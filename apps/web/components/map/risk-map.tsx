@@ -1,9 +1,10 @@
 "use client";
 
-import type { MapAssetFeature } from "@/lib/api";
+import type { MapAssetFeature, MapContextFeature } from "@/lib/api";
 
 type RiskMapProps = {
   features: MapAssetFeature[];
+  contextFeatures: MapContextFeature[];
   selectedId?: string | null;
   onSelectAsset: (feature: MapAssetFeature) => void;
 };
@@ -19,8 +20,8 @@ const width = 720;
 const height = 430;
 const padding = 34;
 
-export function RiskMap({ features, selectedId, onSelectAsset }: RiskMapProps) {
-  const bounds = getBounds(features);
+export function RiskMap({ features, contextFeatures, selectedId, onSelectAsset }: RiskMapProps) {
+  const bounds = getBounds([...features, ...contextFeatures]);
   const zones = features.filter((feature) => feature.properties.assetType === "zone");
   const pipes = features.filter((feature) => feature.properties.assetType === "pipe");
   const pumpStations = features.filter((feature) => feature.properties.assetType === "pump_station");
@@ -30,6 +31,7 @@ export function RiskMap({ features, selectedId, onSelectAsset }: RiskMapProps) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
         <h2 className="text-base font-semibold text-ink">VA-kart</h2>
         <div className="flex flex-wrap gap-3 text-xs text-muted">
+          <LegendSwatch className="border border-slate-400 bg-transparent" label="Kommunegrense" />
           <LegendSwatch className="bg-riskHigh" label="Høy risiko" />
           <LegendSwatch className="bg-riskMedium" label="Medium" />
           <LegendSwatch className="bg-riskLow" label="Lav" />
@@ -37,6 +39,17 @@ export function RiskMap({ features, selectedId, onSelectAsset }: RiskMapProps) {
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Kart med VA-objekter" className="block w-full">
         <rect width={width} height={height} fill="#f7f8f5" />
+        {contextFeatures.map((feature) => (
+          <path
+            key={feature.id}
+            d={multiPolygonPath(feature, bounds)}
+            fill="#e8eef2"
+            stroke="#5f6f7a"
+            strokeDasharray="8 7"
+            strokeWidth="2"
+            opacity="0.7"
+          />
+        ))}
         {zones.map((feature) => (
           <path
             key={feature.id}
@@ -111,6 +124,20 @@ function polygonPath(feature: MapAssetFeature, bounds: Bounds) {
     .join(" Z ");
 }
 
+function multiPolygonPath(feature: MapContextFeature, bounds: Bounds) {
+  return feature.geometry.coordinates
+    .flat()
+    .map((ring) =>
+      ring
+        .map((point, index) => {
+          const [x, y] = projectPoint(point, bounds);
+          return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+        })
+        .join(" ")
+    )
+    .join(" Z ");
+}
+
 function linePath(feature: MapAssetFeature, bounds: Bounds) {
   if (feature.geometry.type !== "LineString") {
     return "";
@@ -135,8 +162,13 @@ function projectPoint([longitude, latitude]: [number, number], bounds: Bounds): 
   return [Number(x.toFixed(2)), Number(y.toFixed(2))];
 }
 
-function getBounds(features: MapAssetFeature[]): Bounds {
+function getBounds(features: Array<MapAssetFeature | MapContextFeature>): Bounds {
   const points = features.flatMap(extractPoints);
+
+  if (points.length === 0) {
+    return { minX: 0, maxX: 1, minY: 0, maxY: 1 };
+  }
+
   const longitudes = points.map(([longitude]) => longitude);
   const latitudes = points.map(([, latitude]) => latitude);
 
@@ -148,7 +180,11 @@ function getBounds(features: MapAssetFeature[]): Bounds {
   };
 }
 
-function extractPoints(feature: MapAssetFeature): [number, number][] {
+function extractPoints(feature: MapAssetFeature | MapContextFeature): [number, number][] {
+  if (feature.geometry.type === "MultiPolygon") {
+    return feature.geometry.coordinates.flat(2);
+  }
+
   if (feature.geometry.type === "Point") {
     return [feature.geometry.coordinates];
   }

@@ -3,18 +3,22 @@ import {
   getLeakageZoneAnalysis,
   getLeakageZones,
   getMapAssets,
+  getMapContext,
   getOverview,
   getPumpStationAnalysis,
   getPumpStations,
+  getRainfall,
   getRecommendations
 } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [overview, mapAssets, leakageZones, pumpStations, recommendations] = await Promise.all([
+  const [overview, mapAssets, mapContext, rainfall, leakageZones, pumpStations, recommendations] = await Promise.all([
     getOverview(),
     getMapAssets(),
+    getMapContext(),
+    getRainfall(),
     getLeakageZones(),
     getPumpStations(),
     getRecommendations()
@@ -28,6 +32,8 @@ export default async function HomePage() {
     <DashboardScreen
       overview={overview}
       mapAssets={mapAssets}
+      mapContext={mapContext}
+      rainfall={rainfall}
       leakageZones={leakageZones}
       pumpStations={pumpStations}
       recommendations={recommendations}

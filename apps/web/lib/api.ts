@@ -50,6 +50,41 @@ export type MapAssetsResponse = {
   features: MapAssetFeature[];
 };
 
+export type MapContextFeature = {
+  type: "Feature";
+  id: string;
+  geometry: { type: "MultiPolygon"; coordinates: [number, number][][][] };
+  properties: {
+    assetType: "municipality";
+    municipalityCode: string;
+    name: string;
+    source: string;
+  };
+};
+
+export type MapContextResponse = {
+  type: "FeatureCollection";
+  features: MapContextFeature[];
+};
+
+export type RainfallResponse = {
+  municipalityCode: string;
+  from: string;
+  to: string;
+  source: string;
+  observations: RainfallObservation[];
+};
+
+export type RainfallObservation = {
+  id: string;
+  stationId: string;
+  stationName: string | null;
+  observedAt: string;
+  rainfallMm: number | null;
+  temperatureC: number | null;
+  qualityCode: string | null;
+};
+
 export type LeakageZoneSummary = {
   zoneId: string;
   name: string;
@@ -116,6 +151,14 @@ export async function getOverview(): Promise<OverviewResponse> {
 
 export async function getMapAssets(): Promise<MapAssetsResponse> {
   return getJson<MapAssetsResponse>("/api/map/assets");
+}
+
+export async function getMapContext(): Promise<MapContextResponse> {
+  return getJson<MapContextResponse>("/api/map/context");
+}
+
+export async function getRainfall(): Promise<RainfallResponse> {
+  return getJson<RainfallResponse>("/api/weather/rainfall");
 }
 
 export async function getLeakageZones(): Promise<LeakageZoneSummary[]> {

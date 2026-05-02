@@ -60,7 +60,7 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Verification After Each Phase
 
-Last completed phase verified: Phase 7 screens.
+Last completed phase verified: Phase 8 public data integration.
 
 - [x] Run shared scoring tests
 - [x] Run shared typecheck
@@ -96,26 +96,26 @@ Last completed phase verified: Phase 7 screens.
 
 ## Phase 8: Public Data Integration
 
-- [ ] Add `docs/external-data-sources.md`
-- [ ] Add `FROST_CLIENT_ID` to `.env.example`
-- [ ] Add `municipalities` database model/table
-- [ ] Add `weather_observations` database model/table
-- [ ] Add optional `external_data_sources` metadata model/table
-- [ ] Add seeded fallback municipality boundary
-- [ ] Add seeded fallback rainfall observations
-- [ ] Add MET Frost client
-- [ ] Add MET Frost service
-- [ ] Add `GET /api/weather/rainfall`
-- [ ] Add protected `POST /api/import/weather/frost`
-- [ ] Add Kartverket/Geonorge boundary import path
-- [ ] Add `GET /api/municipality`
-- [ ] Add `GET /api/map/context`
-- [ ] Update fremmedvann chart to use Frost rainfall when available
-- [ ] Update map to show municipality boundary
-- [ ] Add `Datakilder` card to overview
-- [ ] Add mocked unit tests for external data clients/services
-- [ ] Verify app works without external API credentials by using fallback seed data
-- [ ] Keep SSB/KOSTRA out of MVP and document it as Phase 2
+- [x] Add `docs/external-data-sources.md`
+- [x] Add `FROST_CLIENT_ID` to `.env.example`
+- [x] Add `municipalities` database model/table
+- [x] Add `weather_observations` database model/table
+- [x] Add optional `external_data_sources` metadata model/table
+- [x] Add seeded fallback municipality boundary
+- [x] Add seeded fallback rainfall observations
+- [x] Add MET Frost client
+- [x] Add MET Frost service
+- [x] Add `GET /api/weather/rainfall`
+- [x] Add protected `POST /api/import/weather/frost`
+- [x] Add Kartverket/Geonorge boundary import path
+- [x] Add `GET /api/municipality`
+- [x] Add `GET /api/map/context`
+- [x] Update fremmedvann chart to use Frost rainfall when available
+- [x] Update map to show municipality boundary
+- [x] Add `Datakilder` card to overview
+- [x] Add mocked unit tests for external data clients/services
+- [x] Verify app works without external API credentials by using fallback seed data
+- [x] Keep SSB/KOSTRA out of MVP and document it as Phase 2
 
 ## Phase 9: PDF Report
 

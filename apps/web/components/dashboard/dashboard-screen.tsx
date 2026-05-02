@@ -6,9 +6,11 @@ import type {
   LeakageZoneSummary,
   MapAssetFeature,
   MapAssetsResponse,
+  MapContextResponse,
   OverviewResponse,
   PumpStationAnalysis,
   PumpStationSummary,
+  RainfallResponse,
   RecommendationSummary
 } from "@/lib/api";
 import { fetchLeakageZoneAnalysis, fetchPumpStationAnalysis } from "@/lib/client-api";
@@ -16,12 +18,15 @@ import { UI_TEXT } from "@/lib/ui-text";
 import { PumpStationChart } from "../fremmedvann/pump-station-chart";
 import { LeakageDetailsPanel } from "../leakage/leakage-details-panel";
 import { RiskMap } from "../map/risk-map";
+import { DataSourcesCard } from "../overview/data-sources-card";
 import { KpiCard } from "../overview/kpi-card";
 import { RecommendationsTable } from "../recommendations/recommendations-table";
 
 type DashboardScreenProps = {
   overview: OverviewResponse;
   mapAssets: MapAssetsResponse;
+  mapContext: MapContextResponse;
+  rainfall: RainfallResponse;
   leakageZones: LeakageZoneSummary[];
   pumpStations: PumpStationSummary[];
   recommendations: RecommendationSummary[];
@@ -32,6 +37,8 @@ type DashboardScreenProps = {
 export function DashboardScreen({
   overview,
   mapAssets,
+  mapContext,
+  rainfall,
   leakageZones,
   pumpStations,
   recommendations,
@@ -117,7 +124,12 @@ export function DashboardScreen({
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">
-        <RiskMap features={mapAssets.features} selectedId={selectedAssetId} onSelectAsset={handleSelectAsset} />
+        <RiskMap
+          features={mapAssets.features}
+          contextFeatures={mapContext.features}
+          selectedId={selectedAssetId}
+          onSelectAsset={handleSelectAsset}
+        />
         <LeakageDetailsPanel
           zones={leakageZones}
           selectedZoneId={selectedZoneId}
@@ -134,6 +146,7 @@ export function DashboardScreen({
       <section className="mx-auto max-w-7xl px-6 pb-6">
         <PumpStationChart
           pumpStations={pumpStations}
+          rainfall={rainfall}
           selectedPumpStationId={selectedPumpStationId}
           analysis={pumpStationAnalysis}
           isLoading={loadingPumpStation}
@@ -143,6 +156,10 @@ export function DashboardScreen({
             setSelectedPumpStationId(pumpStationId);
           }}
         />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-8">
+        <DataSourcesCard />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-8">

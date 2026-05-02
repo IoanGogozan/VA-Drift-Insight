@@ -17,6 +17,7 @@ const ids = {
   pumpStation03: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
   pumpStation04: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
   pumpStation05: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  municipalityTonsberg: "30000000-0000-4000-8000-000000000001",
   incidentLeakNorth: "10000000-0000-4000-8000-000000000001",
   incidentAlarmPs03: "10000000-0000-4000-8000-000000000002",
   incidentOverflowPs03: "10000000-0000-4000-8000-000000000003",
@@ -26,6 +27,9 @@ const ids = {
 
 async function main() {
   await prisma.$transaction([
+    prisma.externalDataSource.deleteMany(),
+    prisma.weatherObservation.deleteMany(),
+    prisma.municipality.deleteMany(),
     prisma.recommendation.deleteMany(),
     prisma.riskScore.deleteMany(),
     prisma.incident.deleteMany(),
@@ -277,10 +281,72 @@ async function main() {
     ]
   });
 
+  await prisma.externalDataSource.createMany({
+    data: [
+      {
+        sourceKey: "met-frost",
+        name: "MET Norway Frost API",
+        url: "https://frost.met.no/",
+        description: "Historical precipitation data used for fremmedvann rainfall context.",
+        isMvp: true
+      },
+      {
+        sourceKey: "kartverket-grensedata",
+        name: "Kartverket grensedata / Geonorge kommunegrenser",
+        url: "https://www.kartverket.no/api-og-data/grensedata",
+        description: "Official municipality boundary data used as map context.",
+        isMvp: true
+      },
+      {
+        sourceKey: "ssb-kostra",
+        name: "SSB/KOSTRA",
+        url: "https://www.ssb.no/api/pxwebapi",
+        description: "Optional Phase 2 municipality water and wastewater statistics.",
+        isMvp: false
+      }
+    ]
+  });
+
+  await prisma.municipality.create({
+    data: {
+      id: ids.municipalityTonsberg,
+      municipalityCode: "3905",
+      name: "Tonsberg kommune",
+      source: "Kartverket grensedata / Geonorge kommunegrenser fallback"
+    }
+  });
+
+  await prisma.weatherObservation.createMany({
+    data: createFallbackWeatherObservations()
+  });
+
   await setDemoGeometry();
 }
 
+function createFallbackWeatherObservations() {
+  const rainfallByDay = [0, 0.8, 2.4, 8.2, 14.6, 6.4, 1.2, 0, 0, 3.1, 9.8, 4.7, 0.4, 0];
+
+  return rainfallByDay.map((rainfallMm, index) => ({
+    source: "MET Norway Frost API fallback",
+    stationId: "SN27450",
+    stationName: "Tonsberg - demo station",
+    municipalityCode: "3905",
+    observedAt: new Date(Date.UTC(2026, 3, 15 + index, 6, 0, 0)),
+    rainfallMm,
+    temperatureC: Number((7.5 + index * 0.25).toFixed(1)),
+    qualityCode: "0"
+  }));
+}
+
 async function setDemoGeometry() {
+  await prisma.$executeRaw`
+    UPDATE municipalities
+    SET geometry = ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(${
+      '{"type":"Polygon","coordinates":[[[10.660,59.875],[10.825,59.875],[10.825,59.990],[10.660,59.990],[10.660,59.875]]]}'
+    }), 4326))
+    WHERE id = ${ids.municipalityTonsberg}::uuid
+  `;
+
   const geometries = [
     [
       "zones",

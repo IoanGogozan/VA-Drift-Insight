@@ -7,8 +7,10 @@ import { FremmedvannModule } from "./fremmedvann/fremmedvann.module";
 import { HealthModule } from "./health/health.module";
 import { LeakageModule } from "./leakage/leakage.module";
 import { OverviewModule } from "./overview/overview.module";
+import { MunicipalityModule } from "./municipality/municipality.module";
 import { RecommendationsModule } from "./recommendations/recommendations.module";
 import { VersionModule } from "./version/version.module";
+import { WeatherModule } from "./weather/weather.module";
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { VersionModule } from "./version/version.module";
     AssetsModule,
     LeakageModule,
     FremmedvannModule,
-    RecommendationsModule
+    RecommendationsModule,
+    MunicipalityModule,
+    WeatherModule
   ]
 })
 export class AppModule {}

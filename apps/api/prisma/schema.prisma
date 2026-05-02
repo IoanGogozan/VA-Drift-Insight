@@ -179,3 +179,45 @@ model Recommendation {
   @@index([priority, status])
   @@map("recommendations")
 }
+
+model Municipality {
+  id               String   @id @default(uuid()) @db.Uuid
+  municipalityCode String   @unique @map("municipality_code")
+  name             String
+  source           String
+  geometry         Unsupported("geometry(MultiPolygon, 4326)")?
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("municipalities")
+}
+
+model WeatherObservation {
+  id               String   @id @default(uuid()) @db.Uuid
+  source           String
+  stationId        String   @map("station_id")
+  stationName      String?  @map("station_name")
+  municipalityCode String?  @map("municipality_code")
+  observedAt       DateTime @map("observed_at")
+  rainfallMm       Float?   @map("rainfall_mm")
+  temperatureC     Float?   @map("temperature_c")
+  qualityCode      String?  @map("quality_code")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@unique([source, stationId, observedAt])
+  @@index([municipalityCode, observedAt])
+  @@index([stationId, observedAt])
+  @@map("weather_observations")
+}
+
+model ExternalDataSource {
+  id          String   @id @default(uuid()) @db.Uuid
+  sourceKey   String   @unique @map("source_key")
+  name        String
+  url         String
+  description String
+  isMvp       Boolean  @default(false) @map("is_mvp")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("external_data_sources")
+}

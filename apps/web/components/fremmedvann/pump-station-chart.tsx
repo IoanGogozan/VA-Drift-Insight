@@ -1,10 +1,11 @@
-import type { PumpStationAnalysis, PumpStationSummary } from "@/lib/api";
+import type { PumpStationAnalysis, PumpStationSummary, RainfallResponse } from "@/lib/api";
 import { UI_TEXT } from "@/lib/ui-text";
 
 type PumpStationChartProps = {
   pumpStations: PumpStationSummary[];
   selectedPumpStationId: string | null;
   analysis: PumpStationAnalysis | null;
+  rainfall: RainfallResponse;
   isLoading: boolean;
   error: string | null;
   onSelectPumpStation: (pumpStationId: string) => void;
@@ -18,6 +19,7 @@ export function PumpStationChart({
   pumpStations,
   selectedPumpStationId,
   analysis,
+  rainfall,
   isLoading,
   error,
   onSelectPumpStation
@@ -47,20 +49,22 @@ export function PumpStationChart({
         {isLoading ? <p className="text-sm text-muted">{UI_TEXT.loading}</p> : null}
         {error ? <p className="text-sm text-riskHigh">{error}</p> : null}
         {!isLoading && !analysis ? <p className="text-sm text-muted">{UI_TEXT.selectPumpStation}</p> : null}
-        {analysis ? <ChartContent analysis={analysis} /> : null}
+        {analysis ? <ChartContent analysis={analysis} rainfall={rainfall} /> : null}
       </div>
     </section>
   );
 }
 
-function ChartContent({ analysis }: { analysis: PumpStationAnalysis }) {
+function ChartContent({ analysis, rainfall }: { analysis: PumpStationAnalysis; rainfall: RainfallResponse }) {
   const runtimePoints = makePolyline(analysis.chartData.map((point) => point.pumpRuntimeMinutes));
-  const rainfallBars = analysis.chartData.map((point, index) => {
-    const barWidth = (chartWidth - chartPadding * 2) / analysis.chartData.length - 2;
+  const rainfallPoints = rainfall.observations.length > 0 ? rainfall.observations : [];
+  const rainfallBars = rainfallPoints.map((point, index) => {
+    const barWidth = (chartWidth - chartPadding * 2) / rainfallPoints.length - 2;
     const x = chartPadding + index * (barWidth + 2);
-    const barHeight = (point.rainfallMm / maxValue(analysis.chartData.map((item) => item.rainfallMm))) * 80;
+    const rainfallMm = point.rainfallMm ?? 0;
+    const barHeight = (rainfallMm / maxValue(rainfallPoints.map((item) => item.rainfallMm ?? 0))) * 80;
 
-    return <rect key={point.timestamp} x={x} y={chartHeight - chartPadding - barHeight} width={barWidth} height={barHeight} fill="#3b82a0" opacity="0.65" />;
+    return <rect key={point.observedAt} x={x} y={chartHeight - chartPadding - barHeight} width={barWidth} height={barHeight} fill="#3b82a0" opacity="0.65" />;
   });
 
   return (
@@ -73,6 +77,9 @@ function ChartContent({ analysis }: { analysis: PumpStationAnalysis }) {
         <span className="text-muted">Score {analysis.suspicionScore}/100</span>
         <span className="text-muted">Tillit {analysis.confidence}%</span>
       </div>
+      <p className="text-xs text-muted">
+        Datakilde: Nedbør fra {rainfall.source}. Pumpedata er simulert demo-data.
+      </p>
 
       <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="block w-full border border-slate-200 bg-surface" role="img" aria-label="Regn og pumpetid">
         <line x1={chartPadding} y1={chartHeight - chartPadding} x2={chartWidth - chartPadding} y2={chartHeight - chartPadding} stroke="#94a3b8" />
