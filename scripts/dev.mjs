@@ -5,6 +5,7 @@ const npmCommand = "npm";
 const dockerCommand = "docker";
 
 const children = [];
+const devPorts = [3000, 3001];
 
 function run(command, args, options = {}) {
   const spawnCommand = isWindows ? process.env.ComSpec ?? "cmd.exe" : command;
@@ -59,6 +60,8 @@ function runAndWait(command, args, options = {}) {
 }
 
 async function main() {
+  await stopDevPortListeners();
+
   console.log("Starting PostgreSQL/PostGIS...");
   await runAndWait(dockerCommand, ["compose", "up", "-d", "postgres"]);
 
@@ -108,3 +111,110 @@ main().catch((error) => {
   console.error(error);
   shutdown("error");
 });
+
+async function stopDevPortListeners() {
+  if (process.env.DEV_SKIP_PORT_CLEANUP === "true") {
+    return;
+  }
+
+  const pids = isWindows ? await getWindowsPortPids(devPorts) : await getUnixPortPids(devPorts);
+
+  if (pids.length === 0) {
+    return;
+  }
+
+  console.log(`Stopping existing dev processes on ports ${devPorts.join(", ")}: ${pids.join(", ")}`);
+
+  for (const pid of pids) {
+    if (pid === process.pid) {
+      continue;
+    }
+
+    await killPid(pid);
+  }
+}
+
+async function getWindowsPortPids(ports) {
+  const output = await capture("netstat", ["-ano", "-p", "tcp"]);
+  const pids = new Set();
+
+  for (const line of output.split(/\r?\n/u)) {
+    const normalized = line.trim().replace(/\s+/gu, " ");
+
+    if (!normalized.includes("LISTENING")) {
+      continue;
+    }
+
+    const parts = normalized.split(" ");
+    const localAddress = parts[1] ?? "";
+    const pid = Number(parts.at(-1));
+
+    if (ports.some((port) => localAddress.endsWith(`:${port}`)) && Number.isInteger(pid)) {
+      pids.add(pid);
+    }
+  }
+
+  return [...pids];
+}
+
+async function getUnixPortPids(ports) {
+  const pids = new Set();
+
+  for (const port of ports) {
+    try {
+      const output = await capture("lsof", ["-ti", `tcp:${port}`]);
+
+      for (const value of output.split(/\s+/u)) {
+        const pid = Number(value);
+
+        if (Number.isInteger(pid)) {
+          pids.add(pid);
+        }
+      }
+    } catch {
+      // lsof is not always installed. In that case, skip automatic cleanup.
+    }
+  }
+
+  return [...pids];
+}
+
+function capture(command, args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      shell: false,
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout?.on("data", (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr?.on("data", (chunk) => {
+      stderr += chunk;
+    });
+    child.on("exit", (code) => {
+      if (code === 0) {
+        resolve(stdout);
+        return;
+      }
+
+      reject(new Error(stderr || `${command} ${args.join(" ")} exited with code ${code}`));
+    });
+  });
+}
+
+function killPid(pid) {
+  if (isWindows) {
+    return runAndWait("taskkill", ["/PID", String(pid), "/F", "/T"]);
+  }
+
+  try {
+    process.kill(pid, "SIGTERM");
+  } catch {
+    // Process may already be gone.
+  }
+
+  return Promise.resolve();
+}
