@@ -94,7 +94,30 @@ Last completed phase verified: Phase 7 screens.
 - [x] Build `Anbefalte tiltak`
 - [x] Add recommendation status updates
 
-## Phase 8: PDF Report
+## Phase 8: Public Data Integration
+
+- [ ] Add `docs/external-data-sources.md`
+- [ ] Add `FROST_CLIENT_ID` to `.env.example`
+- [ ] Add `municipalities` database model/table
+- [ ] Add `weather_observations` database model/table
+- [ ] Add optional `external_data_sources` metadata model/table
+- [ ] Add seeded fallback municipality boundary
+- [ ] Add seeded fallback rainfall observations
+- [ ] Add MET Frost client
+- [ ] Add MET Frost service
+- [ ] Add `GET /api/weather/rainfall`
+- [ ] Add protected `POST /api/import/weather/frost`
+- [ ] Add Kartverket/Geonorge boundary import path
+- [ ] Add `GET /api/municipality`
+- [ ] Add `GET /api/map/context`
+- [ ] Update fremmedvann chart to use Frost rainfall when available
+- [ ] Update map to show municipality boundary
+- [ ] Add `Datakilder` card to overview
+- [ ] Add mocked unit tests for external data clients/services
+- [ ] Verify app works without external API credentials by using fallback seed data
+- [ ] Keep SSB/KOSTRA out of MVP and document it as Phase 2
+
+## Phase 9: PDF Report
 
 - [ ] Create report HTML template
 - [ ] Add Puppeteer PDF service
@@ -103,7 +126,7 @@ Last completed phase verified: Phase 7 screens.
 - [ ] Add frontend report button
 - [ ] Add sample generated PDF to demo material if appropriate
 
-## Phase 9: Polish
+## Phase 10: Polish
 
 - [ ] Add screenshots
 - [ ] Improve README run instructions
@@ -120,5 +143,8 @@ Last completed phase verified: Phase 7 screens.
 - Leakage score has factors, explanation and recommended action
 - Fremmedvann screen shows rainfall response and explanation
 - Recommendations table supports status updates
+- Real rainfall data can be imported from MET Frost or loaded from fallback seed data
+- Real municipality boundary can be shown from Kartverket/Geonorge data or fallback seed data
+- UI clearly separates public data sources from simulated VA data
 - PDF report can be generated
 - README explains purpose, stack and how to run the project

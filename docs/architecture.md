@@ -16,6 +16,13 @@ PostgreSQL + PostGIS
    +--> Seed data / CSV import
    +--> Scoring engine
    +--> PDF report generator
+   +--> Public data cache
+
+External public sources
+   |
+   +--> MET Norway Frost API: rainfall observations
+   +--> Kartverket / Geonorge: maps and municipality boundaries
+   +--> SSB / KOSTRA: optional municipality statistics
 ```
 
 ## Repository Structure
@@ -127,7 +134,45 @@ src/
   imports/
     imports.controller.ts
     imports.service.ts
+
+  external-data/
+    met/
+      frost-client.ts
+      frost.service.ts
+
+    kartverket/
+      kartverket-client.ts
+      municipality-boundary.service.ts
+
+    ssb/
+      ssb-client.ts
+      ssb.service.ts
+
+  weather/
+    weather.controller.ts
+    weather.service.ts
+
+  municipality/
+    municipality.controller.ts
+    municipality.service.ts
 ```
+
+## External Data Strategy
+
+The MVP should combine real public Norwegian data with simulated VA operational data.
+
+MVP public sources:
+
+- MET Norway Frost API for historical precipitation
+- Kartverket grensedata / Geonorge kommunegrenser for map context and municipality boundaries
+
+Phase 2 source:
+
+- SSB / KOSTRA for municipality water and wastewater context
+
+The pipe network, pump station operations, leakage incidents, pump runtime, flow, pressure and alarms remain simulated because real VA infrastructure data is sensitive and not suitable for a public demo.
+
+See [External data sources](external-data-sources.md).
 
 ## Frontend Stack
 

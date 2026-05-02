@@ -97,3 +97,19 @@ The latest stable Next version available during Phase 6 pulled `postcss@8.4.31` 
 Implication:
 
 Revisit this dependency before deployment and return to stable Next as soon as the stable release line has the patched dependency.
+
+## ADR 007: Use Public Norwegian Data, Simulate Sensitive VA Operations
+
+Status: Accepted
+
+Decision:
+
+Use MET Norway Frost API and Kartverket grensedata / Geonorge kommunegrenser in the MVP. Keep SSB/KOSTRA as a Phase 2 contextual integration. Continue simulating VA operational data.
+
+Reason:
+
+Real rainfall and official municipality boundaries make the demo credible, while real pipe networks, pump station data, incidents, alarms and SCADA data are sensitive and not suitable for a public portfolio project.
+
+Implication:
+
+The UI, README and PDF reports must clearly label which data is public/open and which data is simulated. The app must keep working with fallback seed data when external APIs or credentials are unavailable.

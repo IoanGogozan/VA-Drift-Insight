@@ -72,15 +72,52 @@ Demo sentence:
 
 Pumpestasjonen reagerer på nedbør, og systemet foreslår feltundersøkelser oppstrøms.
 
-## Week 4: Recommendations, PDF And Polish
+## Week 4: Public Data Integration
+
+Goal: make the demo more realistic by combining open Norwegian public data with simulated VA operational data.
+
+MVP sources:
+
+- MET Norway Frost API: real historical rainfall observations
+- Kartverket grensedata / Geonorge kommunegrenser: real municipality boundary
+
+Tasks:
+
+- Add data-source labels in the UI
+- Add `municipalities` table
+- Add `weather_observations` table
+- Add external data source metadata
+- Add Frost client and service
+- Add Kartverket/Geonorge boundary import path
+- Add `GET /api/weather/rainfall`
+- Add `POST /api/import/weather/frost`
+- Add `GET /api/municipality`
+- Add `GET /api/map/context`
+- Update fremmedvann chart to show real rainfall + simulated pump response
+- Update map to show real municipality boundary + simulated VA assets
+- Add mocked service tests for external clients
+- Add fallback seed data so local demo works without external API calls
+
+Phase 2 source:
+
+- SSB/KOSTRA municipality profile through SSB PxWebApi
+
+Result:
+
+The demo uses real Norwegian rainfall and real public map context while keeping VA operational data simulated and safe for a public portfolio.
+
+Demo sentence:
+
+Demoen bruker ekte norske nedborsdata og offentlige kommunegrenser,
+kombinert med simulerte VA-driftsdata, for a vise beslutningsstotte
+for lekkasjekontroll, fremmedvann og prioritering.
+
+## Week 5: PDF And Polish
 
 Goal: presentable job-application demo.
 
 Tasks:
 
-- Implement recommendations service
-- Implement status update
-- Add recommendations table
 - Add CSV export if time allows
 - Implement PDF report generation
 - Write final README
@@ -97,8 +134,11 @@ The project has a GitHub repo, local demo, optional live demo or video, PDF samp
 1. Map and explainable leakage scoring
 2. Fremmedvann chart
 3. Recommendations
-4. PDF report
-5. Data quality
-6. CSV import
-7. Cloud deployment
-8. Auth
+4. MET Frost rainfall integration
+5. Kartverket municipality boundary
+6. PDF report
+7. Data quality
+8. CSV import
+9. SSB/KOSTRA municipality profile
+10. Cloud deployment
+11. Auth

@@ -4,6 +4,8 @@ A practical demo application for Norwegian water and wastewater operations.
 
 The app combines GIS, time-series data, incidents and explainable scoring methods to support leakage control, fremmedvann analysis and maintenance prioritization.
 
+The updated MVP direction is to combine open Norwegian public data sources with simulated VA operational data.
+
 ## Demo Message
 
 Jeg kan koble praktisk VA-forståelse med moderne backend, data, kart og rapportering.
@@ -28,7 +30,33 @@ This demo shows how backend systems, maps, PostGIS, scoring and reporting can tu
 - Pump station rainfall response
 - Work recommendation table
 - Data quality scoring
+- Public data source labeling
+- MET Norway Frost rainfall integration
+- Kartverket / Geonorge municipality boundary integration
 - PDF risk report
+
+## Data Sources
+
+This demo combines public Norwegian data with simulated VA operational data.
+
+Public data planned for MVP:
+
+- MET Norway Frost API: historical precipitation
+- Kartverket grensedata / Geonorge kommunegrenser: municipality boundary and map context
+
+Phase 2 optional data:
+
+- SSB/KOSTRA through SSB PxWebApi: municipality water and wastewater context
+
+Simulated VA data:
+
+- pipe network
+- measuring zones
+- pump stations
+- leakage incidents
+- flow, pressure, pump runtime and alarms
+
+No real sensitive VA infrastructure data is used.
 
 ## Tech Stack
 
@@ -63,6 +91,7 @@ This demo shows how backend systems, maps, PostGIS, scoring and reporting can tu
 - [Scoring methodology](docs/scoring-methodology.md)
 - [Engineering guidelines](docs/engineering-guidelines.md)
 - [Engineering decisions](docs/engineering-decisions.md)
+- [External data sources](docs/external-data-sources.md)
 - [Security checklist](docs/security-checklist.md)
 - [Seed data plan](docs/seed-data.md)
 - [UI screens](docs/ui-screens.md)
@@ -72,16 +101,21 @@ This demo shows how backend systems, maps, PostGIS, scoring and reporting can tu
 
 ## Current Status
 
-The repository is in Phase 1: monorepo foundation.
+The repository has completed Phase 7: interactive MVP screens.
 
 Implemented so far:
 
-- Git repository initialized
-- Root npm workspace configuration
-- Shared TypeScript package scaffold
-- Docker Compose with PostGIS
-- Environment template
-- Documentation set for implementation
+- Monorepo foundation
+- NestJS API with PostgreSQL/PostGIS and Prisma
+- Seeded simulated VA dataset
+- Explainable leakage and fremmedvann scoring
+- Recommendations API and status workflow
+- Next.js overview, map, leakage, fremmedvann and recommendations screens
+- Root `npm run dev` for local API + web startup
+
+Next planned phase:
+
+- Public data integration with MET Norway Frost API and Kartverket grensedata / Geonorge kommunegrenser
 
 ## Local Development
 
