@@ -99,6 +99,8 @@ Recommended query params:
 
 Updates recommendation status.
 
+This is a protected demo write endpoint. Send the `x-demo-api-key` header in local development.
+
 Example request:
 
 ```json

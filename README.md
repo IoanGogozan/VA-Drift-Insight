@@ -148,6 +148,21 @@ OpenAPI/Swagger:
 http://localhost:3001/api/docs
 ```
 
+Protected demo write endpoints use the `x-demo-api-key` header. For local development, the demo-only key is:
+
+```text
+local-demo-key
+```
+
+Example protected write request:
+
+```bash
+curl -X PATCH http://localhost:3001/api/recommendations/{id}/status \
+  -H "Content-Type: application/json" \
+  -H "x-demo-api-key: local-demo-key" \
+  -d "{\"status\":\"planned\"}"
+```
+
 The web application will be added in a later implementation phase.
 
 ## MVP Priority

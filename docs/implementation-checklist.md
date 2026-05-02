@@ -41,12 +41,12 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 - [x] Implement `GET /api/overview`
 - [x] Implement `GET /api/map/assets`
-- [ ] Implement `GET /api/leakage/zones`
-- [ ] Implement `GET /api/leakage/zones/:id`
-- [ ] Implement `GET /api/fremmedvann/pump-stations`
-- [ ] Implement `GET /api/fremmedvann/pump-stations/:id/analysis`
-- [ ] Implement `GET /api/recommendations`
-- [ ] Implement `PATCH /api/recommendations/:id/status`
+- [x] Implement `GET /api/leakage/zones`
+- [x] Implement `GET /api/leakage/zones/:id`
+- [x] Implement `GET /api/fremmedvann/pump-stations`
+- [x] Implement `GET /api/fremmedvann/pump-stations/:id/analysis`
+- [x] Implement `GET /api/recommendations`
+- [x] Implement `PATCH /api/recommendations/:id/status`
 
 ## Phase 5: Scoring
 

@@ -26,7 +26,7 @@ These endpoints should require demo authentication before they are implemented:
 
 - [ ] `POST /api/import/*`
 - [ ] `POST /api/reports/*`
-- [ ] `PATCH /api/recommendations/:id/status`
+- [x] `PATCH /api/recommendations/:id/status`
 
 These endpoints can remain public in the demo:
 
