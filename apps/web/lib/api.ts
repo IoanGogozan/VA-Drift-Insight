@@ -38,7 +38,7 @@ export type MapAssetFeature = {
     | { type: "LineString"; coordinates: [number, number][] }
     | { type: "Polygon"; coordinates: [number, number][][] };
   properties: {
-    assetType: "zone" | "pipe" | "pump_station";
+    assetType: "zone" | "pipe" | "pump_station" | "incident";
     name: string;
     subtype: string;
     riskScore: number | null;

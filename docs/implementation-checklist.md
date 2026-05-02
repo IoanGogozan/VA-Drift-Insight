@@ -126,7 +126,27 @@ Last completed phase verified: Phase 9 PDF report.
 - [x] Add frontend report button
 - [ ] Add sample generated PDF to demo material if appropriate
 
-## Phase 10: Polish
+## Phase 10: Professional GIS Map Experience
+
+- [x] Replace static SVG map with interactive map component
+- [x] Use Kartverket topo basemap as the operational map background
+- [x] Add layer control for kommunegrense, målesoner, vannledninger, avløpsledninger, overvannsledninger, pumpestasjoner and hendelser
+- [x] Expand simulated pipe network to a more realistic connected network
+- [x] Add clear styling for water, wastewater and stormwater pipes
+- [x] Add smaller, more technical pump station symbols/icons
+- [x] Add selected asset highlight
+- [x] Add useful popup or side-panel handoff for selected map assets
+- [x] Keep public basemap/geodata clearly separated from simulated VA data
+- [x] Verify desktop and mobile map screenshots with Playwright
+
+Acceptance criteria:
+
+- The map should look like a credible VA/GIS operational view, not a decorative diagram.
+- Simulated pipes should appear as connected network segments placed in a plausible urban pattern.
+- Pump stations should use technical symbols and should not dominate the map visually.
+- The user should understand what each layer represents without reading documentation.
+
+## Phase 11: Polish
 
 - [ ] Add screenshots
 - [ ] Improve README run instructions

@@ -93,41 +93,7 @@ async function main() {
   });
 
   await prisma.pipe.createMany({
-    data: [
-      {
-        id: ids.pipe141,
-        pipeCode: "Ledning 141",
-        zoneId: ids.zoneNorth,
-        material: "støpejern",
-        installedYear: 1974,
-        diameterMm: 160,
-        pipeType: "water",
-        criticality: 75,
-        previousBreaks: 2
-      },
-      {
-        id: ids.pipe203,
-        pipeCode: "Ledning 203",
-        zoneId: ids.zoneSentrum,
-        material: "duktilt støpejern",
-        installedYear: 1992,
-        diameterMm: 200,
-        pipeType: "water",
-        criticality: 70,
-        previousBreaks: 1
-      },
-      {
-        id: ids.pipe312,
-        pipeCode: "Ledning 312",
-        zoneId: ids.zoneSouth,
-        material: "PE",
-        installedYear: 2016,
-        diameterMm: 110,
-        pipeType: "water",
-        criticality: 35,
-        previousBreaks: 0
-      }
-    ]
+    data: createPipeSeedData()
   });
 
   await prisma.pumpStation.createMany({
@@ -338,6 +304,143 @@ function createFallbackWeatherObservations() {
   }));
 }
 
+function createPipeSeedData() {
+  const basePipes = [
+    {
+      id: ids.pipe141,
+      pipeCode: "Ledning 141",
+      zoneId: ids.zoneNorth,
+      material: "støpejern",
+      installedYear: 1974,
+      diameterMm: 160,
+      pipeType: "water",
+      criticality: 75,
+      previousBreaks: 2
+    },
+    {
+      id: ids.pipe203,
+      pipeCode: "Ledning 203",
+      zoneId: ids.zoneSentrum,
+      material: "duktilt støpejern",
+      installedYear: 1992,
+      diameterMm: 200,
+      pipeType: "water",
+      criticality: 70,
+      previousBreaks: 1
+    },
+    {
+      id: ids.pipe312,
+      pipeCode: "Ledning 312",
+      zoneId: ids.zoneSouth,
+      material: "PE",
+      installedYear: 2016,
+      diameterMm: 110,
+      pipeType: "water",
+      criticality: 35,
+      previousBreaks: 0
+    }
+  ];
+
+  const generatedPipes = createNetworkSegments().map((segment, index) => ({
+    pipeCode: `Demo-${segment.pipeType}-${String(index + 1).padStart(2, "0")}`,
+    zoneId: segment.zoneId,
+    material: segment.material,
+    installedYear: segment.installedYear,
+    diameterMm: segment.diameterMm,
+    pipeType: segment.pipeType,
+    criticality: segment.criticality,
+    previousBreaks: segment.previousBreaks
+  }));
+
+  return [...basePipes, ...generatedPipes];
+}
+
+function createNetworkSegments() {
+  const waterTrunks = [
+    [[10.371, 59.285], [10.388, 59.287], [10.405, 59.286], [10.423, 59.283], [10.442, 59.281]],
+    [[10.382, 59.296], [10.397, 59.294], [10.413, 59.292], [10.432, 59.290]],
+    [[10.382, 59.268], [10.397, 59.270], [10.414, 59.272], [10.431, 59.274], [10.451, 59.276]]
+  ];
+  const waterBranches = [
+    [[10.388, 59.287], [10.386, 59.294], [10.394, 59.298]],
+    [[10.405, 59.286], [10.407, 59.279], [10.411, 59.273]],
+    [[10.423, 59.283], [10.425, 59.275], [10.428, 59.268]],
+    [[10.397, 59.270], [10.392, 59.262], [10.388, 59.255]],
+    [[10.414, 59.272], [10.416, 59.264], [10.421, 59.256]]
+  ];
+  const wastewater = [
+    [[10.371, 59.275], [10.390, 59.274], [10.410, 59.270], [10.425, 59.258]],
+    [[10.386, 59.292], [10.399, 59.286], [10.414, 59.276], [10.425, 59.258]],
+    [[10.452, 59.276], [10.441, 59.269], [10.431, 59.261], [10.425, 59.258]],
+    [[10.390, 59.252], [10.405, 59.255], [10.425, 59.258], [10.438, 59.263]]
+  ];
+  const stormwater = [
+    [[10.360, 59.284], [10.377, 59.281], [10.394, 59.279], [10.414, 59.276]],
+    [[10.382, 59.300], [10.395, 59.293], [10.410, 59.286], [10.430, 59.282]],
+    [[10.384, 59.250], [10.401, 59.252], [10.418, 59.255], [10.438, 59.260]],
+    [[10.430, 59.288], [10.438, 59.278], [10.446, 59.268]]
+  ];
+
+  return [
+    ...createSegmentsFromRoutes(waterTrunks, {
+      zoneId: ids.zoneNorth,
+      material: "duktilt støpejern",
+      installedYear: 1988,
+      diameterMm: 200,
+      pipeType: "water" as const,
+      criticality: 68,
+      previousBreaks: 1
+    }),
+    ...createSegmentsFromRoutes(waterBranches, {
+      zoneId: ids.zoneSentrum,
+      material: "PVC",
+      installedYear: 2004,
+      diameterMm: 160,
+      pipeType: "water" as const,
+      criticality: 52,
+      previousBreaks: 0
+    }),
+    ...createSegmentsFromRoutes(wastewater, {
+      zoneId: ids.catchmentB,
+      material: "betong",
+      installedYear: 1982,
+      diameterMm: 250,
+      pipeType: "wastewater" as const,
+      criticality: 72,
+      previousBreaks: 1
+    }),
+    ...createSegmentsFromRoutes(stormwater, {
+      zoneId: ids.catchmentA,
+      material: "PVC",
+      installedYear: 2008,
+      diameterMm: 315,
+      pipeType: "stormwater" as const,
+      criticality: 45,
+      previousBreaks: 0
+    })
+  ];
+}
+
+function createSegmentsFromRoutes(
+  routes: number[][][],
+  defaults: {
+    zoneId: string;
+    material: string;
+    installedYear: number;
+    diameterMm: number;
+    pipeType: "water" | "wastewater" | "stormwater";
+    criticality: number;
+    previousBreaks: number;
+  }
+) {
+  return routes.flatMap((route) =>
+    route.slice(0, -1).map((point, index) => ({
+      ...defaults,
+      coordinates: [point, route[index + 1]]
+    }))
+  );
+}
+
 async function setDemoGeometry() {
   await prisma.$executeRaw`
     UPDATE municipalities
@@ -388,17 +491,31 @@ async function setDemoGeometry() {
     );
   }
 
-  const pipeGeometries = [
+  const fixedPipeGeometries = [
     [ids.pipe141, '{"type":"LineString","coordinates":[[10.386,59.294],[10.398,59.295],[10.403,59.289]]}'],
     [ids.pipe203, '{"type":"LineString","coordinates":[[10.410,59.280],[10.423,59.279],[10.428,59.273]]}'],
     [ids.pipe312, '{"type":"LineString","coordinates":[[10.389,59.257],[10.401,59.259],[10.409,59.262]]}']
   ] as const;
 
-  for (const [id, geometry] of pipeGeometries) {
+  for (const [id, geometry] of fixedPipeGeometries) {
     await prisma.$executeRaw`
       UPDATE pipes
       SET geometry = ST_SetSRID(ST_GeomFromGeoJSON(${geometry}), 4326)
       WHERE id = ${id}::uuid
+    `;
+  }
+
+  for (const [index, segment] of createNetworkSegments().entries()) {
+    const pipeCode = `Demo-${segment.pipeType}-${String(index + 1).padStart(2, "0")}`;
+    const geometry = JSON.stringify({
+      type: "LineString",
+      coordinates: segment.coordinates
+    });
+
+    await prisma.$executeRaw`
+      UPDATE pipes
+      SET geometry = ST_SetSRID(ST_GeomFromGeoJSON(${geometry}), 4326)
+      WHERE pipe_code = ${pipeCode}
     `;
   }
 
@@ -413,6 +530,20 @@ async function setDemoGeometry() {
   for (const [id, geometry] of pumpStationGeometries) {
     await prisma.$executeRaw`
       UPDATE pump_stations
+      SET geometry = ST_SetSRID(ST_GeomFromGeoJSON(${geometry}), 4326)
+      WHERE id = ${id}::uuid
+    `;
+  }
+
+  const incidentGeometries = [
+    [ids.incidentLeakNorth, '{"type":"Point","coordinates":[10.397,59.292]}'],
+    [ids.incidentAlarmPs03, '{"type":"Point","coordinates":[10.425,59.258]}'],
+    [ids.incidentOverflowPs03, '{"type":"Point","coordinates":[10.431,59.261]}']
+  ] as const;
+
+  for (const [id, geometry] of incidentGeometries) {
+    await prisma.$executeRaw`
+      UPDATE incidents
       SET geometry = ST_SetSRID(ST_GeomFromGeoJSON(${geometry}), 4326)
       WHERE id = ${id}::uuid
     `;
