@@ -60,11 +60,17 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Verification After Each Phase
 
-- [ ] Run API tests
-- [ ] Run API typecheck
-- [ ] Run API build
-- [ ] Commit completed phase
-- [ ] Push branch when a Git remote is configured
+Last completed phase verified: Phase 5 scoring.
+
+- [x] Run shared scoring tests
+- [x] Run shared typecheck
+- [x] Run shared build
+- [x] Run API tests
+- [x] Run API typecheck
+- [x] Run API build
+- [x] Run runtime smoke test
+- [x] Commit completed phase
+- [x] Push branch when a Git remote is configured
 
 ## Phase 6: Frontend Foundation
 
