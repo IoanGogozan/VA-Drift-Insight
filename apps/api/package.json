@@ -8,11 +8,14 @@
     "build": "nest build",
     "start": "node dist/main.js",
     "lint": "echo \"No lint configured for api yet\"",
-    "test": "jest",
+    "test": "jest --config jest.config.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "tsx prisma/seed.ts"
+  },
+  "jest": {
+    "rootDir": "."
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",

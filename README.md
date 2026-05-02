@@ -111,6 +111,12 @@ Run shared package typecheck:
 npm run typecheck --workspace @va-drift-insight/shared
 ```
 
+Run API tests:
+
+```bash
+npm run test --workspace @va-drift-insight/api
+```
+
 Apply database migrations:
 
 ```bash

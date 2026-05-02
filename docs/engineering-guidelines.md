@@ -567,6 +567,13 @@ Avoid:
 - `changes`
 - `final version`
 
+After each completed implementation phase:
+
+- Run relevant tests.
+- Run typecheck and build.
+- Commit with a clear message.
+- Push the branch when a remote is configured.
+
 ## Pull Request Checklist
 
 Even when working alone, use this checklist mentally:

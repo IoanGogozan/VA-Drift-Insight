@@ -47,6 +47,7 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 - [x] Implement `GET /api/fremmedvann/pump-stations/:id/analysis`
 - [x] Implement `GET /api/recommendations`
 - [x] Implement `PATCH /api/recommendations/:id/status`
+- [x] Add unit tests for current API services and guards
 
 ## Phase 5: Scoring
 
@@ -56,6 +57,14 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 - [ ] Implement data quality scoring
 - [ ] Store score explanations
 - [ ] Add unit tests for scoring functions
+
+## Verification After Each Phase
+
+- [ ] Run API tests
+- [ ] Run API typecheck
+- [ ] Run API build
+- [ ] Commit completed phase
+- [ ] Push branch when a Git remote is configured
 
 ## Phase 6: Frontend Foundation
 
