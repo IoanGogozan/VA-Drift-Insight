@@ -100,13 +100,51 @@ Start PostgreSQL/PostGIS:
 docker compose up -d postgres
 ```
 
+PostgreSQL is exposed on local port `5433` to avoid conflicts with an existing local database.
+
 Run shared package typecheck:
 
 ```bash
 npm run typecheck --workspace @va-drift-insight/shared
 ```
 
-The API and web applications will be added in the next implementation phase.
+Apply database migrations:
+
+```bash
+$env:DATABASE_URL="postgresql://va_demo:va_demo@localhost:5433/va_drift_insight"
+npm exec --workspace @va-drift-insight/api -- prisma migrate deploy
+```
+
+Seed demo data:
+
+```bash
+$env:DATABASE_URL="postgresql://va_demo:va_demo@localhost:5433/va_drift_insight"
+npm run prisma:seed --workspace @va-drift-insight/api
+```
+
+Build and start the API:
+
+```bash
+npm run build --workspace @va-drift-insight/api
+$env:DATABASE_URL="postgresql://va_demo:va_demo@localhost:5433/va_drift_insight"
+$env:API_PORT="3001"
+npm run start --workspace @va-drift-insight/api
+```
+
+Health checks:
+
+```text
+GET http://localhost:3001/api/health
+GET http://localhost:3001/api/health/db
+```
+
+OpenAPI/Swagger:
+
+```text
+http://localhost:3001/api/docs
+```
+
+The web application will be added in a later implementation phase.
 
 ## MVP Priority
 

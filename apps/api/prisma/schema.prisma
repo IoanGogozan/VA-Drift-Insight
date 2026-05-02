@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ZoneType {
+  water_meter_zone
+  wastewater_catchment
+}
+
+enum PipeType {
+  water
+  wastewater
+  stormwater
+}
+
+enum AssetType {
+  zone
+  pipe
+  pump_station
+}
+
+enum IncidentType {
+  leak
+  pipe_break
+  high_level_alarm
+  overflow
+  complaint
+  pump_failure
+  suspected_fremmedvann
+}
+
+enum ScoreType {
+  leakage
+  fremmedvann
+  data_quality
+  sanering
+}
+
+enum RecommendationType {
+  leakage
+  fremmedvann
+  sanering
+  data_gap
+}
+
+enum RecommendationPriority {
+  high
+  medium
+  low
+}
+
+enum RecommendationStatus {
+  new
+  planned
+  in_progress
+  completed
+  dismissed
+}
+
+model Zone {
+  id                 String   @id @default(cuid())
+  name               String
+  zoneType           ZoneType @map("zone_type")
+  population         Int?
+  baselineNightFlow  Float?   @map("baseline_night_flow")
+  currentNightFlow   Float?   @map("current_night_flow")
+  dataQualityScore   Int?     @map("data_quality_score")
+  geometry           Unsupported("geometry")?
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  pipes        Pipe[]
+  pumpStations PumpStation[] @relation("CatchmentPumpStations")
+
+  @@map("zones")
+}
+
+model Pipe {
+  id             String   @id @default(cuid())
+  pipeCode       String   @unique @map("pipe_code")
+  zoneId         String?  @map("zone_id")
+  material       String
+  installedYear  Int?     @map("installed_year")
+  diameterMm     Int?     @map("diameter_mm")
+  pipeType       PipeType @map("pipe_type")
+  criticality    Int      @default(50)
+  previousBreaks Int      @default(0) @map("previous_breaks")
+  geometry       Unsupported("geometry")?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  zone Zone? @relation(fields: [zoneId], references: [id])
+
+  @@map("pipes")
+}
+
+model PumpStation {
+  id             String   @id @default(cuid())
+  stationCode    String   @unique @map("station_code")
+  name           String
+  catchmentId    String?  @map("catchment_id")
+  capacityM3h    Float?   @map("capacity_m3h")
+  alarmCount     Int      @default(0) @map("alarm_count")
+  overflowEvents Int      @default(0) @map("overflow_events")
+  geometry       Unsupported("geometry")?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  catchment Zone? @relation("CatchmentPumpStations", fields: [catchmentId], references: [id])
+
+  @@map("pump_stations")
+}
+
+model TimeSeries {
+  id                 String    @id @default(cuid())
+  assetType          AssetType @map("asset_type")
+  assetId            String    @map("asset_id")
+  timestamp          DateTime
+  flowM3h            Float?    @map("flow_m3h")
+  pressureBar        Float?    @map("pressure_bar")
+  levelM             Float?    @map("level_m")
+  pumpRuntimeMinutes Int?      @map("pump_runtime_minutes")
+  rainfallMm         Float?    @map("rainfall_mm")
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  @@index([assetType, assetId, timestamp])
+  @@map("time_series")
+}
+
+model Incident {
+  id           String       @id @default(cuid())
+  incidentType IncidentType @map("incident_type")
+  assetType    AssetType    @map("asset_type")
+  assetId      String       @map("asset_id")
+  occurredAt   DateTime     @map("occurred_at")
+  description  String
+  resolvedAt   DateTime?    @map("resolved_at")
+  geometry     Unsupported("geometry")?
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  @@index([assetType, assetId, occurredAt])
+  @@map("incidents")
+}
+
+model RiskScore {
+  id           String    @id @default(cuid())
+  assetType    AssetType @map("asset_type")
+  assetId      String    @map("asset_id")
+  scoreType    ScoreType @map("score_type")
+  score        Int
+  confidence   Int
+  explanation  String
+  calculatedAt DateTime  @default(now()) @map("calculated_at")
+
+  @@index([assetType, assetId, scoreType])
+  @@map("risk_scores")
+}
+
+model Recommendation {
+  id              String                 @id @default(cuid())
+  type            RecommendationType
+  priority        RecommendationPriority
+  assetType       AssetType              @map("asset_type")
+  assetId         String                 @map("asset_id")
+  areaName        String                 @map("area_name")
+  reason          String
+  suggestedAction String                 @map("suggested_action")
+  status          RecommendationStatus   @default(new)
+  createdAt       DateTime               @default(now()) @map("created_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+
+  @@index([priority, status])
+  @@map("recommendations")
+}

@@ -14,14 +14,14 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Phase 2: Backend Foundation
 
-- [ ] Create NestJS app in `apps/api`
-- [ ] Add Prisma
-- [ ] Configure database connection
-- [ ] Add PostGIS extension migration
-- [ ] Create Prisma schema for MVP tables
-- [ ] Add seed script
-- [ ] Add Swagger/OpenAPI
-- [ ] Add health endpoint
+- [x] Create NestJS app in `apps/api`
+- [x] Add Prisma
+- [x] Configure database connection
+- [x] Add PostGIS extension migration
+- [x] Create Prisma schema for MVP tables
+- [x] Add seed script
+- [x] Add Swagger/OpenAPI
+- [x] Add health endpoint
 
 ## Phase 3: Seed Data
 
