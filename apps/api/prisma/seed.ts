@@ -26,6 +26,8 @@ const ids = {
 };
 
 async function main() {
+  await prisma.$executeRaw`DELETE FROM network_nodes`;
+
   await prisma.$transaction([
     prisma.externalDataSource.deleteMany(),
     prisma.weatherObservation.deleteMany(),
@@ -95,6 +97,8 @@ async function main() {
   await prisma.pipe.createMany({
     data: createPipeSeedData()
   });
+
+  await seedNetworkNodes();
 
   await prisma.pumpStation.createMany({
     data: [
@@ -306,14 +310,14 @@ function createFallbackWeatherObservations() {
 
 function createPipeSeedData() {
   const basePipes = [
-    {
-      id: ids.pipe141,
+      {
+        id: ids.pipe141,
       pipeCode: "Ledning 141",
       zoneId: ids.zoneNorth,
       material: "støpejern",
       installedYear: 1974,
       diameterMm: 160,
-      pipeType: "water",
+        pipeType: "water" as const,
       criticality: 75,
       previousBreaks: 2
     },
@@ -324,7 +328,7 @@ function createPipeSeedData() {
       material: "duktilt støpejern",
       installedYear: 1992,
       diameterMm: 200,
-      pipeType: "water",
+        pipeType: "water" as const,
       criticality: 70,
       previousBreaks: 1
     },
@@ -335,7 +339,7 @@ function createPipeSeedData() {
       material: "PE",
       installedYear: 2016,
       diameterMm: 110,
-      pipeType: "water",
+        pipeType: "water" as const,
       criticality: 35,
       previousBreaks: 0
     }
@@ -443,6 +447,38 @@ function createSegmentsFromRoutes(
       coordinates: [point, route[index + 1]]
     }))
   );
+}
+
+async function seedNetworkNodes() {
+  const nodes = [
+    ["KUM-V-01", "kum", "water", "normal", [10.397, 59.286]],
+    ["KUM-V-02", "kum", "water", "normal", [10.405, 59.286]],
+    ["KUM-V-03", "kum", "water", "normal", [10.414, 59.286]],
+    ["KUM-V-04", "kum", "water", "normal", [10.409, 59.280]],
+    ["KUM-V-05", "kum", "water", "normal", [10.410, 59.273]],
+    ["KUM-A-01", "kum", "wastewater", "normal", [10.398, 59.281]],
+    ["KUM-A-02", "kum", "wastewater", "normal", [10.414, 59.275]],
+    ["KUM-A-03", "kum", "wastewater", "normal", [10.425, 59.265]],
+    ["KUM-A-04", "kum", "wastewater", "inspection", [10.425, 59.258]],
+    ["KUM-O-01", "kum", "stormwater", "normal", [10.394, 59.286]],
+    ["KUM-O-02", "kum", "stormwater", "normal", [10.414, 59.270]],
+    ["KUM-O-03", "kum", "stormwater", "normal", [10.431, 59.260]],
+    ["V-14", "valve", "water", "normal", [10.405, 59.282]],
+    ["V-21", "valve", "water", "normal", [10.418, 59.280]],
+    ["V-33", "valve", "water", "normal", [10.397, 59.290]],
+    ["VM-NORD", "water_meter", "water", "normal", [10.389, 59.286]],
+    ["VM-SENTRUM", "water_meter", "water", "normal", [10.392, 59.273]],
+    ["TRYKK-01", "sensor", "water", "normal", [10.400, 59.279]],
+    ["TRYKK-02", "sensor", "water", "warning", [10.421, 59.258]],
+    ["NIVA-PS03", "sensor", "wastewater", "warning", [10.425, 59.258]]
+  ] as const;
+
+  for (const [nodeCode, nodeType, pipeType, status, [longitude, latitude]] of nodes) {
+    await prisma.$executeRaw`
+      INSERT INTO network_nodes (node_code, node_type, pipe_type, status, geometry)
+      VALUES (${nodeCode}, ${nodeType}, ${pipeType}, ${status}, ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326))
+    `;
+  }
 }
 
 async function setDemoGeometry() {

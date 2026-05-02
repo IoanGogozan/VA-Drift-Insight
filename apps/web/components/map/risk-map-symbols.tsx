@@ -17,6 +17,18 @@ export function pumpStationIcon(selected: boolean, riskScore: number | null) {
   });
 }
 
+export function networkNodeIcon(subtype: string) {
+  const [nodeType, pipeType, status] = subtype.split(":");
+  const config = getNetworkNodeConfig(nodeType ?? "unknown", pipeType, status);
+
+  return L.divIcon({
+    className: "",
+    html: `<div title="${config.title}" style="height:${config.size}px;width:${config.size}px;border:${config.border};border-radius:${config.radius};background:${config.background};box-shadow:0 1px 2px rgba(15,23,42,.24);display:grid;place-items:center;font:700 ${config.fontSize}px Arial,sans-serif;color:${config.color};letter-spacing:0;">${config.code}</div>`,
+    iconAnchor: [config.size / 2, config.size / 2],
+    popupAnchor: [0, -config.size / 2]
+  });
+}
+
 export function incidentIcon(subtype: string) {
   const codeBySubtype: Record<string, string> = {
     leak: "LK",
@@ -37,6 +49,49 @@ export function incidentIcon(subtype: string) {
     iconAnchor: [11, 11],
     popupAnchor: [0, -11]
   });
+}
+
+function getNetworkNodeConfig(nodeType: string, pipeType: string | undefined, status: string | undefined) {
+  const stroke = status === "warning" ? "#b91c1c" : colorForPipeType(pipeType);
+  const base = {
+    border: `1.8px solid ${stroke}`,
+    background: "#f8fafc",
+    color: "#111827",
+    fontSize: 7,
+    radius: "999px",
+    size: 18,
+    title: "VA-objekt"
+  };
+
+  if (nodeType === "kum") {
+    return { ...base, code: "K", title: "Kum" };
+  }
+
+  if (nodeType === "valve") {
+    return { ...base, code: "V", radius: "2px", size: 17, title: "Ventil" };
+  }
+
+  if (nodeType === "water_meter") {
+    return { ...base, code: "M", border: `2px double ${stroke}`, title: "Vannmåler" };
+  }
+
+  if (nodeType === "sensor") {
+    return { ...base, code: "S", background: status === "warning" ? "#fef2f2" : "#eff6ff", radius: "4px", title: "Sensor" };
+  }
+
+  return { ...base, code: "N" };
+}
+
+function colorForPipeType(pipeType: string | undefined) {
+  if (pipeType === "wastewater") {
+    return "#7c2d12";
+  }
+
+  if (pipeType === "stormwater") {
+    return "#0891b2";
+  }
+
+  return "#2563eb";
 }
 
 export function LegendLine({ className, label }: { className: string; label: string }) {

@@ -137,6 +137,9 @@ Last completed phase verified: Phase 9 PDF report.
 - [x] Replace generic incident dots with technical event codes
 - [x] Refine simulated pipe geometry to road-like grid segments
 - [x] Make zone polygons less rectangular and less visually dominant
+- [x] Add simulated kummer, ventiler, vannmålere and sensorer as PostGIS map assets
+- [x] Add technical map symbols and layer toggles for VA nodes
+- [x] Keep dense detail layers available without cluttering the default map view
 - [x] Add selected asset highlight
 - [x] Add useful popup or side-panel handoff for selected map assets
 - [x] Keep public basemap/geodata clearly separated from simulated VA data

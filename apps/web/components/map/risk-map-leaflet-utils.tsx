@@ -117,6 +117,10 @@ function extractLatLngs(feature: MapAssetFeature | MapContextFeature): L.LatLngE
 }
 
 function formatSubtype(value: string) {
+  if (value.includes(":")) {
+    return formatNetworkNodeSubtype(value);
+  }
+
   const labels: Record<string, string> = {
     water_meter_zone: "Målesone",
     wastewater_catchment: "Avløpssone",
@@ -130,6 +134,32 @@ function formatSubtype(value: string) {
   };
 
   return labels[value] ?? value;
+}
+
+function formatNetworkNodeSubtype(value: string) {
+  const [nodeType, pipeType, status] = value.split(":");
+  const nodeLabels: Record<string, string> = {
+    kum: "Kum",
+    valve: "Ventil",
+    water_meter: "Vannmåler",
+    sensor: "Sensor"
+  };
+  const pipeLabels: Record<string, string> = {
+    water: "vann",
+    wastewater: "avløp",
+    stormwater: "overvann"
+  };
+  const statusLabels: Record<string, string> = {
+    normal: "normal",
+    warning: "varsel",
+    inspection: "til kontroll"
+  };
+
+  const nodeLabel = nodeType ? (nodeLabels[nodeType] ?? nodeType) : null;
+  const pipeLabel = pipeType ? (pipeLabels[pipeType] ?? pipeType) : null;
+  const statusLabel = status ? (statusLabels[status] ?? status) : null;
+
+  return [nodeLabel, pipeLabel, statusLabel].filter(Boolean).join(" - ");
 }
 
 function escapeHtml(value: string) {

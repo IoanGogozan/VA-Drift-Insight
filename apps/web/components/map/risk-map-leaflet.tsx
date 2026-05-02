@@ -16,7 +16,7 @@ import {
   toFeatureCollection,
   zoneStyle
 } from "./risk-map-leaflet-utils";
-import { LegendDot, LegendLine, incidentIcon, pumpStationIcon } from "./risk-map-symbols";
+import { LegendDot, LegendLine, incidentIcon, networkNodeIcon, pumpStationIcon } from "./risk-map-symbols";
 
 export type RiskMapProps = {
   features: MapAssetFeature[];
@@ -32,6 +32,10 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
   const stormwaterPipes = features.filter((feature) => isPipe(feature, "stormwater"));
   const pumpStations = features.filter((feature) => feature.properties.assetType === "pump_station");
   const incidents = features.filter((feature) => feature.properties.assetType === "incident");
+  const kummer = features.filter((feature) => isNetworkNode(feature, "kum"));
+  const valves = features.filter((feature) => isNetworkNode(feature, "valve"));
+  const waterMeters = features.filter((feature) => isNetworkNode(feature, "water_meter"));
+  const sensors = features.filter((feature) => isNetworkNode(feature, "sensor"));
   const bounds = useMemo(() => getLeafletBounds(features), [features]);
 
   return (
@@ -43,7 +47,8 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
           <LegendLine className="bg-[#7c2d12]" label="Avløp" />
           <LegendLine className="bg-[#0891b2]" label="Overvann" />
           <LegendDot className="bg-[#111827]" label="Pumpestasjon" />
-          <LegendDot className="bg-riskHigh" label="Hendelse" />
+          <LegendDot className="border border-[#334155] bg-white" label="Kum/ventil/måler" />
+          <LegendDot className="bg-riskHigh" label="Hendelse/sensor" />
         </div>
       </div>
 
@@ -102,6 +107,54 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                 </Marker>
               ))}
             </LayersControl.Overlay>
+            <LayersControl.Overlay name="Kummer">
+              {kummer.map((feature) => (
+                <Marker
+                  key={feature.id}
+                  position={pointLatLng(feature)}
+                  icon={networkNodeIcon(feature.properties.subtype)}
+                  eventHandlers={{ click: () => onSelectAsset(feature) }}
+                >
+                  <Popup>{popupContent(feature)}</Popup>
+                </Marker>
+              ))}
+            </LayersControl.Overlay>
+            <LayersControl.Overlay name="Ventiler">
+              {valves.map((feature) => (
+                <Marker
+                  key={feature.id}
+                  position={pointLatLng(feature)}
+                  icon={networkNodeIcon(feature.properties.subtype)}
+                  eventHandlers={{ click: () => onSelectAsset(feature) }}
+                >
+                  <Popup>{popupContent(feature)}</Popup>
+                </Marker>
+              ))}
+            </LayersControl.Overlay>
+            <LayersControl.Overlay checked name="Vannmålere">
+              {waterMeters.map((feature) => (
+                <Marker
+                  key={feature.id}
+                  position={pointLatLng(feature)}
+                  icon={networkNodeIcon(feature.properties.subtype)}
+                  eventHandlers={{ click: () => onSelectAsset(feature) }}
+                >
+                  <Popup>{popupContent(feature)}</Popup>
+                </Marker>
+              ))}
+            </LayersControl.Overlay>
+            <LayersControl.Overlay checked name="Sensorer">
+              {sensors.map((feature) => (
+                <Marker
+                  key={feature.id}
+                  position={pointLatLng(feature)}
+                  icon={networkNodeIcon(feature.properties.subtype)}
+                  eventHandlers={{ click: () => onSelectAsset(feature) }}
+                >
+                  <Popup>{popupContent(feature)}</Popup>
+                </Marker>
+              ))}
+            </LayersControl.Overlay>
             <LayersControl.Overlay checked name="Hendelser">
               {incidents.map((feature) => (
                 <Marker
@@ -123,4 +176,8 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
       </div>
     </div>
   );
+}
+
+function isNetworkNode(feature: MapAssetFeature, nodeType: string) {
+  return feature.properties.assetType === "network_node" && feature.properties.subtype.startsWith(`${nodeType}:`);
 }

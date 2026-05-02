@@ -3,7 +3,7 @@ import { PrismaService } from "../database/prisma.service";
 
 type MapAssetRow = {
   id: string;
-  asset_type: "zone" | "pipe" | "pump_station" | "incident";
+  asset_type: "zone" | "pipe" | "pump_station" | "incident" | "network_node";
   name: string;
   subtype: string;
   geometry: string | null;
@@ -70,6 +70,18 @@ export class AssetsService {
         NULL::integer AS risk_score
       FROM incidents i
       WHERE i.geometry IS NOT NULL
+
+      UNION ALL
+
+      SELECT
+        n.id::text AS id,
+        'network_node' AS asset_type,
+        n.node_code AS name,
+        n.node_type || COALESCE(':' || n.pipe_type, '') || ':' || n.status AS subtype,
+        ST_AsGeoJSON(n.geometry)::text AS geometry,
+        NULL::integer AS risk_score
+      FROM network_nodes n
+      WHERE n.geometry IS NOT NULL
     `;
 
     return {

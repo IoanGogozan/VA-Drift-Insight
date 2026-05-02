@@ -118,6 +118,21 @@ model PumpStation {
   @@map("pump_stations")
 }
 
+model NetworkNode {
+  id        String   @id @default(uuid()) @db.Uuid
+  nodeCode  String   @unique @map("node_code")
+  nodeType  String   @map("node_type")
+  pipeType  String?  @map("pipe_type")
+  status    String   @default("normal")
+  geometry  Unsupported("geometry(Point, 4326)")?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([nodeType])
+  @@index([pipeType])
+  @@map("network_nodes")
+}
+
 model TimeSeries {
   id                 String    @id @default(uuid()) @db.Uuid
   assetType          AssetType @map("asset_type")
