@@ -63,7 +63,7 @@ enum RecommendationStatus {
 }
 
 model Zone {
-  id                 String   @id @default(cuid())
+  id                 String   @id @default(uuid()) @db.Uuid
   name               String
   zoneType           ZoneType @map("zone_type")
   population         Int?
@@ -81,9 +81,9 @@ model Zone {
 }
 
 model Pipe {
-  id             String   @id @default(cuid())
+  id             String   @id @default(uuid()) @db.Uuid
   pipeCode       String   @unique @map("pipe_code")
-  zoneId         String?  @map("zone_id")
+  zoneId         String?  @map("zone_id") @db.Uuid
   material       String
   installedYear  Int?     @map("installed_year")
   diameterMm     Int?     @map("diameter_mm")
@@ -96,14 +96,15 @@ model Pipe {
 
   zone Zone? @relation(fields: [zoneId], references: [id])
 
+  @@index([zoneId])
   @@map("pipes")
 }
 
 model PumpStation {
-  id             String   @id @default(cuid())
+  id             String   @id @default(uuid()) @db.Uuid
   stationCode    String   @unique @map("station_code")
   name           String
-  catchmentId    String?  @map("catchment_id")
+  catchmentId    String?  @map("catchment_id") @db.Uuid
   capacityM3h    Float?   @map("capacity_m3h")
   alarmCount     Int      @default(0) @map("alarm_count")
   overflowEvents Int      @default(0) @map("overflow_events")
@@ -113,11 +114,12 @@ model PumpStation {
 
   catchment Zone? @relation("CatchmentPumpStations", fields: [catchmentId], references: [id])
 
+  @@index([catchmentId])
   @@map("pump_stations")
 }
 
 model TimeSeries {
-  id                 String    @id @default(cuid())
+  id                 String    @id @default(uuid()) @db.Uuid
   assetType          AssetType @map("asset_type")
   assetId            String    @map("asset_id")
   timestamp          DateTime
@@ -133,7 +135,7 @@ model TimeSeries {
 }
 
 model Incident {
-  id           String       @id @default(cuid())
+  id           String       @id @default(uuid()) @db.Uuid
   incidentType IncidentType @map("incident_type")
   assetType    AssetType    @map("asset_type")
   assetId      String       @map("asset_id")
@@ -148,7 +150,7 @@ model Incident {
 }
 
 model RiskScore {
-  id           String    @id @default(cuid())
+  id           String    @id @default(uuid()) @db.Uuid
   assetType    AssetType @map("asset_type")
   assetId      String    @map("asset_id")
   scoreType    ScoreType @map("score_type")
@@ -162,7 +164,7 @@ model RiskScore {
 }
 
 model Recommendation {
-  id              String                 @id @default(cuid())
+  id              String                 @id @default(uuid()) @db.Uuid
   type            RecommendationType
   priority        RecommendationPriority
   assetType       AssetType              @map("asset_type")

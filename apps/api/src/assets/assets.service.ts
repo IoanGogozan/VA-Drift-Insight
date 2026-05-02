@@ -17,7 +17,7 @@ export class AssetsService {
   async getMapAssets() {
     const rows = await this.prisma.$queryRaw<MapAssetRow[]>`
       SELECT
-        z.id,
+        z.id::text AS id,
         'zone' AS asset_type,
         z.name,
         z.zone_type::text AS subtype,
@@ -25,14 +25,14 @@ export class AssetsService {
         rs.score AS risk_score
       FROM zones z
       LEFT JOIN risk_scores rs
-        ON rs.asset_id = z.id
+        ON rs.asset_id = z.id::text
        AND rs.asset_type = 'zone'
        AND rs.score_type IN ('leakage', 'fremmedvann')
 
       UNION ALL
 
       SELECT
-        p.id,
+        p.id::text AS id,
         'pipe' AS asset_type,
         p.pipe_code AS name,
         p.pipe_type::text AS subtype,
@@ -40,14 +40,14 @@ export class AssetsService {
         rs.score AS risk_score
       FROM pipes p
       LEFT JOIN risk_scores rs
-        ON rs.asset_id = p.id
+        ON rs.asset_id = p.id::text
        AND rs.asset_type = 'pipe'
        AND rs.score_type IN ('leakage', 'sanering')
 
       UNION ALL
 
       SELECT
-        ps.id,
+        ps.id::text AS id,
         'pump_station' AS asset_type,
         ps.station_code || ' ' || ps.name AS name,
         'pump_station' AS subtype,
@@ -55,7 +55,7 @@ export class AssetsService {
         rs.score AS risk_score
       FROM pump_stations ps
       LEFT JOIN risk_scores rs
-        ON rs.asset_id = ps.id
+        ON rs.asset_id = ps.id::text
        AND rs.asset_type = 'pump_station'
        AND rs.score_type = 'fremmedvann'
     `;

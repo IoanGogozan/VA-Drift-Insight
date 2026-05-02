@@ -61,6 +61,9 @@ This demo shows how backend systems, maps, PostGIS, scoring and reporting can tu
 - [Domain model](docs/domain-model.md)
 - [API design](docs/api-design.md)
 - [Scoring methodology](docs/scoring-methodology.md)
+- [Engineering guidelines](docs/engineering-guidelines.md)
+- [Engineering decisions](docs/engineering-decisions.md)
+- [Security checklist](docs/security-checklist.md)
 - [Seed data plan](docs/seed-data.md)
 - [UI screens](docs/ui-screens.md)
 - [PDF report specification](docs/pdf-report.md)
@@ -136,6 +139,7 @@ Health checks:
 ```text
 GET http://localhost:3001/api/health
 GET http://localhost:3001/api/health/db
+GET http://localhost:3001/api/version
 ```
 
 OpenAPI/Swagger:
@@ -165,6 +169,12 @@ Auth, multi-tenancy, Kubernetes, complex user management and real SCADA integrat
 
 This project combines practical VVS/VA understanding with software engineering. It demonstrates how field knowledge can be translated into backend systems, APIs, data models, maps, scoring and reporting tools for VA operations.
 
+This project follows documented engineering guidelines covering architecture, security, testing, file size, validation, scoring explainability and data quality.
+
+This demo uses simulated VA data inspired by realistic operational scenarios. No real municipal or sensitive infrastructure data is included.
+
 Norwegian positioning:
 
 Prosjektet kombinerer min praktiske bakgrunn som faglært VVS-installatør i Norge med backend-utvikling, databaser, API-er og kartbasert beslutningsstøtte. Målet er å vise hvordan feltforståelse kan omsettes til nyttige digitale verktøy for VA-drift.
+
+Denne demoen bruker simulerte VA-data inspirert av realistiske driftssituasjoner. Ingen reelle kommunale eller sensitive infrastrukturdata er inkludert.

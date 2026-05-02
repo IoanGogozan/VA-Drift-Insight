@@ -1,4 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TYPE "ZoneType" AS ENUM ('water_meter_zone', 'wastewater_catchment');
 CREATE TYPE "PipeType" AS ENUM ('water', 'wastewater', 'stormwater');
@@ -10,7 +11,7 @@ CREATE TYPE "RecommendationPriority" AS ENUM ('high', 'medium', 'low');
 CREATE TYPE "RecommendationStatus" AS ENUM ('new', 'planned', 'in_progress', 'completed', 'dismissed');
 
 CREATE TABLE "zones" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "name" TEXT NOT NULL,
   "zone_type" "ZoneType" NOT NULL,
   "population" INTEGER,
@@ -24,9 +25,9 @@ CREATE TABLE "zones" (
 );
 
 CREATE TABLE "pipes" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "pipe_code" TEXT NOT NULL,
-  "zone_id" TEXT,
+  "zone_id" UUID,
   "material" TEXT NOT NULL,
   "installed_year" INTEGER,
   "diameter_mm" INTEGER,
@@ -40,10 +41,10 @@ CREATE TABLE "pipes" (
 );
 
 CREATE TABLE "pump_stations" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "station_code" TEXT NOT NULL,
   "name" TEXT NOT NULL,
-  "catchment_id" TEXT,
+  "catchment_id" UUID,
   "capacity_m3h" DOUBLE PRECISION,
   "alarm_count" INTEGER NOT NULL DEFAULT 0,
   "overflow_events" INTEGER NOT NULL DEFAULT 0,
@@ -54,7 +55,7 @@ CREATE TABLE "pump_stations" (
 );
 
 CREATE TABLE "time_series" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "asset_type" "AssetType" NOT NULL,
   "asset_id" TEXT NOT NULL,
   "timestamp" TIMESTAMP(3) NOT NULL,
@@ -68,7 +69,7 @@ CREATE TABLE "time_series" (
 );
 
 CREATE TABLE "incidents" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "incident_type" "IncidentType" NOT NULL,
   "asset_type" "AssetType" NOT NULL,
   "asset_id" TEXT NOT NULL,
@@ -81,7 +82,7 @@ CREATE TABLE "incidents" (
 );
 
 CREATE TABLE "risk_scores" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "asset_type" "AssetType" NOT NULL,
   "asset_id" TEXT NOT NULL,
   "score_type" "ScoreType" NOT NULL,
@@ -93,7 +94,7 @@ CREATE TABLE "risk_scores" (
 );
 
 CREATE TABLE "recommendations" (
-  "id" TEXT NOT NULL,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
   "type" "RecommendationType" NOT NULL,
   "priority" "RecommendationPriority" NOT NULL,
   "asset_type" "AssetType" NOT NULL,
@@ -109,10 +110,17 @@ CREATE TABLE "recommendations" (
 
 CREATE UNIQUE INDEX "pipes_pipe_code_key" ON "pipes"("pipe_code");
 CREATE UNIQUE INDEX "pump_stations_station_code_key" ON "pump_stations"("station_code");
+CREATE INDEX "pipes_zone_id_idx" ON "pipes"("zone_id");
+CREATE INDEX "pump_stations_catchment_id_idx" ON "pump_stations"("catchment_id");
 CREATE INDEX "time_series_asset_type_asset_id_timestamp_idx" ON "time_series"("asset_type", "asset_id", "timestamp");
 CREATE INDEX "incidents_asset_type_asset_id_occurred_at_idx" ON "incidents"("asset_type", "asset_id", "occurred_at");
+CREATE INDEX "incidents_asset_id_idx" ON "incidents"("asset_id");
 CREATE INDEX "risk_scores_asset_type_asset_id_score_type_idx" ON "risk_scores"("asset_type", "asset_id", "score_type");
 CREATE INDEX "recommendations_priority_status_idx" ON "recommendations"("priority", "status");
+CREATE INDEX "zones_geometry_idx" ON "zones" USING GIST("geometry");
+CREATE INDEX "pipes_geometry_idx" ON "pipes" USING GIST("geometry");
+CREATE INDEX "pump_stations_geometry_idx" ON "pump_stations" USING GIST("geometry");
+CREATE INDEX "incidents_geometry_idx" ON "incidents" USING GIST("geometry");
 
 ALTER TABLE "pipes" ADD CONSTRAINT "pipes_zone_id_fkey" FOREIGN KEY ("zone_id") REFERENCES "zones"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE "pump_stations" ADD CONSTRAINT "pump_stations_catchment_id_fkey" FOREIGN KEY ("catchment_id") REFERENCES "zones"("id") ON DELETE SET NULL ON UPDATE CASCADE;

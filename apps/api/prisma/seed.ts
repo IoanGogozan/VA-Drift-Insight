@@ -2,6 +2,28 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const ids = {
+  zoneNorth: "11111111-1111-4111-8111-111111111111",
+  zoneSentrum: "22222222-2222-4222-8222-222222222222",
+  zoneSouth: "33333333-3333-4333-8333-333333333333",
+  catchmentA: "44444444-4444-4444-8444-444444444444",
+  catchmentB: "55555555-5555-4555-8555-555555555555",
+  catchmentC: "66666666-6666-4666-8666-666666666666",
+  pipe141: "77777777-7777-4777-8777-777777777777",
+  pipe203: "88888888-8888-4888-8888-888888888888",
+  pipe312: "99999999-9999-4999-8999-999999999999",
+  pumpStation01: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  pumpStation02: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  pumpStation03: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  pumpStation04: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+  pumpStation05: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  incidentLeakNorth: "10000000-0000-4000-8000-000000000001",
+  incidentAlarmPs03: "10000000-0000-4000-8000-000000000002",
+  incidentOverflowPs03: "10000000-0000-4000-8000-000000000003",
+  recommendationLeakageNorth: "20000000-0000-4000-8000-000000000001",
+  recommendationFremmedvannPs03: "20000000-0000-4000-8000-000000000002"
+};
+
 async function main() {
   await prisma.$transaction([
     prisma.recommendation.deleteMany(),
@@ -16,7 +38,7 @@ async function main() {
   await prisma.zone.createMany({
     data: [
       {
-        id: "zone-north",
+        id: ids.zoneNorth,
         name: "Målesone Nord",
         zoneType: "water_meter_zone",
         population: 4200,
@@ -25,7 +47,7 @@ async function main() {
         dataQualityScore: 72
       },
       {
-        id: "zone-sentrum",
+        id: ids.zoneSentrum,
         name: "Målesone Sentrum",
         zoneType: "water_meter_zone",
         population: 6100,
@@ -34,7 +56,7 @@ async function main() {
         dataQualityScore: 68
       },
       {
-        id: "zone-south",
+        id: ids.zoneSouth,
         name: "Målesone Sør",
         zoneType: "water_meter_zone",
         population: 2900,
@@ -43,21 +65,21 @@ async function main() {
         dataQualityScore: 84
       },
       {
-        id: "catchment-a",
+        id: ids.catchmentA,
         name: "Avløpssone A",
         zoneType: "wastewater_catchment",
         population: 5200,
         dataQualityScore: 78
       },
       {
-        id: "catchment-b",
+        id: ids.catchmentB,
         name: "Avløpssone B",
         zoneType: "wastewater_catchment",
         population: 3800,
         dataQualityScore: 75
       },
       {
-        id: "catchment-c",
+        id: ids.catchmentC,
         name: "Avløpssone C",
         zoneType: "wastewater_catchment",
         population: 2500,
@@ -69,9 +91,9 @@ async function main() {
   await prisma.pipe.createMany({
     data: [
       {
-        id: "pipe-141",
+        id: ids.pipe141,
         pipeCode: "Ledning 141",
-        zoneId: "zone-north",
+        zoneId: ids.zoneNorth,
         material: "støpejern",
         installedYear: 1974,
         diameterMm: 160,
@@ -80,9 +102,9 @@ async function main() {
         previousBreaks: 2
       },
       {
-        id: "pipe-203",
+        id: ids.pipe203,
         pipeCode: "Ledning 203",
-        zoneId: "zone-sentrum",
+        zoneId: ids.zoneSentrum,
         material: "duktilt støpejern",
         installedYear: 1992,
         diameterMm: 200,
@@ -91,9 +113,9 @@ async function main() {
         previousBreaks: 1
       },
       {
-        id: "pipe-312",
+        id: ids.pipe312,
         pipeCode: "Ledning 312",
-        zoneId: "zone-south",
+        zoneId: ids.zoneSouth,
         material: "PE",
         installedYear: 2016,
         diameterMm: 110,
@@ -107,46 +129,46 @@ async function main() {
   await prisma.pumpStation.createMany({
     data: [
       {
-        id: "ps-01",
+        id: ids.pumpStation01,
         stationCode: "PS-01",
         name: "Sentrum",
-        catchmentId: "catchment-a",
+        catchmentId: ids.catchmentA,
         capacityM3h: 220,
         alarmCount: 3,
         overflowEvents: 1
       },
       {
-        id: "ps-02",
+        id: ids.pumpStation02,
         stationCode: "PS-02",
         name: "Havna",
-        catchmentId: "catchment-a",
+        catchmentId: ids.catchmentA,
         capacityM3h: 260,
         alarmCount: 1,
         overflowEvents: 0
       },
       {
-        id: "ps-03",
+        id: ids.pumpStation03,
         stationCode: "PS-03",
         name: "Skoglia",
-        catchmentId: "catchment-b",
+        catchmentId: ids.catchmentB,
         capacityM3h: 180,
         alarmCount: 7,
         overflowEvents: 2
       },
       {
-        id: "ps-04",
+        id: ids.pumpStation04,
         stationCode: "PS-04",
         name: "Industriveien",
-        catchmentId: "catchment-b",
+        catchmentId: ids.catchmentB,
         capacityM3h: 300,
         alarmCount: 2,
         overflowEvents: 0
       },
       {
-        id: "ps-05",
+        id: ids.pumpStation05,
         stationCode: "PS-05",
         name: "Nordbekken",
-        catchmentId: "catchment-c",
+        catchmentId: ids.catchmentC,
         capacityM3h: 140,
         alarmCount: 5,
         overflowEvents: 1
@@ -157,26 +179,26 @@ async function main() {
   await prisma.incident.createMany({
     data: [
       {
-        id: "incident-leak-north-1",
+        id: ids.incidentLeakNorth,
         incidentType: "leak",
         assetType: "zone",
-        assetId: "zone-north",
+        assetId: ids.zoneNorth,
         occurredAt: new Date("2026-03-15T08:30:00.000Z"),
         description: "Tidligere lekkasje i nærheten av gate X"
       },
       {
-        id: "incident-alarm-ps03-1",
+        id: ids.incidentAlarmPs03,
         incidentType: "high_level_alarm",
         assetType: "pump_station",
-        assetId: "ps-03",
+        assetId: ids.pumpStation03,
         occurredAt: new Date("2026-04-19T21:15:00.000Z"),
         description: "Høy-nivå alarm ved våtvær"
       },
       {
-        id: "incident-overflow-ps03-1",
+        id: ids.incidentOverflowPs03,
         incidentType: "overflow",
         assetType: "pump_station",
-        assetId: "ps-03",
+        assetId: ids.pumpStation03,
         occurredAt: new Date("2026-04-20T00:10:00.000Z"),
         description: "Kort overløpshendelse etter kraftig nedbør"
       }
@@ -187,7 +209,7 @@ async function main() {
     data: [
       {
         assetType: "zone",
-        assetId: "zone-north",
+        assetId: ids.zoneNorth,
         scoreType: "leakage",
         score: 82,
         confidence: 76,
@@ -195,7 +217,7 @@ async function main() {
       },
       {
         assetType: "zone",
-        assetId: "zone-sentrum",
+        assetId: ids.zoneSentrum,
         scoreType: "leakage",
         score: 58,
         confidence: 68,
@@ -203,7 +225,7 @@ async function main() {
       },
       {
         assetType: "zone",
-        assetId: "zone-south",
+        assetId: ids.zoneSouth,
         scoreType: "leakage",
         score: 28,
         confidence: 84,
@@ -211,7 +233,7 @@ async function main() {
       },
       {
         assetType: "pump_station",
-        assetId: "ps-03",
+        assetId: ids.pumpStation03,
         scoreType: "fremmedvann",
         score: 86,
         confidence: 78,
@@ -219,7 +241,7 @@ async function main() {
       },
       {
         assetType: "pump_station",
-        assetId: "ps-01",
+        assetId: ids.pumpStation01,
         scoreType: "fremmedvann",
         score: 64,
         confidence: 72,
@@ -231,22 +253,22 @@ async function main() {
   await prisma.recommendation.createMany({
     data: [
       {
-        id: "rec-leakage-north",
+        id: ids.recommendationLeakageNorth,
         type: "leakage",
         priority: "high",
         assetType: "zone",
-        assetId: "zone-north",
+        assetId: ids.zoneNorth,
         areaName: "Målesone Nord",
         reason: "Økt nattforbruk",
         suggestedAction: "Akustisk lekkasjesøk og ventilkontroll",
         status: "new"
       },
       {
-        id: "rec-fremmedvann-ps03",
+        id: ids.recommendationFremmedvannPs03,
         type: "fremmedvann",
         priority: "high",
         assetType: "pump_station",
-        assetId: "ps-03",
+        assetId: ids.pumpStation03,
         areaName: "PS-03 Skoglia",
         reason: "Regnkorrelasjon",
         suggestedAction: "CCTV/røyktest i oppstrøms delområde",
@@ -262,80 +284,71 @@ async function setDemoGeometry() {
   const geometries = [
     [
       "zones",
-      "zone-north",
+      ids.zoneNorth,
       '{"type":"Polygon","coordinates":[[[10.710,59.930],[10.725,59.930],[10.725,59.940],[10.710,59.940],[10.710,59.930]]]}'
     ],
     [
       "zones",
-      "zone-sentrum",
+      ids.zoneSentrum,
       '{"type":"Polygon","coordinates":[[[10.725,59.920],[10.742,59.920],[10.742,59.932],[10.725,59.932],[10.725,59.920]]]}'
     ],
     [
       "zones",
-      "zone-south",
+      ids.zoneSouth,
       '{"type":"Polygon","coordinates":[[[10.712,59.908],[10.730,59.908],[10.730,59.920],[10.712,59.920],[10.712,59.908]]]}'
     ],
     [
       "zones",
-      "catchment-a",
+      ids.catchmentA,
       '{"type":"Polygon","coordinates":[[[10.742,59.920],[10.758,59.920],[10.758,59.934],[10.742,59.934],[10.742,59.920]]]}'
     ],
     [
       "zones",
-      "catchment-b",
+      ids.catchmentB,
       '{"type":"Polygon","coordinates":[[[10.730,59.905],[10.748,59.905],[10.748,59.920],[10.730,59.920],[10.730,59.905]]]}'
     ],
     [
       "zones",
-      "catchment-c",
+      ids.catchmentC,
       '{"type":"Polygon","coordinates":[[[10.700,59.914],[10.712,59.914],[10.712,59.928],[10.700,59.928],[10.700,59.914]]]}'
     ]
   ] as const;
 
   for (const [table, id, geometry] of geometries) {
     await prisma.$executeRawUnsafe(
-      `UPDATE ${table} SET geometry = ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) WHERE id = $2`,
+      `UPDATE ${table} SET geometry = ST_SetSRID(ST_GeomFromGeoJSON($1), 4326) WHERE id = $2::uuid`,
       geometry,
       id
     );
   }
 
   const pipeGeometries = [
-    [
-      "pipe-141",
-      '{"type":"LineString","coordinates":[[10.713,59.935],[10.722,59.936],[10.724,59.932]]}'
-    ],
-    [
-      "pipe-203",
-      '{"type":"LineString","coordinates":[[10.728,59.928],[10.736,59.927],[10.740,59.923]]}'
-    ],
-    [
-      "pipe-312",
-      '{"type":"LineString","coordinates":[[10.715,59.914],[10.723,59.916],[10.728,59.918]]}'
-    ]
+    [ids.pipe141, '{"type":"LineString","coordinates":[[10.713,59.935],[10.722,59.936],[10.724,59.932]]}'],
+    [ids.pipe203, '{"type":"LineString","coordinates":[[10.728,59.928],[10.736,59.927],[10.740,59.923]]}'],
+    [ids.pipe312, '{"type":"LineString","coordinates":[[10.715,59.914],[10.723,59.916],[10.728,59.918]]}']
   ] as const;
 
   for (const [id, geometry] of pipeGeometries) {
     await prisma.$executeRaw`
       UPDATE pipes
       SET geometry = ST_SetSRID(ST_GeomFromGeoJSON(${geometry}), 4326)
-      WHERE id = ${id}
+      WHERE id = ${id}::uuid
     `;
   }
 
   const pumpStationGeometries = [
-    ["ps-01", '{"type":"Point","coordinates":[10.751,59.928]}'],
-    ["ps-02", '{"type":"Point","coordinates":[10.756,59.924]}'],
-    ["ps-03", '{"type":"Point","coordinates":[10.739,59.913]}'],
-    ["ps-04", '{"type":"Point","coordinates":[10.746,59.917]}'],
-    ["ps-05", '{"type":"Point","coordinates":[10.706,59.923]}']
+    [ids.pumpStation01, '{"type":"Point","coordinates":[10.751,59.928]}'],
+    [ids.pumpStation02, '{"type":"Point","coordinates":[10.756,59.924]}'],
+    [ids.pumpStation03, '{"type":"Point","coordinates":[10.739,59.913]}'],
+    [ids.pumpStation04, '{"type":"Point","coordinates":[10.746,59.917]}'],
+    [ids.pumpStation05, '{"type":"Point","coordinates":[10.706,59.923]}']
   ] as const;
 
   for (const [id, geometry] of pumpStationGeometries) {
     await prisma.$executeRaw`
       UPDATE pump_stations
       SET geometry = ST_SetSRID(ST_GeomFromGeoJSON(${geometry}), 4326)
-      WHERE id = ${id}
+      WHERE id = ${id}::uuid
     `;
   }
 }

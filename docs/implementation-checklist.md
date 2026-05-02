@@ -22,6 +22,10 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 - [x] Add seed script
 - [x] Add Swagger/OpenAPI
 - [x] Add health endpoint
+- [x] Add version endpoint
+- [x] Enable Helmet
+- [x] Enable API rate limiting
+- [x] Restrict CORS through environment configuration
 
 ## Phase 3: Seed Data
 
