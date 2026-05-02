@@ -342,7 +342,7 @@ async function setDemoGeometry() {
   await prisma.$executeRaw`
     UPDATE municipalities
     SET geometry = ST_Multi(ST_SetSRID(ST_GeomFromGeoJSON(${
-      '{"type":"Polygon","coordinates":[[[10.660,59.875],[10.825,59.875],[10.825,59.990],[10.660,59.990],[10.660,59.875]]]}'
+      '{"type":"Polygon","coordinates":[[[10.300,59.200],[10.550,59.200],[10.550,59.360],[10.300,59.360],[10.300,59.200]]]}'
     }), 4326))
     WHERE id = ${ids.municipalityTonsberg}::uuid
   `;
@@ -351,32 +351,32 @@ async function setDemoGeometry() {
     [
       "zones",
       ids.zoneNorth,
-      '{"type":"Polygon","coordinates":[[[10.710,59.930],[10.725,59.930],[10.725,59.940],[10.710,59.940],[10.710,59.930]]]}'
+      '{"type":"Polygon","coordinates":[[[10.382,59.285],[10.405,59.285],[10.405,59.300],[10.382,59.300],[10.382,59.285]]]}'
     ],
     [
       "zones",
       ids.zoneSentrum,
-      '{"type":"Polygon","coordinates":[[[10.725,59.920],[10.742,59.920],[10.742,59.932],[10.725,59.932],[10.725,59.920]]]}'
+      '{"type":"Polygon","coordinates":[[[10.405,59.270],[10.430,59.270],[10.430,59.284],[10.405,59.284],[10.405,59.270]]]}'
     ],
     [
       "zones",
       ids.zoneSouth,
-      '{"type":"Polygon","coordinates":[[[10.712,59.908],[10.730,59.908],[10.730,59.920],[10.712,59.920],[10.712,59.908]]]}'
+      '{"type":"Polygon","coordinates":[[[10.385,59.250],[10.412,59.250],[10.412,59.265],[10.385,59.265],[10.385,59.250]]]}'
     ],
     [
       "zones",
       ids.catchmentA,
-      '{"type":"Polygon","coordinates":[[[10.742,59.920],[10.758,59.920],[10.758,59.934],[10.742,59.934],[10.742,59.920]]]}'
+      '{"type":"Polygon","coordinates":[[[10.430,59.270],[10.455,59.270],[10.455,59.288],[10.430,59.288],[10.430,59.270]]]}'
     ],
     [
       "zones",
       ids.catchmentB,
-      '{"type":"Polygon","coordinates":[[[10.730,59.905],[10.748,59.905],[10.748,59.920],[10.730,59.920],[10.730,59.905]]]}'
+      '{"type":"Polygon","coordinates":[[[10.412,59.248],[10.440,59.248],[10.440,59.268],[10.412,59.268],[10.412,59.248]]]}'
     ],
     [
       "zones",
       ids.catchmentC,
-      '{"type":"Polygon","coordinates":[[[10.700,59.914],[10.712,59.914],[10.712,59.928],[10.700,59.928],[10.700,59.914]]]}'
+      '{"type":"Polygon","coordinates":[[[10.360,59.265],[10.382,59.265],[10.382,59.286],[10.360,59.286],[10.360,59.265]]]}'
     ]
   ] as const;
 
@@ -389,9 +389,9 @@ async function setDemoGeometry() {
   }
 
   const pipeGeometries = [
-    [ids.pipe141, '{"type":"LineString","coordinates":[[10.713,59.935],[10.722,59.936],[10.724,59.932]]}'],
-    [ids.pipe203, '{"type":"LineString","coordinates":[[10.728,59.928],[10.736,59.927],[10.740,59.923]]}'],
-    [ids.pipe312, '{"type":"LineString","coordinates":[[10.715,59.914],[10.723,59.916],[10.728,59.918]]}']
+    [ids.pipe141, '{"type":"LineString","coordinates":[[10.386,59.294],[10.398,59.295],[10.403,59.289]]}'],
+    [ids.pipe203, '{"type":"LineString","coordinates":[[10.410,59.280],[10.423,59.279],[10.428,59.273]]}'],
+    [ids.pipe312, '{"type":"LineString","coordinates":[[10.389,59.257],[10.401,59.259],[10.409,59.262]]}']
   ] as const;
 
   for (const [id, geometry] of pipeGeometries) {
@@ -403,11 +403,11 @@ async function setDemoGeometry() {
   }
 
   const pumpStationGeometries = [
-    [ids.pumpStation01, '{"type":"Point","coordinates":[10.751,59.928]}'],
-    [ids.pumpStation02, '{"type":"Point","coordinates":[10.756,59.924]}'],
-    [ids.pumpStation03, '{"type":"Point","coordinates":[10.739,59.913]}'],
-    [ids.pumpStation04, '{"type":"Point","coordinates":[10.746,59.917]}'],
-    [ids.pumpStation05, '{"type":"Point","coordinates":[10.706,59.923]}']
+    [ids.pumpStation01, '{"type":"Point","coordinates":[10.443,59.281]}'],
+    [ids.pumpStation02, '{"type":"Point","coordinates":[10.452,59.276]}'],
+    [ids.pumpStation03, '{"type":"Point","coordinates":[10.425,59.258]}'],
+    [ids.pumpStation04, '{"type":"Point","coordinates":[10.437,59.263]}'],
+    [ids.pumpStation05, '{"type":"Point","coordinates":[10.370,59.276]}']
   ] as const;
 
   for (const [id, geometry] of pumpStationGeometries) {

@@ -10,15 +10,17 @@ type RiskMapProps = {
 };
 
 type Bounds = {
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
+  minWorldX: number;
+  maxWorldX: number;
+  minWorldY: number;
+  maxWorldY: number;
 };
 
 const width = 720;
 const height = 430;
 const padding = 34;
+const tileSize = 256;
+const tileZoom = 12;
 
 export function RiskMap({ features, contextFeatures, selectedId, onSelectAsset }: RiskMapProps) {
   const bounds = getBounds([...features, ...contextFeatures]);
@@ -38,16 +40,17 @@ export function RiskMap({ features, contextFeatures, selectedId, onSelectAsset }
         </div>
       </div>
       <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Kart med VA-objekter" className="block w-full">
-        <rect width={width} height={height} fill="#f7f8f5" />
+        <rect width={width} height={height} fill="#edf2f5" />
+        <BasemapTiles bounds={bounds} />
         {contextFeatures.map((feature) => (
           <path
             key={feature.id}
             d={multiPolygonPath(feature, bounds)}
-            fill="#e8eef2"
+            fill="#dce6ec"
             stroke="#5f6f7a"
             strokeDasharray="8 7"
             strokeWidth="2"
-            opacity="0.7"
+            opacity="0.36"
           />
         ))}
         {zones.map((feature) => (
@@ -94,8 +97,43 @@ export function RiskMap({ features, contextFeatures, selectedId, onSelectAsset }
           );
         })}
       </svg>
+      <div className="border-t border-slate-200 px-4 py-2 text-xs text-muted">
+        Bakgrunnskart: Kartverket topo WMTS. VA-data er simulert demo-data.
+      </div>
     </div>
   );
+}
+
+function BasemapTiles({ bounds }: { bounds: Bounds }) {
+  const minTileX = Math.floor(bounds.minWorldX / tileSize);
+  const maxTileX = Math.floor(bounds.maxWorldX / tileSize);
+  const minTileY = Math.floor(bounds.minWorldY / tileSize);
+  const maxTileY = Math.floor(bounds.maxWorldY / tileSize);
+  const tiles = [];
+
+  for (let tileX = minTileX; tileX <= maxTileX; tileX += 1) {
+    for (let tileY = minTileY; tileY <= maxTileY; tileY += 1) {
+      const x = worldToSvgX(tileX * tileSize, bounds);
+      const y = worldToSvgY(tileY * tileSize, bounds);
+      const nextX = worldToSvgX((tileX + 1) * tileSize, bounds);
+      const nextY = worldToSvgY((tileY + 1) * tileSize, bounds);
+
+      tiles.push(
+        <image
+          key={`${tileX}-${tileY}`}
+          href={`https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/${tileZoom}/${tileY}/${tileX}.png`}
+          x={x}
+          y={y}
+          width={nextX - x}
+          height={nextY - y}
+          preserveAspectRatio="none"
+          opacity="0.9"
+        />
+      );
+    }
+  }
+
+  return <>{tiles}</>;
 }
 
 function LegendSwatch({ className, label }: { className: string; label: string }) {
@@ -156,8 +194,9 @@ function pointCoordinates(feature: MapAssetFeature): [number, number] {
 }
 
 function projectPoint([longitude, latitude]: [number, number], bounds: Bounds): [number, number] {
-  const x = padding + ((longitude - bounds.minX) / (bounds.maxX - bounds.minX)) * (width - padding * 2);
-  const y = height - padding - ((latitude - bounds.minY) / (bounds.maxY - bounds.minY)) * (height - padding * 2);
+  const [worldX, worldY] = lonLatToWorldPixels(longitude, latitude, tileZoom);
+  const x = worldToSvgX(worldX, bounds);
+  const y = worldToSvgY(worldY, bounds);
 
   return [Number(x.toFixed(2)), Number(y.toFixed(2))];
 }
@@ -166,18 +205,43 @@ function getBounds(features: Array<MapAssetFeature | MapContextFeature>): Bounds
   const points = features.flatMap(extractPoints);
 
   if (points.length === 0) {
-    return { minX: 0, maxX: 1, minY: 0, maxY: 1 };
+    return { minWorldX: 0, maxWorldX: 1, minWorldY: 0, maxWorldY: 1 };
   }
 
-  const longitudes = points.map(([longitude]) => longitude);
-  const latitudes = points.map(([, latitude]) => latitude);
+  const worldPoints = points.map(([longitude, latitude]) => lonLatToWorldPixels(longitude, latitude, tileZoom));
+  const worldXs = worldPoints.map(([worldX]) => worldX);
+  const worldYs = worldPoints.map(([, worldY]) => worldY);
+  const minWorldX = Math.min(...worldXs);
+  const maxWorldX = Math.max(...worldXs);
+  const minWorldY = Math.min(...worldYs);
+  const maxWorldY = Math.max(...worldYs);
+  const padX = Math.max((maxWorldX - minWorldX) * 0.08, 80);
+  const padY = Math.max((maxWorldY - minWorldY) * 0.08, 80);
 
   return {
-    minX: Math.min(...longitudes),
-    maxX: Math.max(...longitudes),
-    minY: Math.min(...latitudes),
-    maxY: Math.max(...latitudes)
+    minWorldX: minWorldX - padX,
+    maxWorldX: maxWorldX + padX,
+    minWorldY: minWorldY - padY,
+    maxWorldY: maxWorldY + padY
   };
+}
+
+function worldToSvgX(worldX: number, bounds: Bounds) {
+  return padding + ((worldX - bounds.minWorldX) / (bounds.maxWorldX - bounds.minWorldX)) * (width - padding * 2);
+}
+
+function worldToSvgY(worldY: number, bounds: Bounds) {
+  return padding + ((worldY - bounds.minWorldY) / (bounds.maxWorldY - bounds.minWorldY)) * (height - padding * 2);
+}
+
+function lonLatToWorldPixels(longitude: number, latitude: number, zoom: number): [number, number] {
+  const scale = tileSize * 2 ** zoom;
+  const boundedLatitude = Math.max(Math.min(latitude, 85.05112878), -85.05112878);
+  const sinLatitude = Math.sin((boundedLatitude * Math.PI) / 180);
+  const x = ((longitude + 180) / 360) * scale;
+  const y = (0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI)) * scale;
+
+  return [x, y];
 }
 
 function extractPoints(feature: MapAssetFeature | MapContextFeature): [number, number][] {
