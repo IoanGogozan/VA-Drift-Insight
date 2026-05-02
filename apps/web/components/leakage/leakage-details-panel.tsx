@@ -92,5 +92,14 @@ function FactorBars({ factors }: { factors: Record<string, number> }) {
 }
 
 function formatFactor(value: string) {
-  return value.replace(/([A-Z])/g, " $1").replace(/^./, (first) => first.toUpperCase());
+  const labels: Record<string, string> = {
+    pipeAge: "Ledningsalder",
+    material: "Materiale",
+    historicalBreaks: "Tidligere brudd",
+    nightFlowAnomaly: "Avvik i nattforbruk",
+    pressureVariation: "Trykkvariasjon",
+    criticality: "Kritikalitet"
+  };
+
+  return labels[value] ?? value.replace(/([A-Z])/g, " $1").replace(/^./, (first) => first.toUpperCase());
 }

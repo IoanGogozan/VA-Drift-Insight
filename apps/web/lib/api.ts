@@ -42,6 +42,7 @@ export type MapAssetFeature = {
     name: string;
     subtype: string;
     riskScore: number | null;
+    parentId: string | null;
   };
 };
 

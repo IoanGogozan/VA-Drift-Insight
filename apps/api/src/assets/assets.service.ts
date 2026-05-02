@@ -8,6 +8,7 @@ type MapAssetRow = {
   subtype: string;
   geometry: string | null;
   risk_score: number | null;
+  parent_id: string | null;
 };
 
 @Injectable()
@@ -22,7 +23,8 @@ export class AssetsService {
         z.name,
         z.zone_type::text AS subtype,
         ST_AsGeoJSON(z.geometry)::text AS geometry,
-        rs.score AS risk_score
+        rs.score AS risk_score,
+        NULL::text AS parent_id
       FROM zones z
       LEFT JOIN risk_scores rs
         ON rs.asset_id = z.id::text
@@ -37,7 +39,8 @@ export class AssetsService {
         p.pipe_code AS name,
         p.pipe_type::text AS subtype,
         ST_AsGeoJSON(p.geometry)::text AS geometry,
-        rs.score AS risk_score
+        rs.score AS risk_score,
+        p.zone_id::text AS parent_id
       FROM pipes p
       LEFT JOIN risk_scores rs
         ON rs.asset_id = p.id::text
@@ -52,7 +55,8 @@ export class AssetsService {
         ps.station_code || ' ' || ps.name AS name,
         'pump_station' AS subtype,
         ST_AsGeoJSON(ps.geometry)::text AS geometry,
-        rs.score AS risk_score
+        rs.score AS risk_score,
+        ps.catchment_id::text AS parent_id
       FROM pump_stations ps
       LEFT JOIN risk_scores rs
         ON rs.asset_id = ps.id::text
@@ -67,7 +71,8 @@ export class AssetsService {
         i.description AS name,
         i.incident_type::text AS subtype,
         ST_AsGeoJSON(i.geometry)::text AS geometry,
-        NULL::integer AS risk_score
+        NULL::integer AS risk_score,
+        i.asset_id::text AS parent_id
       FROM incidents i
       WHERE i.geometry IS NOT NULL
 
@@ -79,7 +84,8 @@ export class AssetsService {
         n.node_code AS name,
         n.node_type || COALESCE(':' || n.pipe_type, '') || ':' || n.status AS subtype,
         ST_AsGeoJSON(n.geometry)::text AS geometry,
-        NULL::integer AS risk_score
+        NULL::integer AS risk_score,
+        NULL::text AS parent_id
       FROM network_nodes n
       WHERE n.geometry IS NOT NULL
     `;
@@ -96,7 +102,8 @@ export class AssetsService {
             assetType: row.asset_type,
             name: row.name,
             subtype: row.subtype,
-            riskScore: row.risk_score
+            riskScore: row.risk_score,
+            parentId: row.parent_id
           }
         }))
     };

@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { GeoJSON, LayersControl, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { useMemo, useState } from "react";
+import { GeoJSON, LayersControl, MapContainer, Marker, Popup, ScaleControl, TileLayer } from "react-leaflet";
 import type { MapAssetFeature, MapContextFeature } from "@/lib/api";
 import {
   FitBounds,
@@ -27,6 +27,7 @@ export type RiskMapProps = {
 };
 
 export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelectAsset }: RiskMapProps) {
+  const [isBasemapDimmed, setIsBasemapDimmed] = useState(true);
   const zones = features.filter((feature) => feature.properties.assetType === "zone");
   const waterPipes = features.filter((feature) => isPipe(feature, "water"));
   const wastewaterPipes = features.filter((feature) => isPipe(feature, "wastewater"));
@@ -43,13 +44,23 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
     <div className="border border-slate-200 bg-white">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
         <h2 className="text-base font-semibold text-ink">VA-kart</h2>
-        <div className="flex flex-wrap gap-3 text-xs text-muted">
-          <LegendLine className="bg-[#2563eb]" label="Vannledning" />
-          <LegendLine className="bg-[#7c2d12]" label="Avløp" />
-          <LegendLine className="bg-[#0891b2]" label="Overvann" />
-          <LegendDot className="bg-[#111827]" label="Pumpestasjon" />
-          <LegendDot className="border border-[#334155] bg-white" label="Kum/ventil/måler" />
-          <LegendDot className="bg-riskHigh" label="Hendelse/sensor" />
+        <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+          <div className="flex flex-wrap gap-3">
+            <LegendLine className="bg-[#2563eb]" label="Vannledning" />
+            <LegendLine className="bg-[#7c2d12]" label="Avløp" />
+            <LegendLine className="bg-[#0891b2]" label="Overvann" />
+            <LegendDot className="bg-[#111827]" label="Pumpestasjon" />
+            <LegendDot className="border border-[#334155] bg-white" label="Kum/ventil/måler" />
+            <LegendDot className="bg-riskHigh" label="Hendelse/sensor" />
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsBasemapDimmed((value) => !value)}
+            className="border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-ink"
+            aria-pressed={isBasemapDimmed}
+          >
+            Bakgrunn: {isBasemapDimmed ? "Dempet" : "Normal"}
+          </button>
         </div>
       </div>
 
@@ -58,9 +69,10 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
           <FitBounds bounds={bounds} />
           <TileLayer
             attribution='&copy; <a href="https://www.kartverket.no/">Kartverket</a>'
-            opacity={0.86}
+            opacity={isBasemapDimmed ? 0.62 : 0.94}
             url="https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png"
           />
+          <ScaleControl imperial={false} position="bottomleft" />
           <LayersControl position="topright">
             <LayersControl.Overlay checked name="Kommunegrense">
               <GeoJSON key={`context-${selectedId ?? "none"}`} data={toFeatureCollection(contextFeatures)} style={municipalityStyle} />

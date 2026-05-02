@@ -67,16 +67,16 @@ export function zoneStyle(feature: unknown, selectedId?: string | null) {
 
 export function pipeStyle(feature: unknown, selectedId: string | null | undefined, color: string) {
   const asset = feature as MapAssetFeature;
-  const selected = asset.id === selectedId;
+  const selected = asset.id === selectedId || asset.properties.parentId === selectedId;
   const isStormwater = asset.properties.subtype === "stormwater";
 
   return {
-    color,
+    color: selected ? riskColor(asset.properties.riskScore) : color,
     dashArray: isStormwater ? "6 4" : undefined,
     lineCap: "round" as const,
     lineJoin: "round" as const,
-    opacity: selected ? 0.95 : 0.72,
-    weight: selected ? 4 : 1.8
+    opacity: selected ? 0.98 : 0.72,
+    weight: selected ? 4.2 : 1.8
   };
 }
 

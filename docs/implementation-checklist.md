@@ -143,6 +143,10 @@ Last completed phase verified: Phase 9 PDF report.
 - [x] Replace escaped HTML marker popups with structured popup content
 - [x] Reduce visual weight of VA overlays and basemap dominance
 - [x] Add explicit technical code legend for PS, K, V, M, S, LK, AL and OF
+- [x] Add dempet/normal basemap toggle
+- [x] Add map scale bar
+- [x] Highlight pipes connected to the selected zone
+- [x] Translate leakage factor labels to Norwegian
 - [x] Add selected asset highlight
 - [x] Add useful popup or side-panel handoff for selected map assets
 - [x] Keep public basemap/geodata clearly separated from simulated VA data
