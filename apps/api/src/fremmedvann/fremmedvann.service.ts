@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { calculateFremmedvannRisk, getFremmedvannSuspicionLevel } from "@va-drift-insight/shared";
 import { PumpStation, RiskScore } from "@prisma/client";
 import { PrismaService } from "../database/prisma.service";
 
@@ -15,7 +16,7 @@ export class FremmedvannService {
 
     return pumpStations.map((pumpStation) => {
       const score = scores.get(pumpStation.id);
-      const calculated = this.calculateFremmedvannScore(pumpStation);
+      const calculated = calculateFremmedvannRisk(toFremmedvannInput(pumpStation));
 
       return {
         pumpStationId: pumpStation.id,
@@ -23,11 +24,11 @@ export class FremmedvannService {
         name: pumpStation.name,
         catchmentName: pumpStation.catchment?.name ?? null,
         suspicionScore: score?.score ?? calculated.score,
-        suspicionLevel: getSuspicionLevel(score?.score ?? calculated.score),
+        suspicionLevel: getFremmedvannSuspicionLevel(score?.score ?? calculated.score),
         confidence: score?.confidence ?? calculated.confidence,
         alarmCount: pumpStation.alarmCount,
         overflowEvents: pumpStation.overflowEvents,
-        explanation: score?.explanation ?? this.createExplanation(pumpStation)
+        explanation: score?.explanation ?? calculated.explanation
       };
     });
   }
@@ -57,7 +58,7 @@ export class FremmedvannService {
         take: 5
       })
     ]);
-    const calculated = this.calculateFremmedvannScore(pumpStation);
+    const calculated = calculateFremmedvannRisk(toFremmedvannInput(pumpStation));
     const suspicionScore = score?.score ?? calculated.score;
 
     return {
@@ -66,10 +67,10 @@ export class FremmedvannService {
       name: pumpStation.name,
       catchmentName: pumpStation.catchment?.name ?? null,
       suspicionScore,
-      suspicionLevel: getSuspicionLevel(suspicionScore),
+      suspicionLevel: getFremmedvannSuspicionLevel(suspicionScore),
       confidence: score?.confidence ?? calculated.confidence,
       factors: calculated.factors,
-      explanation: score?.explanation ?? this.createExplanation(pumpStation),
+      explanation: score?.explanation ?? calculated.explanation,
       recommendedAction:
         recommendation?.suggestedAction ??
         "Inspiser oppstrøms kummer og vurder midlertidig flowmåler.",
@@ -94,37 +95,6 @@ export class FremmedvannService {
 
     return new Map<string, RiskScore>(scores.map((score) => [score.assetId, score]));
   }
-
-  private calculateFremmedvannScore(pumpStation: PumpStation) {
-    const factors = {
-      rainfallCorrelation: pumpStation.alarmCount >= 5 ? 85 : pumpStation.alarmCount >= 2 ? 60 : 25,
-      pumpRuntimeIncrease: pumpStation.alarmCount >= 5 ? 80 : 45,
-      delayedFlowResponse: pumpStation.overflowEvents > 0 ? 75 : 35,
-      overflowEvents: clamp(pumpStation.overflowEvents * 40),
-      highLevelAlarms: clamp(pumpStation.alarmCount * 12)
-    };
-    const score = Math.round(
-      factors.rainfallCorrelation * 0.35 +
-        factors.pumpRuntimeIncrease * 0.25 +
-        factors.delayedFlowResponse * 0.2 +
-        factors.overflowEvents * 0.1 +
-        factors.highLevelAlarms * 0.1
-    );
-
-    return {
-      score,
-      confidence: pumpStation.alarmCount > 0 ? 74 : 58,
-      factors
-    };
-  }
-
-  private createExplanation(pumpStation: PumpStation) {
-    if (pumpStation.alarmCount >= 5 || pumpStation.overflowEvents > 0) {
-      return "Pumpestasjonen har gjentatte våtværsrelaterte alarmer og overløpshendelser som gir mistanke om fremmedvann.";
-    }
-
-    return "Pumpestasjonen har begrensede indikasjoner på regnrelatert respons i demo-datasettet.";
-  }
 }
 
 function createDemoRainfallResponse(pumpStation: PumpStation) {
@@ -147,12 +117,10 @@ function createDemoRainfallResponse(pumpStation: PumpStation) {
   });
 }
 
-function getSuspicionLevel(score: number) {
-  if (score >= 75) return "Høy";
-  if (score >= 50) return "Medium";
-  return "Lav";
-}
-
-function clamp(value: number) {
-  return Math.max(0, Math.min(100, value));
+function toFremmedvannInput(pumpStation: PumpStation) {
+  return {
+    alarmCount: pumpStation.alarmCount,
+    overflowEvents: pumpStation.overflowEvents,
+    rainfallDataAvailable: true
+  };
 }

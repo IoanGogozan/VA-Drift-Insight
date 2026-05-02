@@ -117,6 +117,12 @@ Run API tests:
 npm run test --workspace @va-drift-insight/api
 ```
 
+Run shared scoring tests:
+
+```bash
+npm run test --workspace @va-drift-insight/shared
+```
+
 Apply database migrations:
 
 ```bash

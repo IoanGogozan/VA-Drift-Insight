@@ -4,8 +4,8 @@
   "private": true,
   "description": "Decision-support demo for Norwegian VA operations.",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "dev": "npm run dev --workspaces --if-present",

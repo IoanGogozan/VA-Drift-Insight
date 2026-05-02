@@ -51,12 +51,12 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Phase 5: Scoring
 
-- [ ] Implement shared scoring constants
-- [ ] Implement leakage scoring
-- [ ] Implement fremmedvann scoring
-- [ ] Implement data quality scoring
+- [x] Implement shared scoring constants
+- [x] Implement leakage scoring
+- [x] Implement fremmedvann scoring
+- [x] Implement data quality scoring
 - [ ] Store score explanations
-- [ ] Add unit tests for scoring functions
+- [x] Add unit tests for scoring functions
 
 ## Verification After Each Phase
 
