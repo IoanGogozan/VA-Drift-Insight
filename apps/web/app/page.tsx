@@ -1,6 +1,8 @@
 import { getOverview } from "@/lib/api";
 import { UI_TEXT } from "@/lib/ui-text";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const overview = await getOverview();
 

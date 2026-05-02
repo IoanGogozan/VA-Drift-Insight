@@ -33,3 +33,5 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+apps/web/AGENTS.md
+apps/web/CLAUDE.md

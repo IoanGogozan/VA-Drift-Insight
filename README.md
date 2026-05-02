@@ -97,13 +97,27 @@ Install dependencies:
 npm install
 ```
 
-Start PostgreSQL/PostGIS:
+Start the full local development environment:
+
+```bash
+npm run dev
+```
+
+This starts PostgreSQL/PostGIS, the API and the web app:
+
+```text
+API: http://localhost:3001
+Web: http://localhost:3000
+Swagger: http://localhost:3001/api/docs
+```
+
+PostgreSQL is exposed on local port `5433` to avoid conflicts with an existing local database.
+
+To start only PostgreSQL/PostGIS:
 
 ```bash
 docker compose up -d postgres
 ```
-
-PostgreSQL is exposed on local port `5433` to avoid conflicts with an existing local database.
 
 Run shared package typecheck:
 
@@ -146,7 +160,7 @@ $env:API_PORT="3001"
 npm run start --workspace @va-drift-insight/api
 ```
 
-Run the web app:
+Run only the web app:
 
 ```bash
 $env:NEXT_PUBLIC_API_URL="http://localhost:3001"

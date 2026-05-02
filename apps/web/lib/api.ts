@@ -29,7 +29,7 @@ export type RecommendationSummary = {
 
 export async function getOverview(): Promise<OverviewResponse> {
   const response = await fetch(`${API_URL}/api/overview`, {
-    next: { revalidate: 30 }
+    cache: "no-store"
   });
 
   if (!response.ok) {
