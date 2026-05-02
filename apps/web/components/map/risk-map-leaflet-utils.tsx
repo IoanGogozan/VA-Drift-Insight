@@ -13,7 +13,7 @@ export function FitBounds({ bounds }: { bounds: L.LatLngBounds | null }) {
 
   useEffect(() => {
     if (bounds?.isValid()) {
-      map.fitBounds(bounds, { padding: [28, 28], maxZoom: 15 });
+      map.fitBounds(bounds, { padding: [32, 32], maxZoom: 14 });
     }
   }, [bounds, map]);
 
@@ -59,9 +59,9 @@ export function zoneStyle(feature: unknown, selectedId?: string | null) {
   return {
     color: selected ? "#111827" : riskColor(asset.properties.riskScore),
     fillColor: riskColor(asset.properties.riskScore),
-    fillOpacity: selected ? 0.16 : 0.07,
-    opacity: 0.95,
-    weight: selected ? 3 : 1.5
+    fillOpacity: selected ? 0.12 : 0.045,
+    opacity: selected ? 0.9 : 0.65,
+    weight: selected ? 2.4 : 1.1
   };
 }
 
@@ -75,8 +75,8 @@ export function pipeStyle(feature: unknown, selectedId: string | null | undefine
     dashArray: isStormwater ? "6 4" : undefined,
     lineCap: "round" as const,
     lineJoin: "round" as const,
-    opacity: selected ? 1 : 0.86,
-    weight: selected ? 5 : 2.4
+    opacity: selected ? 0.95 : 0.72,
+    weight: selected ? 4 : 1.8
   };
 }
 
@@ -116,7 +116,7 @@ function extractLatLngs(feature: MapAssetFeature | MapContextFeature): L.LatLngE
   return feature.geometry.coordinates.flat().map(([longitude, latitude]) => [latitude, longitude]);
 }
 
-function formatSubtype(value: string) {
+export function formatSubtype(value: string) {
   if (value.includes(":")) {
     return formatNetworkNodeSubtype(value);
   }

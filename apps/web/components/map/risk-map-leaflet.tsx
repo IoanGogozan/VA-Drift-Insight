@@ -12,6 +12,7 @@ import {
   municipalityStyle,
   pipeStyle,
   pointLatLng,
+  formatSubtype,
   popupContent,
   toFeatureCollection,
   zoneStyle
@@ -57,6 +58,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
           <FitBounds bounds={bounds} />
           <TileLayer
             attribution='&copy; <a href="https://www.kartverket.no/">Kartverket</a>'
+            opacity={0.86}
             url="https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png"
           />
           <LayersControl position="topright">
@@ -103,7 +105,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                   icon={pumpStationIcon(feature.id === selectedId, feature.properties.riskScore)}
                   eventHandlers={{ click: () => onSelectAsset(feature) }}
                 >
-                  <Popup>{popupContent(feature)}</Popup>
+                  <MapPopup feature={feature} />
                 </Marker>
               ))}
             </LayersControl.Overlay>
@@ -115,7 +117,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                   icon={networkNodeIcon(feature.properties.subtype)}
                   eventHandlers={{ click: () => onSelectAsset(feature) }}
                 >
-                  <Popup>{popupContent(feature)}</Popup>
+                  <MapPopup feature={feature} />
                 </Marker>
               ))}
             </LayersControl.Overlay>
@@ -127,7 +129,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                   icon={networkNodeIcon(feature.properties.subtype)}
                   eventHandlers={{ click: () => onSelectAsset(feature) }}
                 >
-                  <Popup>{popupContent(feature)}</Popup>
+                  <MapPopup feature={feature} />
                 </Marker>
               ))}
             </LayersControl.Overlay>
@@ -139,7 +141,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                   icon={networkNodeIcon(feature.properties.subtype)}
                   eventHandlers={{ click: () => onSelectAsset(feature) }}
                 >
-                  <Popup>{popupContent(feature)}</Popup>
+                  <MapPopup feature={feature} />
                 </Marker>
               ))}
             </LayersControl.Overlay>
@@ -151,7 +153,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                   icon={networkNodeIcon(feature.properties.subtype)}
                   eventHandlers={{ click: () => onSelectAsset(feature) }}
                 >
-                  <Popup>{popupContent(feature)}</Popup>
+                  <MapPopup feature={feature} />
                 </Marker>
               ))}
             </LayersControl.Overlay>
@@ -163,7 +165,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                   icon={incidentIcon(feature.properties.subtype)}
                   eventHandlers={{ click: () => onSelectAsset(feature) }}
                 >
-                  <Popup>{popupContent(feature)}</Popup>
+                  <MapPopup feature={feature} />
                 </Marker>
               ))}
             </LayersControl.Overlay>
@@ -171,10 +173,23 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
         </MapContainer>
       </div>
 
-      <div className="border-t border-slate-200 px-4 py-2 text-xs text-muted">
-        Bakgrunnskart: Kartverket topo WMTS. VA-nett, hendelser og driftsdata er simulert demo-data.
+      <div className="border-t border-slate-200 px-4 py-2 text-xs leading-5 text-muted">
+        <span>Bakgrunnskart: Kartverket topo WMTS. VA-nett, hendelser og driftsdata er simulert demo-data.</span>
+        <span className="ml-3 text-ink">Koder: PS pumpestasjon, K kum, V ventil, M vannmåler, S sensor, LK lekkasje, AL alarm, OF overløp.</span>
       </div>
     </div>
+  );
+}
+
+function MapPopup({ feature }: { feature: MapAssetFeature }) {
+  return (
+    <Popup>
+      <div className="min-w-40 text-sm leading-5">
+        <p className="font-semibold text-ink">{feature.properties.name}</p>
+        <p className="text-muted">{formatSubtype(feature.properties.subtype)}</p>
+        {feature.properties.riskScore === null ? null : <p className="mt-1 text-xs text-muted">Score {feature.properties.riskScore}/100</p>}
+      </div>
+    </Popup>
   );
 }
 

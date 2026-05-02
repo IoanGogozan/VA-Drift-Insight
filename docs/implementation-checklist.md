@@ -140,6 +140,9 @@ Last completed phase verified: Phase 9 PDF report.
 - [x] Add simulated kummer, ventiler, vannmålere and sensorer as PostGIS map assets
 - [x] Add technical map symbols and layer toggles for VA nodes
 - [x] Keep dense detail layers available without cluttering the default map view
+- [x] Replace escaped HTML marker popups with structured popup content
+- [x] Reduce visual weight of VA overlays and basemap dominance
+- [x] Add explicit technical code legend for PS, K, V, M, S, LK, AL and OF
 - [x] Add selected asset highlight
 - [x] Add useful popup or side-panel handoff for selected map assets
 - [x] Keep public basemap/geodata clearly separated from simulated VA data
