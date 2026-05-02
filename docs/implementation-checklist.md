@@ -60,7 +60,7 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Verification After Each Phase
 
-Last completed phase verified: Phase 8 public data integration.
+Last completed phase verified: Phase 9 PDF report.
 
 - [x] Run shared scoring tests
 - [x] Run shared typecheck
@@ -119,11 +119,11 @@ Last completed phase verified: Phase 8 public data integration.
 
 ## Phase 9: PDF Report
 
-- [ ] Create report HTML template
-- [ ] Add Puppeteer PDF service
-- [ ] Implement `POST /api/reports/va-risk`
-- [ ] Implement `GET /api/reports/:id/download`
-- [ ] Add frontend report button
+- [x] Create report HTML template
+- [x] Add Puppeteer PDF service
+- [x] Implement `POST /api/reports/va-risk`
+- [x] Implement `GET /api/reports/:id/download`
+- [x] Add frontend report button
 - [ ] Add sample generated PDF to demo material if appropriate
 
 ## Phase 10: Polish

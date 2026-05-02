@@ -27,6 +27,7 @@ pnpm-debug.log*
 # Local data
 postgres_data/
 reports/generated/
+apps/api/reports/generated/
 
 # OS and editor
 .DS_Store

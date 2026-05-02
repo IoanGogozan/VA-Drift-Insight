@@ -31,6 +31,31 @@ export async function updateRecommendationStatus(
   return response.json() as Promise<RecommendationSummary>;
 }
 
+export async function generateVaRiskReport(): Promise<{
+  id: string;
+  fileName: string;
+  downloadUrl: string;
+  generatedAt: string;
+}> {
+  const response = await fetch(`${API_URL}/api/reports/va-risk`, {
+    method: "POST",
+    headers: {
+      "x-demo-api-key": DEMO_API_KEY
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunne ikke generere rapport.");
+  }
+
+  return response.json() as Promise<{
+    id: string;
+    fileName: string;
+    downloadUrl: string;
+    generatedAt: string;
+  }>;
+}
+
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${API_URL}${path}`);
 

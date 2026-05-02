@@ -21,6 +21,7 @@ import { RiskMap } from "../map/risk-map";
 import { DataSourcesCard } from "../overview/data-sources-card";
 import { KpiCard } from "../overview/kpi-card";
 import { RecommendationsTable } from "../recommendations/recommendations-table";
+import { ReportButton } from "../reports/report-button";
 
 type DashboardScreenProps = {
   overview: OverviewResponse;
@@ -108,10 +109,13 @@ export function DashboardScreen({
   return (
     <main className="min-h-screen">
       <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-5">
-          <p className="text-sm font-medium text-muted">{UI_TEXT.demoDataset}</p>
-          <h1 className="text-2xl font-semibold tracking-normal text-ink">{UI_TEXT.overviewTitle}</h1>
-          <p className="max-w-3xl text-sm text-muted">{UI_TEXT.subtitle}</p>
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-muted">{UI_TEXT.demoDataset}</p>
+            <h1 className="text-2xl font-semibold tracking-normal text-ink">{UI_TEXT.overviewTitle}</h1>
+            <p className="max-w-3xl text-sm text-muted">{UI_TEXT.subtitle}</p>
+          </div>
+          <ReportButton />
         </div>
       </section>
 

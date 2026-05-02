@@ -9,6 +9,7 @@ import { LeakageModule } from "./leakage/leakage.module";
 import { OverviewModule } from "./overview/overview.module";
 import { MunicipalityModule } from "./municipality/municipality.module";
 import { RecommendationsModule } from "./recommendations/recommendations.module";
+import { ReportsModule } from "./reports/reports.module";
 import { VersionModule } from "./version/version.module";
 import { WeatherModule } from "./weather/weather.module";
 
@@ -32,7 +33,8 @@ import { WeatherModule } from "./weather/weather.module";
     FremmedvannModule,
     RecommendationsModule,
     MunicipalityModule,
-    WeatherModule
+    WeatherModule,
+    ReportsModule
   ]
 })
 export class AppModule {}
