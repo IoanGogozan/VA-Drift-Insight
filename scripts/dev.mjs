@@ -93,6 +93,8 @@ async function main() {
     env: commonEnv
   });
 
+  await waitForHttp(`http://localhost:${apiPort}/api/health`);
+
   console.log(`Starting web on http://localhost:${webPort}`);
   run(npmCommand, ["run", "dev", "--workspace", "@va-drift-insight/web"], {
     env: commonEnv
@@ -226,4 +228,30 @@ function killPid(pid) {
   }
 
   return Promise.resolve();
+}
+
+async function waitForHttp(url) {
+  const startedAt = Date.now();
+  const timeoutMs = 45_000;
+
+  console.log(`Waiting for API health at ${url}`);
+
+  while (Date.now() - startedAt < timeoutMs) {
+    try {
+      const response = await fetch(url);
+
+      if (response.ok) {
+        console.log("API is ready.");
+        return;
+      }
+    } catch {
+      // The API process is still compiling or binding the port.
+    }
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1_000);
+    });
+  }
+
+  throw new Error(`API health check did not pass within ${timeoutMs / 1_000} seconds.`);
 }

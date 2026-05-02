@@ -5,6 +5,18 @@ export const UI_TEXT = {
   highRiskLeakageZones: "Høyrisiko lekkasjesoner",
   fremmedvannSuspicions: "Mistanke om fremmedvann",
   recommendedFieldChecks: "Anbefalte feltkontroller",
+  activeAnomalies: "Aktive avvik",
+  dataQuality: "Datakvalitet",
   topRecommendations: "Topp anbefalte tiltak",
-  mapPlaceholder: "Kartvisning kommer i neste steg"
+  mapTitle: "VA-kart",
+  leakageTitle: "Hvor bør vi lete først?",
+  fremmedvannTitle: "Regn vs pumpestasjon",
+  fremmedvannSubtitle: "Analyse av regnrespons, pumpetid, vannstand og alarmer",
+  recommendationsTitle: "Anbefalte tiltak",
+  decisionSupportNote: "Beslutningsstøtte, ikke automatisk diagnose.",
+  selectZone: "Velg en målesone på kartet for å se lekkasjedetaljer.",
+  selectPumpStation: "Velg en pumpestasjon for å se regnrespons.",
+  loading: "Laster data...",
+  noRecommendations: "Ingen anbefalte tiltak funnet.",
+  updateFailed: "Kunne ikke oppdatere status."
 } as const;

@@ -60,7 +60,7 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Verification After Each Phase
 
-Last completed phase verified: Phase 6 frontend foundation.
+Last completed phase verified: Phase 7 screens.
 
 - [x] Run shared scoring tests
 - [x] Run shared typecheck
@@ -85,14 +85,14 @@ Last completed phase verified: Phase 6 frontend foundation.
 
 ## Phase 7: Screens
 
-- [ ] Build `VA-risikooversikt`
-- [ ] Build map layers for zones, pipes and pump stations
-- [ ] Build `Hvor bør vi lete først?`
-- [ ] Build leakage detail panel
-- [ ] Build `Regn vs pumpestasjon`
-- [ ] Build rainfall and pump runtime chart
-- [ ] Build `Anbefalte tiltak`
-- [ ] Add recommendation status updates
+- [x] Build `VA-risikooversikt`
+- [x] Build map layers for zones, pipes and pump stations
+- [x] Build `Hvor bør vi lete først?`
+- [x] Build leakage detail panel
+- [x] Build `Regn vs pumpestasjon`
+- [x] Build rainfall and pump runtime chart
+- [x] Build `Anbefalte tiltak`
+- [x] Add recommendation status updates
 
 ## Phase 8: PDF Report
 
