@@ -13,7 +13,7 @@ export function FitBounds({ bounds }: { bounds: L.LatLngBounds | null }) {
 
   useEffect(() => {
     if (bounds?.isValid()) {
-      map.fitBounds(bounds, { padding: [24, 24], maxZoom: 14 });
+      map.fitBounds(bounds, { padding: [28, 28], maxZoom: 15 });
     }
   }, [bounds, map]);
 
@@ -59,7 +59,7 @@ export function zoneStyle(feature: unknown, selectedId?: string | null) {
   return {
     color: selected ? "#111827" : riskColor(asset.properties.riskScore),
     fillColor: riskColor(asset.properties.riskScore),
-    fillOpacity: selected ? 0.24 : 0.13,
+    fillOpacity: selected ? 0.16 : 0.07,
     opacity: 0.95,
     weight: selected ? 3 : 1.5
   };
@@ -68,11 +68,15 @@ export function zoneStyle(feature: unknown, selectedId?: string | null) {
 export function pipeStyle(feature: unknown, selectedId: string | null | undefined, color: string) {
   const asset = feature as MapAssetFeature;
   const selected = asset.id === selectedId;
+  const isStormwater = asset.properties.subtype === "stormwater";
 
   return {
     color,
+    dashArray: isStormwater ? "6 4" : undefined,
+    lineCap: "round" as const,
+    lineJoin: "round" as const,
     opacity: selected ? 1 : 0.86,
-    weight: selected ? 6 : 3
+    weight: selected ? 5 : 2.4
   };
 }
 

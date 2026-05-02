@@ -134,6 +134,9 @@ Last completed phase verified: Phase 9 PDF report.
 - [x] Expand simulated pipe network to a more realistic connected network
 - [x] Add clear styling for water, wastewater and stormwater pipes
 - [x] Add smaller, more technical pump station symbols/icons
+- [x] Replace generic incident dots with technical event codes
+- [x] Refine simulated pipe geometry to road-like grid segments
+- [x] Make zone polygons less rectangular and less visually dominant
 - [x] Add selected asset highlight
 - [x] Add useful popup or side-panel handoff for selected map assets
 - [x] Keep public basemap/geodata clearly separated from simulated VA data

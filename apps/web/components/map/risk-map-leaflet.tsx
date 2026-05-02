@@ -32,7 +32,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
   const stormwaterPipes = features.filter((feature) => isPipe(feature, "stormwater"));
   const pumpStations = features.filter((feature) => feature.properties.assetType === "pump_station");
   const incidents = features.filter((feature) => feature.properties.assetType === "incident");
-  const bounds = useMemo(() => getLeafletBounds([...features, ...contextFeatures]), [features, contextFeatures]);
+  const bounds = useMemo(() => getLeafletBounds(features), [features]);
 
   return (
     <div className="border border-slate-200 bg-white">
@@ -74,7 +74,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                 onEachFeature={(feature, layer) => bindAssetLayer(feature as MapAssetFeature, layer, onSelectAsset)}
               />
             </LayersControl.Overlay>
-            <LayersControl.Overlay checked name="Avløpsledninger">
+            <LayersControl.Overlay name="Avløpsledninger">
               <GeoJSON
                 key={`wastewater-${selectedId ?? "none"}`}
                 data={toFeatureCollection(wastewaterPipes)}
@@ -82,7 +82,7 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
                 onEachFeature={(feature, layer) => bindAssetLayer(feature as MapAssetFeature, layer, onSelectAsset)}
               />
             </LayersControl.Overlay>
-            <LayersControl.Overlay checked name="Overvannsledninger">
+            <LayersControl.Overlay name="Overvannsledninger">
               <GeoJSON
                 key={`stormwater-${selectedId ?? "none"}`}
                 data={toFeatureCollection(stormwaterPipes)}
@@ -104,7 +104,12 @@ export function RiskMapLeaflet({ features, contextFeatures, selectedId, onSelect
             </LayersControl.Overlay>
             <LayersControl.Overlay checked name="Hendelser">
               {incidents.map((feature) => (
-                <Marker key={feature.id} position={pointLatLng(feature)} icon={incidentIcon} eventHandlers={{ click: () => onSelectAsset(feature) }}>
+                <Marker
+                  key={feature.id}
+                  position={pointLatLng(feature)}
+                  icon={incidentIcon(feature.properties.subtype)}
+                  eventHandlers={{ click: () => onSelectAsset(feature) }}
+                >
                   <Popup>{popupContent(feature)}</Popup>
                 </Marker>
               ))}
