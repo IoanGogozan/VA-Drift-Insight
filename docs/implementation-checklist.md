@@ -25,18 +25,18 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Phase 3: Seed Data
 
-- [ ] Create Fjordvik kommune zones
-- [ ] Create water pipe segments
-- [ ] Create wastewater and stormwater pipe segments
-- [ ] Create pump stations
-- [ ] Create incident data
+- [x] Create Fjordvik kommune zones
+- [x] Create water pipe segments
+- [x] Create wastewater and stormwater pipe segments
+- [x] Create pump stations
+- [x] Create incident data
 - [ ] Create time-series mock data
-- [ ] Verify seeded geometry can be returned as GeoJSON
+- [x] Verify seeded geometry can be returned as GeoJSON
 
 ## Phase 4: Core API
 
-- [ ] Implement `GET /api/overview`
-- [ ] Implement `GET /api/map/assets`
+- [x] Implement `GET /api/overview`
+- [x] Implement `GET /api/map/assets`
 - [ ] Implement `GET /api/leakage/zones`
 - [ ] Implement `GET /api/leakage/zones/:id`
 - [ ] Implement `GET /api/fremmedvann/pump-stations`
