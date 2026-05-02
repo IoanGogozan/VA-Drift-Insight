@@ -5,7 +5,9 @@ const npmCommand = "npm";
 const dockerCommand = "docker";
 
 const children = [];
-const devPorts = [3000, 3001];
+const webPort = "3000";
+const apiPort = process.env.API_PORT ?? "3001";
+const devPorts = [Number(webPort), Number(apiPort)];
 
 function run(command, args, options = {}) {
   const spawnCommand = isWindows ? process.env.ComSpec ?? "cmd.exe" : command;
@@ -72,19 +74,26 @@ async function main() {
     ...process.env,
     DATABASE_URL:
       process.env.DATABASE_URL ?? "postgresql://va_demo:va_demo@localhost:5433/va_drift_insight",
-    API_PORT: process.env.API_PORT ?? "3001",
+    API_PORT: apiPort,
     API_VERSION: process.env.API_VERSION ?? "0.1.0",
-    API_CORS_ORIGINS: process.env.API_CORS_ORIGINS ?? "http://localhost:3000",
+    API_CORS_ORIGINS: process.env.API_CORS_ORIGINS ?? `http://localhost:${webPort}`,
     DEMO_API_KEY: process.env.DEMO_API_KEY ?? "local-demo-key",
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL ?? `http://localhost:${apiPort}`
   };
 
-  console.log("Starting API on http://localhost:3001");
+  console.log("");
+  console.log("VA Drift Insight local URLs:");
+  console.log(`- Frontend: http://localhost:${webPort}`);
+  console.log(`- Backend API: http://localhost:${apiPort}`);
+  console.log(`- API health: http://localhost:${apiPort}/api/health`);
+  console.log("");
+
+  console.log(`Starting API on http://localhost:${apiPort}`);
   run(npmCommand, ["run", "dev", "--workspace", "@va-drift-insight/api"], {
     env: commonEnv
   });
 
-  console.log("Starting web on http://localhost:3000");
+  console.log(`Starting web on http://localhost:${webPort}`);
   run(npmCommand, ["run", "dev", "--workspace", "@va-drift-insight/web"], {
     env: commonEnv
   });
