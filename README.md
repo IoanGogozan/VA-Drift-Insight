@@ -146,6 +146,13 @@ $env:API_PORT="3001"
 npm run start --workspace @va-drift-insight/api
 ```
 
+Run the web app:
+
+```bash
+$env:NEXT_PUBLIC_API_URL="http://localhost:3001"
+npm run dev --workspace @va-drift-insight/web
+```
+
 Health checks:
 
 ```text

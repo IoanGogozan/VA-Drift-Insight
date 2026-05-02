@@ -60,7 +60,7 @@ Use this checklist as the main build guide. Keep each step small enough to test 
 
 ## Verification After Each Phase
 
-Last completed phase verified: Phase 5 scoring.
+Last completed phase verified: Phase 6 frontend foundation.
 
 - [x] Run shared scoring tests
 - [x] Run shared typecheck
@@ -68,18 +68,20 @@ Last completed phase verified: Phase 5 scoring.
 - [x] Run API tests
 - [x] Run API typecheck
 - [x] Run API build
+- [x] Run web typecheck
+- [x] Run web build
 - [x] Run runtime smoke test
 - [x] Commit completed phase
 - [x] Push branch when a Git remote is configured
 
 ## Phase 6: Frontend Foundation
 
-- [ ] Create Next.js app in `apps/web`
-- [ ] Add Tailwind CSS
-- [ ] Add shadcn/ui
-- [ ] Add API client
-- [ ] Add base layout
-- [ ] Add Norwegian UI text constants
+- [x] Create Next.js app in `apps/web`
+- [x] Add Tailwind CSS
+- [x] Add shadcn/ui
+- [x] Add API client
+- [x] Add base layout
+- [x] Add Norwegian UI text constants
 
 ## Phase 7: Screens
 

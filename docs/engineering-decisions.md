@@ -81,3 +81,19 @@ UUIDs are a better default for a production-minded API and match the engineering
 Implication:
 
 Even when seed data uses fixed IDs for readability, generated records should use UUID defaults.
+
+## ADR 006: Use Next Canary Temporarily For Security Audit Cleanliness
+
+Status: Accepted
+
+Decision:
+
+Use `next@16.3.0-canary.8` for the frontend foundation until the stable Next release includes a non-vulnerable internal PostCSS version.
+
+Reason:
+
+The latest stable Next version available during Phase 6 pulled `postcss@8.4.31` internally, which npm audit reports as vulnerable. The canary version resolves the audit finding and passes typecheck/build for this demo.
+
+Implication:
+
+Revisit this dependency before deployment and return to stable Next as soon as the stable release line has the patched dependency.
