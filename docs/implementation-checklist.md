@@ -220,6 +220,8 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Update README with relevance for leakage control, water loss, field follow-up and reporting
 - [x] Update app subtitle and first-page copy for vanntap, lekkasjekontroll and feltoppfølging
 - [x] Align sticky navigation with the interview demo flow
+- [x] Reorder dashboard sections to match the interview demo flow
+- [x] Add first-page workflow strip: data, analysis, explanation, field follow-up and report
 - [ ] Add general Norwegian demo script for applications and interviews
 - [ ] Add portfolio screenshots for the main workflow
 

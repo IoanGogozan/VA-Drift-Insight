@@ -28,7 +28,7 @@ export function ReportButton() {
     <div className="flex flex-col items-start gap-2">
       <Button type="button" onClick={handleGenerateReport} disabled={isPending}>
         <FileText className="mr-2 h-4 w-4" />
-        {isPending ? "Genererer rapport..." : "Generer VA-risikorapport"}
+        {isPending ? "Genererer rapport..." : "Generer demo-rapport"}
       </Button>
       {error ? <p className="text-sm text-riskHigh">{error}</p> : null}
     </div>

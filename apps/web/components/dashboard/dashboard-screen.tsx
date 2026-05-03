@@ -182,6 +182,25 @@ export function DashboardScreen({
             data fra ledningsnett, vannsoner, vannmålere, private stikkledninger, hendelser og nedbør kan brukes til
             bedre prioritering i felt.
           </p>
+          <ol className="mt-5 grid gap-3 border-t border-slate-100 pt-4 text-sm md:grid-cols-5">
+            {[
+              ["1", "Datagrunnlag", "Import og validering"],
+              ["2", "Analyse", "Vannsoner og risiko"],
+              ["3", "Forklaring", "Årsak og tillit"],
+              ["4", "Feltoppfølging", "Metode og status"],
+              ["5", "Rapport", "Sammendrag for møte"]
+            ].map(([step, title, description]) => (
+              <li key={step} className="flex gap-3">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-slate-300 text-xs font-semibold text-ink">
+                  {step}
+                </span>
+                <span>
+                  <span className="block font-semibold text-ink">{title}</span>
+                  <span className="block text-muted">{description}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
           <p className="mt-3 text-sm font-medium text-ink">Beslutningsstøtte, ikke automatisk diagnose.</p>
         </article>
       </section>
@@ -222,14 +241,6 @@ export function DashboardScreen({
         <WaterZonesTable waterZones={waterZones} />
       </section>
 
-      <section id="private-stikkledninger" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
-        <PrivateCasesTable initialPrivateCases={privateCases} />
-      </section>
-
-      <section id="feltoppgaver" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
-        <FieldTasksTable initialFieldTasks={fieldTasks} />
-      </section>
-
       <section id="lekkasjekontroll" className="mx-auto grid max-w-7xl scroll-mt-20 gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">
         <RiskMap
           features={mapAssets.features}
@@ -250,10 +261,6 @@ export function DashboardScreen({
         />
       </section>
 
-      <section id="datagrunnlag" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
-        <DataImportPanel initialImportRuns={importRuns} />
-      </section>
-
       <section id="fremmedvann" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
         <PumpStationChart
           pumpStations={pumpStations}
@@ -269,16 +276,31 @@ export function DashboardScreen({
         />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-8">
-        <DataSourcesCard />
+      <section id="private-stikkledninger" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
+        <PrivateCasesTable initialPrivateCases={privateCases} />
       </section>
 
-      <section id="tiltak" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-8">
+      <section id="feltoppgaver" className="mx-auto max-w-7xl scroll-mt-20 space-y-6 px-6 pb-8">
+        <FieldTasksTable initialFieldTasks={fieldTasks} />
         <RecommendationsTable initialRecommendations={recommendations} />
       </section>
 
-      <section id="rapport" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-8">
+      <section id="rapport" className="mx-auto max-w-7xl scroll-mt-20 space-y-4 px-6 pb-8">
+        <div className="flex flex-col gap-3 border border-slate-200 bg-white p-5 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-ink">Rapport</h2>
+            <p className="mt-1 text-sm text-muted">
+              Generer en demo-rapport og bruk månedsoppsummeringen som kort beslutningsgrunnlag.
+            </p>
+          </div>
+          <ReportButton />
+        </div>
         <MonthlyReportCard report={monthlyReport} />
+      </section>
+
+      <section id="datagrunnlag" className="mx-auto max-w-7xl scroll-mt-20 space-y-6 px-6 pb-8">
+        <DataSourcesCard />
+        <DataImportPanel initialImportRuns={importRuns} />
       </section>
     </main>
   );
