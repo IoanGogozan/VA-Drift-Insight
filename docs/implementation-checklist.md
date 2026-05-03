@@ -163,7 +163,7 @@ Acceptance criteria:
 
 - [ ] Add screenshots
 - [x] Improve README run instructions
-- [ ] Add demo script link
+- [x] Add demo script link
 - [ ] Add architecture diagram to README if useful
 - [ ] Verify Docker local startup from clean checkout
 - [ ] Record optional demo video
@@ -224,8 +224,8 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Add first-page workflow strip: data, analysis, explanation, field follow-up and report
 - [x] Upgrade leakage detail with estimated water loss, private cases and recommended field method
 - [x] Add visible data quality and data gap section in Datagrunnlag
-- [ ] Add general Norwegian demo script for applications and interviews
-- [ ] Add portfolio screenshots for the main workflow
+- [x] Add general Norwegian demo script for applications and interviews
+- [x] Add portfolio screenshots plan for the main workflow
 
 ## Definition Of Done For MVP
 

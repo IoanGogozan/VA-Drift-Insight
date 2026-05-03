@@ -129,6 +129,7 @@ No real sensitive VA infrastructure data is used.
 - [PDF report specification](docs/pdf-report.md)
 - [Implementation checklist](docs/implementation-checklist.md)
 - [Demo script in Norwegian](docs/demo-script-no.md)
+- [Portfolio screenshots plan](docs/portfolio-screenshots.md)
 
 ## Current Status
 
