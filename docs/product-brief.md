@@ -6,17 +6,19 @@ VA Drift Insight
 
 ## Subtitle
 
-Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, fremmedvann og driftsdata
+Demo for datadrevet lekkasjekontroll, vanntap og feltoppfølging.
 
 ## Core Message
 
-Jeg kan koble praktisk VA-forståelse med moderne backend, data, kart og rapportering.
+Jeg kan koble praktisk VA-/VVS-forståelse med moderne backend, data, kart og rapportering.
 
 ## Purpose
 
 VA Drift Insight is a portfolio demo that shows how operational VA data can be transformed into practical prioritization, field checks and reports.
 
-The application should feel like a realistic decision-support tool for a municipality, an intermunicipal water company or a VA consultant.
+The application should feel like a realistic decision-support tool for a municipality, an intermunicipal water company, a VA operations team or a VA consultant.
+
+It should be useful as a general job-application demo for VA/VVS-related software roles, not tailored to only one employer.
 
 ## What The Demo Should Prove
 
@@ -28,6 +30,8 @@ The application should feel like a realistic decision-support tool for a municip
 - Explainable scoring instead of black-box ML
 - Recommendations that support operational workflow
 - PDF reporting for meetings and planning
+- Water zones, night flow, estimated water loss and field follow-up
+- Private service line case follow-up
 
 ## Product Principle
 
@@ -53,25 +57,31 @@ The data should look realistic enough to support a professional demo without usi
 
 ## MVP Screens
 
-1. VA-risikooversikt
-2. Hvor bør vi lete først?
-3. Regn vs pumpestasjon
-4. Anbefalte tiltak
+1. Oversikt
+2. Vannsoner og vanntap
+3. Lekkasjekontroll
+4. Fremmedvann
+5. Private stikkledninger
+6. Feltoppgaver
+7. Rapport
+8. Datagrunnlag
 
 ## Target Product Navigation
 
 1. Oversikt
-2. Lekkasjekontroll
-3. Fremmedvann
-4. Tiltak
-5. Rapporter
-6. Datagrunnlag
+2. Vannsoner og vanntap
+3. Lekkasjekontroll
+4. Fremmedvann
+5. Private stikkledninger
+6. Feltoppgaver
+7. Rapport
+8. Datagrunnlag
 
 ## Target Product Positioning
 
-VA Drift Insight - Vanntap & lekkasjekontroll + fremmedvann analyse
+VA Drift Insight - vanntap, lekkasjekontroll og datadrevet feltoppfølging
 
-Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, vanntap og fremmedvann i kommunal VA-drift.
+Et porteføljeprosjekt som viser hvordan praktisk VVS-/VA-erfaring kan kombineres med backend, databaser, kart og rapportering.
 
 ## Out Of Scope For MVP
 

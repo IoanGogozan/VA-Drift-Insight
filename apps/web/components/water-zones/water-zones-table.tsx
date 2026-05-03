@@ -12,9 +12,9 @@ const statusClass: Record<WaterZoneSummary["status"], string> = {
 
 export function WaterZonesTable({ waterZones }: WaterZonesTableProps) {
   return (
-    <section id="lekkasjekontroll" className="scroll-mt-20 border border-slate-200 bg-white">
+    <section id="vannsoner" className="scroll-mt-20 border border-slate-200 bg-white">
       <div className="border-b border-slate-200 px-6 py-4">
-        <h2 className="text-xl font-semibold text-ink">Lekkasjekontroll</h2>
+        <h2 className="text-xl font-semibold text-ink">Vannsoner og vanntap</h2>
         <p className="mt-1 text-sm text-muted">
           Vannsoner med estimert vanntap, nattforbruk og trend mot baseline.
         </p>

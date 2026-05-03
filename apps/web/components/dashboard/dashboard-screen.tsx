@@ -148,7 +148,16 @@ export function DashboardScreen({
 
       <nav className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
         <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6 py-3 text-sm">
-          {["Oversikt", "Lekkasjekontroll", "Fremmedvann", "Tiltak", "Rapporter", "Datagrunnlag"].map((item) => (
+          {[
+            "Oversikt",
+            "Vannsoner og vanntap",
+            "Lekkasjekontroll",
+            "Fremmedvann",
+            "Private stikkledninger",
+            "Feltoppgaver",
+            "Rapport",
+            "Datagrunnlag"
+          ].map((item) => (
             <a
               key={item}
               href={`#${getNavTarget(item)}`}
@@ -164,10 +173,14 @@ export function DashboardScreen({
         <article className="border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-ink">Velkommen til VA Drift Insight</h2>
           <p className="mt-3 max-w-4xl text-sm leading-6 text-muted">
-            Dette er en demoapplikasjon som viser hvordan kommunale VA-data kan brukes til praktisk beslutningsstøtte
-            for lekkasjekontroll, vanntap og fremmedvann. Målet er ikke å erstatte eksisterende
-            driftskontrollsystemer, men å vise hvordan data fra ledningsnett, målesoner, pumpestasjoner og nedbør kan
-            kombineres for å gi bedre grunnlag for prioritering i felt.
+            Jeg har laget denne demoen for å vise hvordan praktisk VVS-/VA-erfaring kan kombineres med backend,
+            kart, databaser og rapportering for å støtte lekkasjekontroll, vanntapsreduksjon og datadrevet
+            feltoppfølging.
+          </p>
+          <p className="mt-3 max-w-4xl text-sm leading-6 text-muted">
+            Målet er ikke å erstatte eksisterende driftskontrollsystemer eller faglige vurderinger, men å vise hvordan
+            data fra ledningsnett, vannsoner, vannmålere, private stikkledninger, hendelser og nedbør kan brukes til
+            bedre prioritering i felt.
           </p>
           <p className="mt-3 text-sm font-medium text-ink">Beslutningsstøtte, ikke automatisk diagnose.</p>
         </article>
@@ -209,15 +222,15 @@ export function DashboardScreen({
         <WaterZonesTable waterZones={waterZones} />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-6">
+      <section id="private-stikkledninger" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
         <PrivateCasesTable initialPrivateCases={privateCases} />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-6">
+      <section id="feltoppgaver" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
         <FieldTasksTable initialFieldTasks={fieldTasks} />
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">
+      <section id="lekkasjekontroll" className="mx-auto grid max-w-7xl scroll-mt-20 gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">
         <RiskMap
           features={mapAssets.features}
           contextFeatures={mapContext.features}
@@ -264,7 +277,7 @@ export function DashboardScreen({
         <RecommendationsTable initialRecommendations={recommendations} />
       </section>
 
-      <section id="rapporter" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-8">
+      <section id="rapport" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-8">
         <MonthlyReportCard report={monthlyReport} />
       </section>
     </main>
@@ -274,10 +287,12 @@ export function DashboardScreen({
 function getNavTarget(item: string) {
   const targets: Record<string, string> = {
     Oversikt: "oversikt",
+    "Vannsoner og vanntap": "vannsoner",
     Lekkasjekontroll: "lekkasjekontroll",
     Fremmedvann: "fremmedvann",
-    Tiltak: "tiltak",
-    Rapporter: "rapporter",
+    "Private stikkledninger": "private-stikkledninger",
+    Feltoppgaver: "feltoppgaver",
+    Rapport: "rapport",
     Datagrunnlag: "datagrunnlag"
   };
 

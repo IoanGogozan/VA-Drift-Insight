@@ -1,6 +1,6 @@
 export const UI_TEXT = {
-  overviewTitle: "VA-risikooversikt",
-  subtitle: "Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, vanntap og fremmedvann i kommunal VA-drift.",
+  overviewTitle: "VA Drift Insight",
+  subtitle: "Demo for datadrevet lekkasjekontroll, vanntap og feltoppfølging.",
   demoDataset: "Fjordvik kommune - demo dataset",
   highRiskLeakageZones: "Høyrisiko lekkasjesoner",
   fremmedvannSuspicions: "Mistanke om fremmedvann",

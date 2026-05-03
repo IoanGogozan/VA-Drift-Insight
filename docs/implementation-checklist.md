@@ -195,7 +195,7 @@ Reference: `docs/backend-workflow-improvement-plan.md`
 
 Reference: `docs/two-week-product-upgrade-plan.md`
 
-- [x] Add top-level navigation: Oversikt, Lekkasjekontroll, Fremmedvann, Tiltak, Rapporter, Datagrunnlag
+- [x] Add top-level navigation: Oversikt, Vannsoner og vanntap, Lekkasjekontroll, Fremmedvann, Private stikkledninger, Feltoppgaver, Rapport, Datagrunnlag
 - [x] Add first-page intro copy for VA Drift Insight
 - [x] Add `water_zones` database model and migration
 - [x] Seed water zones with total consumption, night flow, baseline and trends
@@ -213,6 +213,15 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Add field tasks UI
 - [x] Upgrade fremmedvann chart with baseline and anomaly highlight
 - [ ] Upgrade PDF with water zones, field plan and methodology
+
+## Phase 14: Job-Ready Portfolio Positioning
+
+- [x] Keep positioning general for VA/VVS software roles, not one specific employer
+- [x] Update README with relevance for leakage control, water loss, field follow-up and reporting
+- [x] Update app subtitle and first-page copy for vanntap, lekkasjekontroll and feltoppfølging
+- [x] Align sticky navigation with the interview demo flow
+- [ ] Add general Norwegian demo script for applications and interviews
+- [ ] Add portfolio screenshots for the main workflow
 
 ## Definition Of Done For MVP
 

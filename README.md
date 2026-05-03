@@ -8,19 +8,46 @@ The updated MVP direction is to combine open Norwegian public data sources with 
 
 ## Demo Message
 
-Jeg kan koble praktisk VA-forståelse med moderne backend, data, kart og rapportering.
+Jeg kan koble praktisk VA-/VVS-forståelse med moderne backend, data, kart og rapportering.
 
 The goal is not to present "AI magic". The goal is to show how existing operational data can become practical decision support for municipalities, intermunicipal companies and consultants.
 
 ## Application Subtitle
 
-Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, vanntap og fremmedvann i kommunal VA-drift.
+Demo for datadrevet lekkasjekontroll, vanntap og feltoppfølging.
 
 ## Why This Project
 
 Municipalities and intermunicipal water companies often have data from pipes, pump stations, meters, alarms, incidents and rainfall, but the data can be difficult to use for operational prioritization.
 
 This demo shows how backend systems, maps, PostGIS, scoring and reporting can turn operational data into practical decision support.
+
+## Relevance For VA Roles
+
+This portfolio demo is designed for general VA/VVS-related software roles, not for one specific employer. It shows how practical field understanding can be translated into a backend-driven workflow for leakage control, water loss reduction, field follow-up and reporting.
+
+The demo focuses on:
+
+- water zones and night flow trends
+- estimated water loss
+- water meter and operational data
+- leakage history and risk factors
+- private service line follow-up
+- recommended field tasks and methods
+- data quality and import validation
+- PDF reporting for meetings and planning
+
+The goal is not to replace existing SCADA, Gemini/GISLINE, VA database systems or professional judgement. The goal is to show how exported data, maps, database models, API services and reports can make existing VA data easier to use for practical prioritization.
+
+Norwegian positioning:
+
+```text
+Dette er et porteføljeprosjekt som viser hvordan praktisk VVS-/VA-erfaring kan kombineres
+med backend, databaser, kart og rapportering for å støtte lekkasjekontroll,
+vanntapsreduksjon og datadrevet feltoppfølging.
+
+Demoen bruker simulerte VA-data. Målet er beslutningsstøtte, ikke automatisk diagnose.
+```
 
 ## Main Features
 
