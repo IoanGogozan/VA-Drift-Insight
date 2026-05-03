@@ -144,20 +144,23 @@ export function DashboardScreen({
           </div>
           <ReportButton />
         </div>
-        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6 pb-4 text-sm">
+      </section>
+
+      <nav className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
+        <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6 py-3 text-sm">
           {["Oversikt", "Lekkasjekontroll", "Fremmedvann", "Tiltak", "Rapporter", "Datagrunnlag"].map((item) => (
             <a
               key={item}
               href={`#${getNavTarget(item)}`}
-              className="border border-slate-200 px-3 py-2 text-muted hover:border-slate-400 hover:text-ink"
+              className="shrink-0 border border-slate-200 bg-white px-3 py-2 text-muted hover:border-slate-400 hover:text-ink"
             >
               {item}
             </a>
           ))}
-        </nav>
-      </section>
+        </div>
+      </nav>
 
-      <section id="oversikt" className="mx-auto max-w-7xl px-6 pt-6">
+      <section id="oversikt" className="mx-auto max-w-7xl scroll-mt-20 px-6 pt-6">
         <article className="border border-slate-200 bg-white p-6">
           <h2 className="text-xl font-semibold text-ink">Velkommen til VA Drift Insight</h2>
           <p className="mt-3 max-w-4xl text-sm leading-6 text-muted">
@@ -234,11 +237,11 @@ export function DashboardScreen({
         />
       </section>
 
-      <section id="datagrunnlag" className="mx-auto max-w-7xl px-6 pb-6">
+      <section id="datagrunnlag" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
         <DataImportPanel initialImportRuns={importRuns} />
       </section>
 
-      <section id="fremmedvann" className="mx-auto max-w-7xl px-6 pb-6">
+      <section id="fremmedvann" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-6">
         <PumpStationChart
           pumpStations={pumpStations}
           rainfall={rainfall}
@@ -257,11 +260,11 @@ export function DashboardScreen({
         <DataSourcesCard />
       </section>
 
-      <section id="tiltak" className="mx-auto max-w-7xl px-6 pb-8">
+      <section id="tiltak" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-8">
         <RecommendationsTable initialRecommendations={recommendations} />
       </section>
 
-      <section id="rapporter" className="mx-auto max-w-7xl px-6 pb-8">
+      <section id="rapporter" className="mx-auto max-w-7xl scroll-mt-20 px-6 pb-8">
         <MonthlyReportCard report={monthlyReport} />
       </section>
     </main>
