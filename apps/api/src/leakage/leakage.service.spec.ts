@@ -45,6 +45,20 @@ describe("LeakageService", () => {
       incident: {
         findMany: jest.fn().mockResolvedValue([]),
         count: jest.fn().mockResolvedValueOnce(2).mockResolvedValueOnce(1)
+      },
+      waterZone: {
+        findUnique: jest.fn().mockResolvedValue({
+          estimatedLossM3Day: 74.4,
+          trend7d: 8.3,
+          trend30d: 12.5,
+          status: "high"
+        })
+      },
+      privateServiceCase: {
+        count: jest.fn().mockResolvedValue(2)
+      },
+      fieldTask: {
+        findFirst: jest.fn().mockResolvedValue({ suggestedMethod: "logger" })
       }
     };
     const service = new LeakageService(prisma as never);
@@ -57,9 +71,16 @@ describe("LeakageService", () => {
       decisionSupportNote: "Beslutningsstøtte, ikke automatisk diagnose.",
       factors: {
         nightFlowIncreasePercent: 17.2,
+        estimatedLossM3Day: 74.4,
         avgPipeAge: 52,
         previousLeaks: 2,
+        privateCasesOpen: 2,
         customerComplaints: 1
+      },
+      keyMetrics: {
+        estimatedLossM3Day: 74.4,
+        privateCasesOpen: 2,
+        recommendedMethod: "loggerutplassering"
       }
     });
   });

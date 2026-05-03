@@ -222,6 +222,7 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Align sticky navigation with the interview demo flow
 - [x] Reorder dashboard sections to match the interview demo flow
 - [x] Add first-page workflow strip: data, analysis, explanation, field follow-up and report
+- [x] Upgrade leakage detail with estimated water loss, private cases and recommended field method
 - [ ] Add general Norwegian demo script for applications and interviews
 - [ ] Add portfolio screenshots for the main workflow
 

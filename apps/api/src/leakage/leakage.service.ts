@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { calculateLeakageRisk } from "@va-drift-insight/shared";
-import { Pipe, RiskScore, Zone } from "@prisma/client";
+import { FieldTaskMethod, Pipe, RiskScore, Zone } from "@prisma/client";
 import { PrismaService } from "../database/prisma.service";
 
 type ZoneWithPipes = Zone & { pipes: Pipe[] };
@@ -43,7 +43,16 @@ export class LeakageService {
       throw new NotFoundException("Leakage zone was not found.");
     }
 
-    const [score, recommendation, recentIncidents, previousLeaks, customerComplaints] = await Promise.all([
+    const [
+      score,
+      recommendation,
+      recentIncidents,
+      previousLeaks,
+      customerComplaints,
+      waterZone,
+      privateCasesOpen,
+      fieldTask
+    ] = await Promise.all([
       this.prisma.riskScore.findFirst({
         where: { assetType: "zone", assetId: id, scoreType: "leakage" },
         orderBy: { calculatedAt: "desc" }
@@ -70,11 +79,31 @@ export class LeakageService {
           assetId: id,
           incidentType: "complaint"
         }
+      }),
+      this.prisma.waterZone.findUnique({
+        where: { zoneId: id },
+        select: { estimatedLossM3Day: true, trend7d: true, trend30d: true, status: true }
+      }),
+      this.prisma.privateServiceCase.count({
+        where: {
+          zoneId: id,
+          status: { not: "closed" }
+        }
+      }),
+      this.prisma.fieldTask.findFirst({
+        where: {
+          zoneId: id,
+          type: "leakage_control",
+          status: { not: "cancelled" }
+        },
+        orderBy: [{ priority: "asc" }, { createdAt: "desc" }],
+        select: { suggestedMethod: true }
       })
     ]);
 
     const calculated = calculateLeakageRisk(toLeakageInput(zone));
-    const metrics = createLeakageMetrics(zone, previousLeaks, customerComplaints);
+    const metrics = createLeakageMetrics(zone, previousLeaks, customerComplaints, privateCasesOpen, waterZone);
+    const recommendedMethod = getRecommendedMethodLabel(fieldTask?.suggestedMethod);
 
     return {
       zoneId: zone.id,
@@ -83,10 +112,18 @@ export class LeakageService {
       confidence: score?.confidence ?? calculated.confidence,
       factors: metrics,
       scoringFactors: calculated.factors,
-      explanation: createConcreteLeakageExplanation(zone.name, metrics),
+      keyMetrics: {
+        nightFlowIncreasePercent: metrics.nightFlowIncreasePercent,
+        estimatedLossM3Day: metrics.estimatedLossM3Day,
+        previousLeaks: metrics.previousLeaks,
+        privateCasesOpen: metrics.privateCasesOpen,
+        trend30d: metrics.trend30d,
+        recommendedMethod
+      },
+      explanation: createConcreteLeakageExplanation(zone.name, metrics, recommendedMethod),
       recommendedAction:
         recommendation?.suggestedAction ??
-        "Vurder målrettet lekkasjesøk og kontroll av ventiler i sonen.",
+        `Prioriter ${recommendedMethod.toLowerCase()} i sonen før eventuell videre oppfølging.`,
       decisionSupportNote: "Beslutningsstøtte, ikke automatisk diagnose.",
       recentIncidents: recentIncidents.map((incident) => ({
         id: incident.id,
@@ -120,16 +157,33 @@ function toLeakageInput(zone: ZoneWithPipes) {
   };
 }
 
-function createLeakageMetrics(zone: ZoneWithPipes, previousLeaks: number, customerComplaints: number) {
+function createLeakageMetrics(
+  zone: ZoneWithPipes,
+  previousLeaks: number,
+  customerComplaints: number,
+  privateCasesOpen: number,
+  waterZone: {
+    estimatedLossM3Day: number;
+    trend7d: number;
+    trend30d: number;
+    status: string;
+  } | null
+) {
   const nightFlowIncreasePercent = getNightFlowIncreasePercent(zone.baselineNightFlow, zone.currentNightFlow);
   const avgPipeAge = calculateAveragePipeAge(zone.pipes);
+  const estimatedLossM3Day =
+    waterZone?.estimatedLossM3Day ?? round(Math.max(0, (zone.currentNightFlow ?? 0) - (zone.baselineNightFlow ?? 0)) * 24, 1);
 
   return {
     nightFlowIncreasePercent,
+    estimatedLossM3Day,
     avgPipeAge,
     previousLeaks,
+    privateCasesOpen,
     pressureVariation: Math.min(25, Math.round(nightFlowIncreasePercent * 0.7)),
-    customerComplaints
+    customerComplaints,
+    trend7d: waterZone?.trend7d ?? 0,
+    trend30d: waterZone?.trend30d ?? 0
   };
 }
 
@@ -158,18 +212,42 @@ function createConcreteLeakageExplanation(
   zoneName: string,
   metrics: {
     nightFlowIncreasePercent: number;
+    estimatedLossM3Day: number;
     avgPipeAge: number;
     previousLeaks: number;
+    privateCasesOpen: number;
     pressureVariation: number;
     customerComplaints: number;
-  }
+    trend30d: number;
+  },
+  recommendedMethod: string
 ) {
   return [
     `${zoneName} har ${metrics.nightFlowIncreasePercent} % økning i nattforbruk siste periode sammenlignet med baseline.`,
+    `Dette tilsvarer estimert ${metrics.estimatedLossM3Day} m³/døgn mulig vanntap, med ${formatTrend(metrics.trend30d)} trend siste 30 dager.`,
     `Gjennomsnittlig ledningsalder er ${metrics.avgPipeAge} år.`,
-    `Det er registrert ${metrics.previousLeaks} tidligere lekkasje-/bruddhendelser og ${metrics.customerComplaints} kundemeldinger i sonen.`,
-    "Ingen tydelig regnkorrelasjon er brukt i denne lekkasjevurderingen, derfor bør området prioriteres for målrettet lekkasjekontroll."
+    `Det er registrert ${metrics.previousLeaks} tidligere lekkasje-/bruddhendelser, ${metrics.customerComplaints} kundemeldinger og ${metrics.privateCasesOpen} åpne private lekkasjesaker i sonen.`,
+    `Anbefalt neste steg er ${recommendedMethod.toLowerCase()} før eventuell videre oppfølging.`
   ].join(" ");
+}
+
+function getRecommendedMethodLabel(method?: FieldTaskMethod) {
+  const labels: Record<FieldTaskMethod, string> = {
+    listening: "lytting",
+    logger: "loggerutplassering",
+    valve_check: "ventilkontroll",
+    meter_follow_up: "måleroppfølging",
+    manhole_inspection: "kuminspeksjon",
+    cctv: "CCTV",
+    smoke_test: "røyktest"
+  };
+
+  return method ? labels[method] : "loggerutplassering og lytting";
+}
+
+function formatTrend(value: number) {
+  const prefix = value > 0 ? "+" : "";
+  return `${prefix}${value.toFixed(1)} %`;
 }
 
 function round(value: number, decimals: number) {

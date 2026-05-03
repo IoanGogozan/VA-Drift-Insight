@@ -58,6 +58,8 @@ function AnalysisContent({ analysis }: { analysis: LeakageZoneAnalysis }) {
         </div>
       </div>
 
+      {analysis.keyMetrics ? <KeyMetrics metrics={analysis.keyMetrics} /> : null}
+
       <FactorBars factors={analysis.factors} />
 
       <div>
@@ -69,6 +71,28 @@ function AnalysisContent({ analysis }: { analysis: LeakageZoneAnalysis }) {
         <h3 className="text-sm font-semibold text-ink">Anbefalt tiltak</h3>
         <p className="mt-1 text-sm leading-6 text-ink">{analysis.recommendedAction}</p>
       </div>
+    </div>
+  );
+}
+
+function KeyMetrics({ metrics }: { metrics: NonNullable<LeakageZoneAnalysis["keyMetrics"]> }) {
+  return (
+    <dl className="grid grid-cols-2 gap-2 text-sm">
+      <Metric label="Nattforbruk" value={`+${metrics.nightFlowIncreasePercent} %`} />
+      <Metric label="Estimert vanntap" value={`${metrics.estimatedLossM3Day.toFixed(1)} m³/d`} />
+      <Metric label="Tidligere lekkasjer" value={metrics.previousLeaks} />
+      <Metric label="Private saker" value={metrics.privateCasesOpen} />
+      <Metric label="30d trend" value={formatTrend(metrics.trend30d)} />
+      <Metric label="Metode" value={capitalize(metrics.recommendedMethod)} />
+    </dl>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: number | string }) {
+  return (
+    <div className="border border-slate-100 bg-slate-50 p-3">
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="mt-1 font-semibold text-ink">{value}</dd>
     </div>
   );
 }
@@ -100,9 +124,13 @@ function formatFactor(value: string) {
     pressureVariation: "Trykkvariasjon",
     criticality: "Kritikalitet",
     nightFlowIncreasePercent: "Økning i nattforbruk (%)",
+    estimatedLossM3Day: "Estimert vanntap",
     avgPipeAge: "Gj.sn. ledningsalder",
     previousLeaks: "Tidligere lekkasjer/brudd",
-    customerComplaints: "Kundemeldinger"
+    privateCasesOpen: "Åpne private saker",
+    customerComplaints: "Kundemeldinger",
+    trend7d: "Trend 7 dager",
+    trend30d: "Trend 30 dager"
   };
 
   return labels[value] ?? value.replace(/([A-Z])/g, " $1").replace(/^./, (first) => first.toUpperCase());
@@ -117,7 +145,11 @@ function formatFactorValue(key: string, value: number) {
     return `${value} år`;
   }
 
-  if (key === "pressureVariation") {
+  if (key === "estimatedLossM3Day") {
+    return `${value} m³/d`;
+  }
+
+  if (key === "pressureVariation" || key === "trend7d" || key === "trend30d") {
     return `${value} %`;
   }
 
@@ -125,13 +157,26 @@ function formatFactorValue(key: string, value: number) {
 }
 
 function getFactorWidth(key: string, value: number) {
-  if (key === "previousLeaks" || key === "customerComplaints") {
+  if (key === "previousLeaks" || key === "customerComplaints" || key === "privateCasesOpen") {
     return Math.min(100, value * 25);
   }
 
-  if (key === "pressureVariation") {
+  if (key === "estimatedLossM3Day") {
+    return Math.min(100, value);
+  }
+
+  if (key === "pressureVariation" || key === "trend7d" || key === "trend30d") {
     return Math.min(100, value * 4);
   }
 
   return Math.min(100, Math.max(0, value));
+}
+
+function formatTrend(value: number) {
+  const prefix = value > 0 ? "+" : "";
+  return `${prefix}${value.toFixed(1)} %`;
+}
+
+function capitalize(value: string) {
+  return value.length > 0 ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 }

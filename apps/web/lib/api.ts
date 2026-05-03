@@ -193,6 +193,14 @@ export type LeakageZoneSummary = {
 export type LeakageZoneAnalysis = LeakageZoneSummary & {
   factors: Record<string, number>;
   scoringFactors?: Record<string, number>;
+  keyMetrics?: {
+    nightFlowIncreasePercent: number;
+    estimatedLossM3Day: number;
+    previousLeaks: number;
+    privateCasesOpen: number;
+    trend30d: number;
+    recommendedMethod: string;
+  };
   recommendedAction: string;
   decisionSupportNote: string;
   recentIncidents: IncidentSummary[];
