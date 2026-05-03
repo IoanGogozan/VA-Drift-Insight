@@ -23,6 +23,7 @@ import { UI_TEXT } from "@/lib/ui-text";
 import { FieldTasksTable } from "../field-tasks/field-tasks-table";
 import { PumpStationChart } from "../fremmedvann/pump-station-chart";
 import { DataImportPanel } from "../imports/data-import-panel";
+import { DataQualityOverview } from "../imports/data-quality-overview";
 import { LeakageDetailsPanel } from "../leakage/leakage-details-panel";
 import { RiskMap } from "../map/risk-map";
 import { DataSourcesCard } from "../overview/data-sources-card";
@@ -299,6 +300,7 @@ export function DashboardScreen({
       </section>
 
       <section id="datagrunnlag" className="mx-auto max-w-7xl scroll-mt-20 space-y-6 px-6 pb-8">
+        <DataQualityOverview importRuns={importRuns} waterZones={waterZones} privateCases={privateCases} />
         <DataSourcesCard />
         <DataImportPanel initialImportRuns={importRuns} />
       </section>
