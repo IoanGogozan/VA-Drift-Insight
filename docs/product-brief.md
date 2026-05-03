@@ -16,11 +16,11 @@ Jeg kan koble praktisk VA-/VVS-forståelse med moderne backend, data, kart og ra
 
 VA Drift Insight is a portfolio demo that shows how operational VA data can be transformed into practical prioritization, field checks and reports.
 
-The application should feel like a realistic decision-support tool for a municipality, an intermunicipal water company, a VA operations team or a VA consultant.
+The application is designed to feel like a realistic decision-support tool for a municipality, an intermunicipal water company, a VA operations team or a VA consultant.
 
-It should be useful as a general job-application demo for VA/VVS-related software roles, not tailored to only one employer.
+It is a general portfolio demo for VA/VVS-related software roles, not a project tailored to one specific employer.
 
-## What The Demo Should Prove
+## What The Demo Demonstrates
 
 - Practical understanding of VA operations
 - Backend architecture with clear modules and APIs
@@ -37,7 +37,7 @@ It should be useful as a general job-application demo for VA/VVS-related softwar
 
 Beslutningsstøtte, ikke automatisk diagnose.
 
-The application should help users decide where to investigate first. It should not claim to automatically diagnose all leakage or fremmedvann causes.
+The application helps users decide where to investigate first. It does not claim to automatically diagnose all leakage or fremmedvann causes.
 
 ## Target Demo User
 
@@ -47,13 +47,13 @@ The application should help users decide where to investigate first. It should n
 - Consultant
 - Technical interviewer evaluating software and domain understanding
 
-## Fictional Dataset
+## Demo Dataset
 
-Use a fictional municipality:
+The demo uses a fictional VA dataset:
 
 Fjordvik kommune
 
-The data should look realistic enough to support a professional demo without using real customer, municipality or SCADA data.
+The data is realistic enough to support a professional demo without using real customer, municipality or SCADA data.
 
 ## Application Screens
 
@@ -66,18 +66,7 @@ The data should look realistic enough to support a professional demo without usi
 7. Rapport
 8. Datagrunnlag
 
-## Target Product Navigation
-
-1. Oversikt
-2. Vannsoner og vanntap
-3. Lekkasjekontroll
-4. Fremmedvann
-5. Private stikkledninger
-6. Feltoppgaver
-7. Rapport
-8. Datagrunnlag
-
-## Target Product Positioning
+## Product Positioning
 
 VA Drift Insight - vanntap, lekkasjekontroll og datadrevet feltoppfølging
 

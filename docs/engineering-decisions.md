@@ -64,7 +64,7 @@ The demo should not expose real municipal infrastructure, SCADA data, incidents 
 
 Implication:
 
-README, docs and later UI/report copy must state clearly that the dataset is simulated.
+README, docs, UI copy and report copy must state clearly that the dataset is simulated.
 
 ## ADR 005: Align Early Schema With UUIDs
 

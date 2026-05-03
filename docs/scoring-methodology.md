@@ -4,7 +4,7 @@
 
 Use explainable scoring in the demo.
 
-Do not use ML in the first version. Transparent rule-based scoring is more credible for this demo because VA data quality can vary and operational users need to understand why an area is prioritized.
+The demo uses transparent rule-based scoring instead of ML. This is more credible for a portfolio demo because VA data quality can vary and operational users need to understand why an area is prioritized.
 
 ## Leakage Risk Score
 

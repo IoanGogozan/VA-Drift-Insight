@@ -98,10 +98,11 @@ No real sensitive VA infrastructure data is used.
 - Prisma
 - Next.js
 - TypeScript
-- MapLibre GL or Leaflet
-- Recharts
-- TanStack Table
-- Tailwind CSS and shadcn/ui
+- Leaflet and React Leaflet
+- Custom SVG chart components
+- Native typed table components
+- Tailwind CSS
+- lucide-react icons
 - Docker Compose
 - Puppeteer for PDF generation
 

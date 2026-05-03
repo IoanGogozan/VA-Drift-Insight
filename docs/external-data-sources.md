@@ -2,7 +2,7 @@
 
 This document defines the public data strategy for VA Drift Insight.
 
-The demo should combine open Norwegian public data with simulated VA operational data:
+The demo combines open Norwegian public data with simulated VA operational data:
 
 ```text
 Real Norwegian rainfall data
@@ -36,7 +36,7 @@ Optional future context source:
 
 ## Why This Direction
 
-Real VA pipe networks, pump alarms, leakage history and SCADA data are usually sensitive infrastructure data. They should not be used in a public portfolio demo.
+Real VA pipe networks, pump alarms, leakage history and SCADA data are usually sensitive infrastructure data. They are not used in this public portfolio demo.
 
 The right balance is:
 
@@ -124,16 +124,16 @@ Norwegian UI text:
 
 ```text
 Datakilde:
-Nedbor: MET Norway Frost API
+Nedbør: MET Norway Frost API
 Pumpedata: Simulert demo-data
 ```
 
 Interview explanation:
 
 ```text
-Nedborsdata hentes fra MET Norway Frost API. Pumpestasjonsdata er simulert,
-men responsen er modellert slik at den viser typiske monster ved mulig
-fremmedvann: okt pumpetid etter nedbor og forsinket respons i avlopssonen.
+Nedbørsdata hentes fra MET Norway Frost API. Pumpestasjonsdata er simulert,
+men responsen er modellert slik at den viser typiske mønstre ved mulig
+fremmedvann: økt pumpetid etter nedbør og forsinket respons i avløpssonen.
 ```
 
 ## Source 2: Kartverket / Geonorge
@@ -153,27 +153,29 @@ Official documentation:
 Important implementation notes:
 
 - Use a real medium-sized municipality for the demo.
-- Recommended municipality: Tonsberg kommune.
+- Recommended municipality: Tønsberg kommune.
 - Use official municipality boundary data as context.
 - Keep all VA operational assets simulated.
 - Store source metadata so the UI and reports can explain what is real and what is simulated.
 
-Backend module:
+Current implementation:
 
 ```text
-apps/api/src/external-data/kartverket/
-  kartverket-client.ts
-  municipality-boundary.service.ts
+apps/api/src/municipality/
+  municipality.controller.ts
+  municipality.service.ts
 ```
 
-Simpler local option:
+The current demo uses prepared municipality context/fallback data. A live Kartverket client can be added later without changing the public API.
+
+Local geodata option:
 
 ```text
 data/public-geodata/
   municipality-boundary.geojson
 ```
 
-The local demo can import a prepared GeoJSON file into PostGIS instead of calling a live API during startup.
+The local demo can use prepared GeoJSON in PostGIS instead of calling a live API during startup.
 
 Database table:
 
@@ -238,7 +240,7 @@ Official documentation:
 
 Important implementation notes:
 
-- SSB/KOSTRA should not be central to leakage or fremmedvann scoring.
+- SSB/KOSTRA is not central to leakage or fremmedvann scoring.
 - Use it only after MET Frost, Kartverket grensedata, scoring, recommendations and PDF are complete.
 - Show SSB/KOSTRA as contextual municipality profile data.
 
@@ -269,10 +271,10 @@ Frontend usage:
 
 ```text
 Kommuneprofil
-Tonsberg kommune
+Tønsberg kommune
 
 Datakilde: SSB/KOSTRA
-Tema: Kommunal vannforsyning og kommunalt avlop
+Tema: Kommunal vannforsyning og kommunalt avløp
 ```
 
 ## Target Data Flow
@@ -295,13 +297,13 @@ Add a card in the overview screen:
 ```text
 Datakilder
 
-Apne datakilder:
-- MET Norway Frost API: historiske nedborsdata
+Åpne datakilder:
+- MET Norway Frost API: historiske nedbørsdata
 - Kartverket / Geonorge: kart og kommunegrenser
 
 Simulerte VA-data:
 - ledningsnett
-- malesoner
+- målesoner
 - pumpestasjoner
 - lekkasjehendelser
 - pumpetid, flow, trykk og alarmer
@@ -330,8 +332,8 @@ No real sensitive infrastructure data is used.
 ## Final Portfolio Sentence
 
 ```text
-Demoen bruker ekte norske nedborsdata og offentlige kartdata,
-kombinert med simulerte VA-driftsdata, for a vise beslutningsstotte
+Demoen bruker ekte norske nedbørsdata og offentlige kartdata,
+kombinert med simulerte VA-driftsdata, for å vise beslutningsstøtte
 for lekkasjekontroll, fremmedvann og prioritering.
 ```
 
@@ -339,7 +341,7 @@ for lekkasjekontroll, fremmedvann og prioritering.
 
 - Public source data must be clearly labeled in the UI and reports.
 - Simulated VA data must be clearly labeled in the UI and reports.
-- No real pipe network, pump station, alarm, SCADA or leakage-history data should be used.
+- No real pipe network, pump station, alarm, SCADA or leakage-history data is used.
 - External API credentials must stay in environment variables.
 - The app must work with seeded fallback data when external APIs are unavailable.
 - External integrations must have service-level tests with mocked clients.

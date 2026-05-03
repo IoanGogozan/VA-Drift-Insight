@@ -158,44 +158,34 @@ See [External data sources](external-data-sources.md).
 
 - Next.js
 - TypeScript
-- MapLibre GL or Leaflet
-- Recharts
-- TanStack Table
+- Leaflet and React Leaflet
+- Custom SVG chart components
+- Native typed table components
 - Tailwind CSS
-- shadcn/ui
+- lucide-react icons
 
 ## Docker Compose Services
+
+Docker Compose is used for the local PostgreSQL/PostGIS database. The API and web app run through the root `npm run dev` command during local development.
 
 ```yaml
 services:
   postgres:
     image: postgis/postgis:16-3.4
+    container_name: va-drift-insight-postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: va_demo
       POSTGRES_PASSWORD: va_demo
       POSTGRES_DB: va_drift_insight
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  api:
-    build: ./apps/api
-    ports:
-      - "3001:3001"
-    depends_on:
-      - postgres
-    environment:
-      DATABASE_URL: postgresql://va_demo:va_demo@postgres:5432/va_drift_insight
-
-  web:
-    build: ./apps/web
-    ports:
-      - "3000:3000"
-    depends_on:
-      - api
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U va_demo -d va_drift_insight"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
