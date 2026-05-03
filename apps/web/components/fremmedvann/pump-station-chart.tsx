@@ -57,14 +57,24 @@ export function PumpStationChart({
 
 function ChartContent({ analysis, rainfall }: { analysis: PumpStationAnalysis; rainfall: RainfallResponse }) {
   const runtimePoints = makePolyline(analysis.chartData.map((point) => point.pumpRuntimeMinutes));
-  const rainfallPoints = rainfall.observations.length > 0 ? rainfall.observations : [];
-  const rainfallBars = rainfallPoints.map((point, index) => {
-    const barWidth = (chartWidth - chartPadding * 2) / rainfallPoints.length - 2;
+  const baselinePoints = makePolyline(analysis.chartData.map((point) => point.dryWeatherBaselineMinutes));
+  const anomalyRange = getAnomalyRange(analysis.chartData.map((point) => point.isAnomaly));
+  const rainfallBars = analysis.chartData.map((point, index) => {
+    const barWidth = (chartWidth - chartPadding * 2) / analysis.chartData.length - 2;
     const x = chartPadding + index * (barWidth + 2);
-    const rainfallMm = point.rainfallMm ?? 0;
-    const barHeight = (rainfallMm / maxValue(rainfallPoints.map((item) => item.rainfallMm ?? 0))) * 80;
+    const barHeight = (point.rainfallMm / maxValue(analysis.chartData.map((item) => item.rainfallMm))) * 80;
 
-    return <rect key={point.observedAt} x={x} y={chartHeight - chartPadding - barHeight} width={barWidth} height={barHeight} fill="#3b82a0" opacity="0.65" />;
+    return (
+      <rect
+        key={point.timestamp}
+        x={x}
+        y={chartHeight - chartPadding - barHeight}
+        width={barWidth}
+        height={barHeight}
+        fill="#3b82a0"
+        opacity="0.65"
+      />
+    );
   });
 
   return (
@@ -81,22 +91,48 @@ function ChartContent({ analysis, rainfall }: { analysis: PumpStationAnalysis; r
         Datakilde: Nedbør fra {rainfall.source}. Pumpedata er simulert demo-data.
       </p>
 
-      <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="block w-full border border-slate-200 bg-surface" role="img" aria-label="Regn og pumpetid">
-        <line x1={chartPadding} y1={chartHeight - chartPadding} x2={chartWidth - chartPadding} y2={chartHeight - chartPadding} stroke="#94a3b8" />
+      <svg
+        viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+        className="block w-full border border-slate-200 bg-surface"
+        role="img"
+        aria-label="Regn, baseline og pumpetid"
+      >
+        <line
+          x1={chartPadding}
+          y1={chartHeight - chartPadding}
+          x2={chartWidth - chartPadding}
+          y2={chartHeight - chartPadding}
+          stroke="#94a3b8"
+        />
+        {anomalyRange ? <AnomalyBand start={anomalyRange.start} end={anomalyRange.end} pointCount={analysis.chartData.length} /> : null}
         {rainfallBars}
-        <polyline points={runtimePoints} fill="none" stroke="#d94f45" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline
+          points={baselinePoints}
+          fill="none"
+          stroke="#1f2a2e"
+          strokeWidth="2"
+          strokeDasharray="6 5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <polyline
+          points={runtimePoints}
+          fill="none"
+          stroke="#d94f45"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
 
-      <div className="flex gap-4 text-xs text-muted">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 bg-[#3b82a0]" />
-          Nedbør mm
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 bg-riskHigh" />
-          Pumpetid min
-        </span>
+      <div className="flex flex-wrap gap-4 text-xs text-muted">
+        <Legend color="#3b82a0" label="Nedbør mm" />
+        <Legend color="#d94f45" label="Pumpetid min" />
+        <Legend color="#1f2a2e" label="Tørrværsbaseline" outlined />
+        <Legend color="#fde68a" label="Anomali" />
       </div>
+
+      <DryWetMetrics analysis={analysis} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
@@ -109,6 +145,54 @@ function ChartContent({ analysis, rainfall }: { analysis: PumpStationAnalysis; r
         </div>
       </div>
     </div>
+  );
+}
+
+function DryWetMetrics({ analysis }: { analysis: PumpStationAnalysis }) {
+  const metrics = analysis.dryWetMetrics;
+
+  return (
+    <div className="grid gap-3 md:grid-cols-4">
+      <Metric label="Tørrværsbaseline" value={`${metrics.dryWeatherBaselineMinutes} min/t`} />
+      <Metric label="Våtvær topp" value={`${metrics.wetWeatherPeakRuntimeMinutes} min/t`} />
+      <Metric label="Økning" value={`${metrics.pumpRuntimeIncreasePercent} %`} />
+      <Metric label="Forsinkelse" value={`${metrics.responseDelayHours} t`} />
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border border-slate-100 bg-white p-3">
+      <p className="text-xs text-muted">{label}</p>
+      <p className="mt-1 text-lg font-semibold text-ink">{value}</p>
+    </div>
+  );
+}
+
+function Legend({ color, label, outlined = false }: { color: string; label: string; outlined?: boolean }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="h-2.5 w-2.5" style={{ backgroundColor: outlined ? "transparent" : color, border: `1px solid ${color}` }} />
+      {label}
+    </span>
+  );
+}
+
+function AnomalyBand({ start, end, pointCount }: { start: number; end: number; pointCount: number }) {
+  const step = (chartWidth - chartPadding * 2) / Math.max(1, pointCount - 1);
+  const x = chartPadding + start * step;
+  const width = Math.max(step, (end - start + 1) * step);
+
+  return (
+    <rect
+      x={x}
+      y={chartPadding}
+      width={width}
+      height={chartHeight - chartPadding * 2}
+      fill="#facc15"
+      opacity="0.18"
+    />
   );
 }
 
@@ -127,4 +211,24 @@ function makePolyline(values: number[]) {
 
 function maxValue(values: number[]) {
   return Math.max(1, ...values);
+}
+
+function getAnomalyRange(values: boolean[]) {
+  const start = values.findIndex(Boolean);
+
+  if (start < 0) {
+    return null;
+  }
+
+  let end = start;
+
+  for (let index = start + 1; index < values.length; index += 1) {
+    if (!values[index]) {
+      break;
+    }
+
+    end = index;
+  }
+
+  return { start, end };
 }

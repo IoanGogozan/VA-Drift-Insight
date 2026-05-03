@@ -213,6 +213,16 @@ export type PumpStationSummary = {
 
 export type PumpStationAnalysis = PumpStationSummary & {
   factors: Record<string, number>;
+  dryWetMetrics: {
+    dryWeatherBaselineMinutes: number;
+    wetWeatherPeakRuntimeMinutes: number;
+    pumpRuntimeIncreasePercent: number;
+    responseDelayHours: number;
+    elevatedDurationHours: number;
+    peakFlowM3h: number;
+    highLevelAlarms: number;
+    overflowEvents: number;
+  };
   recommendedAction: string;
   chartData: PumpStationChartPoint[];
   recentIncidents: IncidentSummary[];
@@ -221,6 +231,8 @@ export type PumpStationAnalysis = PumpStationSummary & {
 export type PumpStationChartPoint = {
   timestamp: string;
   rainfallMm: number;
+  dryWeatherBaselineMinutes: number;
+  isAnomaly: boolean;
   pumpRuntimeMinutes: number;
   flowM3h: number;
   levelM: number;

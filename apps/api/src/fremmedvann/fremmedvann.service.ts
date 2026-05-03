@@ -60,6 +60,8 @@ export class FremmedvannService {
     ]);
     const calculated = calculateFremmedvannRisk(toFremmedvannInput(pumpStation));
     const suspicionScore = score?.score ?? calculated.score;
+    const chartData = createDemoRainfallResponse(pumpStation);
+    const dryWetMetrics = calculateDryWetMetrics(chartData, pumpStation.alarmCount, pumpStation.overflowEvents);
 
     return {
       pumpStationId: pumpStation.id,
@@ -70,11 +72,12 @@ export class FremmedvannService {
       suspicionLevel: getFremmedvannSuspicionLevel(suspicionScore),
       confidence: score?.confidence ?? calculated.confidence,
       factors: calculated.factors,
-      explanation: score?.explanation ?? calculated.explanation,
+      dryWetMetrics,
+      explanation: createDryWetExplanation(pumpStation.stationCode, dryWetMetrics),
       recommendedAction:
         recommendation?.suggestedAction ??
         "Inspiser oppstrøms kummer og vurder midlertidig flowmåler.",
-      chartData: createDemoRainfallResponse(pumpStation),
+      chartData,
       recentIncidents: incidents.map((incident) => ({
         id: incident.id,
         type: incident.incidentType,
@@ -110,11 +113,74 @@ function createDemoRainfallResponse(pumpStation: PumpStation) {
     return {
       timestamp: `2026-04-20T${hour.toString().padStart(2, "0")}:00:00.000Z`,
       rainfallMm,
+      dryWeatherBaselineMinutes: baseRuntime,
+      isAnomaly: delayedResponse,
       pumpRuntimeMinutes,
       flowM3h,
       levelM: Number((1.2 + (delayedResponse ? 0.45 : rainfallMm > 0 ? 0.2 : 0)).toFixed(2))
     };
   });
+}
+
+function calculateDryWetMetrics(
+  chartData: Array<{
+    rainfallMm: number;
+    dryWeatherBaselineMinutes: number;
+    isAnomaly: boolean;
+    pumpRuntimeMinutes: number;
+    flowM3h: number;
+  }>,
+  alarmCount: number,
+  overflowEvents: number
+) {
+  const baseline = average(chartData.map((point) => point.dryWeatherBaselineMinutes));
+  const wetWeatherPeakRuntime = Math.max(...chartData.map((point) => point.pumpRuntimeMinutes));
+  const peakFlowM3h = Math.max(...chartData.map((point) => point.flowM3h));
+  const firstRainHour = chartData.findIndex((point) => point.rainfallMm > 0);
+  const firstAnomalyHour = chartData.findIndex((point) => point.isAnomaly);
+  const responseDelayHours = firstRainHour >= 0 && firstAnomalyHour >= 0 ? Math.max(0, firstAnomalyHour - firstRainHour) : 0;
+  const elevatedDurationHours = chartData.filter((point) => point.isAnomaly).length;
+  const pumpRuntimeIncreasePercent = baseline > 0 ? round(((wetWeatherPeakRuntime - baseline) / baseline) * 100, 1) : 0;
+
+  return {
+    dryWeatherBaselineMinutes: round(baseline, 1),
+    wetWeatherPeakRuntimeMinutes: wetWeatherPeakRuntime,
+    pumpRuntimeIncreasePercent,
+    responseDelayHours,
+    elevatedDurationHours,
+    peakFlowM3h,
+    highLevelAlarms: alarmCount,
+    overflowEvents
+  };
+}
+
+function createDryWetExplanation(
+  stationCode: string,
+  metrics: {
+    dryWeatherBaselineMinutes: number;
+    wetWeatherPeakRuntimeMinutes: number;
+    pumpRuntimeIncreasePercent: number;
+    responseDelayHours: number;
+    elevatedDurationHours: number;
+    highLevelAlarms: number;
+    overflowEvents: number;
+  }
+) {
+  return [
+    `${stationCode} har tørrværsbaseline på ${metrics.dryWeatherBaselineMinutes} minutter pumpetid per time.`,
+    `Ved våtvær øker pumpetiden til ${metrics.wetWeatherPeakRuntimeMinutes} minutter, en økning på ${metrics.pumpRuntimeIncreasePercent} %.`,
+    `Responsen kommer omtrent ${metrics.responseDelayHours} timer etter nedbør og holder seg forhøyet i ${metrics.elevatedDurationHours} timer.`,
+    `Det er registrert ${metrics.highLevelAlarms} høy-nivå alarmer og ${metrics.overflowEvents} overløpshendelser.`
+  ].join(" ");
+}
+
+function average(values: number[]) {
+  return values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);
+}
+
+function round(value: number, decimals: number) {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
 }
 
 function toFremmedvannInput(pumpStation: PumpStation) {

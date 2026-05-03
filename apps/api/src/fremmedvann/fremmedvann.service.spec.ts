@@ -1,7 +1,7 @@
 import { FremmedvannService } from "./fremmedvann.service";
 
 describe("FremmedvannService", () => {
-  it("returns pump station analysis with deterministic chart data", async () => {
+  it("returns pump station analysis with dry/wet metrics and deterministic chart data", async () => {
     const pumpStation = {
       id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
       stationCode: "PS-03",
@@ -36,10 +36,23 @@ describe("FremmedvannService", () => {
       stationCode: "PS-03",
       suspicionScore: 86,
       suspicionLevel: "Høy",
-      recommendedAction: "CCTV/røyktest"
+      recommendedAction: "CCTV/røyktest",
+      dryWetMetrics: {
+        dryWeatherBaselineMinutes: 24,
+        wetWeatherPeakRuntimeMinutes: 46,
+        pumpRuntimeIncreasePercent: 91.7,
+        responseDelayHours: 4,
+        elevatedDurationHours: 10,
+        highLevelAlarms: 7,
+        overflowEvents: 2
+      }
     });
     const analysis = await service.getPumpStationAnalysis(pumpStation.id);
 
     expect(analysis.chartData).toHaveLength(24);
+    expect(analysis.chartData[8]).toMatchObject({
+      dryWeatherBaselineMinutes: 24,
+      isAnomaly: true
+    });
   });
 });

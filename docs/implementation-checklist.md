@@ -183,7 +183,7 @@ Reference: `docs/backend-workflow-improvement-plan.md`
 - [ ] Persist scoring run summary and generated recommendation count
 - [ ] Add `Kjør risikoanalyse` action in UI
 - [x] Replace generic leakage explanation with concrete calculated metrics
-- [ ] Replace generic fremmedvann explanation with dry/wet weather metrics
+- [x] Replace generic fremmedvann explanation with dry/wet weather metrics
 - [ ] Implement `GET /api/assets/:assetType/:id`
 - [ ] Add asset profile panel for clicked map assets
 - [ ] Add recommendation event history
@@ -211,7 +211,7 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Add Lekkasjekontroll table page
 - [x] Add private cases UI
 - [x] Add field tasks UI
-- [ ] Upgrade fremmedvann chart with baseline and anomaly highlight
+- [x] Upgrade fremmedvann chart with baseline and anomaly highlight
 - [ ] Upgrade PDF with water zones, field plan and methodology
 
 ## Definition Of Done For MVP
