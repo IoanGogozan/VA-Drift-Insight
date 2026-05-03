@@ -25,6 +25,43 @@ describe("buildVaRiskReportHtml", () => {
           status: "new"
         }
       ],
+      waterZones: [
+        {
+          name: "Målesone Nord",
+          nightFlowM3h: 22.1,
+          baselineNightFlowM3h: 18,
+          estimatedLossM3Day: 98.4,
+          trend30d: 14.2,
+          status: "high",
+          dataQualityScore: 72
+        }
+      ],
+      privateCases: [
+        {
+          address: "Kirkegata 8",
+          zoneName: "Målesone Nord",
+          estimatedLossM3Day: 7.8,
+          status: "suspected",
+          nextFollowUp: new Date("2026-05-10T08:00:00.000Z")
+        }
+      ],
+      fieldTasks: [
+        {
+          priority: "high",
+          areaName: "Målesone Nord",
+          type: "leakage_control",
+          reason: "Økt nattforbruk",
+          suggestedMethod: "logger",
+          status: "planned"
+        }
+      ],
+      dataGaps: [
+        {
+          area: "Ledningsregister",
+          finding: "2 ledninger mangler installasjonsår.",
+          recommendation: "Oppdater installasjonsår."
+        }
+      ],
       dataSources: [
         {
           name: "MET Norway Frost API",
@@ -37,7 +74,11 @@ describe("buildVaRiskReportHtml", () => {
 
     expect(html).toContain("VA-risikorapport");
     expect(html).toContain("Beslutningsstøtte, ikke automatisk diagnose.");
-    expect(html).toContain("Topp 10 risikoområder");
+    expect(html).toContain("Vannsoner og estimert vanntap");
+    expect(html).toContain("Private stikkledninger");
+    expect(html).toContain("Anbefalte feltkontroller");
+    expect(html).toContain("Topp anbefalte tiltak");
+    expect(html).toContain("Ledningsregister");
     expect(html).toContain("MET Norway Frost API");
   });
 });

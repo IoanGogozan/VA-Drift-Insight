@@ -105,7 +105,17 @@ export class ReportsService {
   }
 
   private async buildReportHtml() {
-    const [recommendations, leakageScores, fremmedvannScores, zones, dataSources] = await Promise.all([
+    const [
+      recommendations,
+      leakageScores,
+      fremmedvannScores,
+      zones,
+      waterZones,
+      privateCases,
+      fieldTasks,
+      importRuns,
+      dataSources
+    ] = await Promise.all([
       this.prisma.recommendation.findMany({
         orderBy: [{ priority: "asc" }, { createdAt: "desc" }],
         take: 10
@@ -119,6 +129,31 @@ export class ReportsService {
         orderBy: { score: "desc" }
       }),
       this.prisma.zone.findMany(),
+      this.prisma.waterZone.findMany({
+        orderBy: [{ status: "desc" }, { estimatedLossM3Day: "desc" }],
+        include: {
+          zone: {
+            select: { dataQualityScore: true }
+          }
+        }
+      }),
+      this.prisma.privateServiceCase.findMany({
+        where: { status: { not: "closed" } },
+        orderBy: [{ estimatedLossM3Day: "desc" }],
+        take: 10,
+        include: { zone: { select: { name: true } } }
+      }),
+      this.prisma.fieldTask.findMany({
+        where: { status: { in: ["new", "planned", "in_progress"] } },
+        orderBy: [{ priority: "asc" }, { createdAt: "desc" }],
+        take: 10,
+        include: { zone: { select: { name: true } } }
+      }),
+      this.prisma.importRun.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        include: { validationErrors: true }
+      }),
       this.prisma.externalDataSource.findMany({
         orderBy: { sourceKey: "asc" }
       })
@@ -160,6 +195,31 @@ export class ReportsService {
         suggestedAction: recommendation.suggestedAction,
         status: recommendation.status
       })),
+      waterZones: waterZones.map((zone) => ({
+        name: zone.name,
+        nightFlowM3h: zone.nightFlowM3h,
+        baselineNightFlowM3h: zone.baselineNightFlowM3h,
+        estimatedLossM3Day: zone.estimatedLossM3Day,
+        trend30d: zone.trend30d,
+        status: zone.status,
+        dataQualityScore: zone.zone?.dataQualityScore ?? null
+      })),
+      privateCases: privateCases.map((item) => ({
+        address: item.address,
+        zoneName: item.zone.name,
+        estimatedLossM3Day: item.estimatedLossM3Day,
+        status: item.status,
+        nextFollowUp: item.nextFollowUp
+      })),
+      fieldTasks: fieldTasks.map((task) => ({
+        priority: task.priority,
+        areaName: task.zone.name,
+        type: task.type,
+        reason: task.reason,
+        suggestedMethod: task.suggestedMethod,
+        status: task.status
+      })),
+      dataGaps: summarizeDataGaps(importRuns[0]?.validationErrors ?? []),
       dataSources: dataSources.map((source) => ({
         name: source.name,
         url: source.url,
@@ -186,4 +246,44 @@ function getCurrentMonthPeriod() {
 function round(value: number, decimals: number) {
   const factor = 10 ** decimals;
   return Math.round(value * factor) / factor;
+}
+
+function summarizeDataGaps(
+  validationErrors: Array<{
+    entityType: string;
+    field: string;
+    severity: string;
+    message: string;
+  }>
+) {
+  const missingPipeYears = validationErrors.filter(
+    (issue) => issue.entityType === "pipe" && issue.field === "installed_year"
+  ).length;
+  const missingGeometry = validationErrors.filter((issue) => issue.field === "geometry").length;
+  const timeSeriesGap = validationErrors.some((issue) => issue.entityType === "time_series" && issue.field === "rows");
+
+  return [
+    {
+      area: "Ledningsregister",
+      finding:
+        missingPipeYears > 0
+          ? `${missingPipeYears} ledninger mangler installasjonsår.`
+          : "Ledningsalder er tilstrekkelig dokumentert i demo-datasettet.",
+      recommendation: "Oppdater installasjonsår og materiale for bedre prioritering av lekkasjekontroll og sanering."
+    },
+    {
+      area: "Kartposisjon",
+      finding:
+        missingGeometry > 0
+          ? `${missingGeometry} objekter eller hendelser mangler geometri.`
+          : "VA-objekter har geometri nok til kartbasert beslutningsstøtte.",
+      recommendation: "Koble hendelser og VA-objekter til kartposisjon for bedre historisk analyse."
+    },
+    {
+      area: "Driftsdata",
+      finding: timeSeriesGap ? "Tidsseriedata mangler eller er ufullstendig." : "Tidsseriedata er tilgjengelig.",
+      recommendation:
+        "Etabler baseline for nattforbruk, trykk, flow og alarmer slik at scoring kan følges over tid."
+    }
+  ];
 }

@@ -29,6 +29,35 @@ type ReportData = {
     suggestedAction: string;
     status: string;
   }>;
+  waterZones: Array<{
+    name: string;
+    nightFlowM3h: number;
+    baselineNightFlowM3h: number;
+    estimatedLossM3Day: number;
+    trend30d: number;
+    status: string;
+    dataQualityScore: number | null;
+  }>;
+  privateCases: Array<{
+    address: string;
+    zoneName: string;
+    estimatedLossM3Day: number;
+    status: string;
+    nextFollowUp: Date | null;
+  }>;
+  fieldTasks: Array<{
+    priority: string;
+    areaName: string;
+    type: string;
+    reason: string;
+    suggestedMethod: string;
+    status: string;
+  }>;
+  dataGaps: Array<{
+    area: string;
+    finding: string;
+    recommendation: string;
+  }>;
   dataSources: Array<{
     name: string;
     url: string;
@@ -64,6 +93,9 @@ export function buildVaRiskReportHtml(data: ReportData) {
     .kpi strong { display: block; font-size: 24px; margin-top: 6px; }
     .note { background: #f7f8f5; border-left: 4px solid #1f2a2e; padding: 10px; }
     .source { color: #566873; font-size: 11px; }
+    .muted { color: #566873; }
+    .small { font-size: 11px; }
+    .status { font-weight: bold; text-transform: uppercase; }
   </style>
 </head>
 <body>
@@ -86,13 +118,25 @@ export function buildVaRiskReportHtml(data: ReportData) {
   </section>
 
   <section class="page">
-    <h2>Topp 10 risikoområder og anbefalte tiltak</h2>
+    <h2>Vannsoner og estimert vanntap</h2>
+    <p>Tabellen viser nattforbruk mot baseline og estimert mulig vanntap. Dette er grunnlaget for prioritering av lekkasjekontroll i demoen.</p>
+    ${waterZonesTable(data.waterZones)}
+    <h3>Prioritert lekkasjekontroll</h3>
+    ${scoreTable(data.leakageScores.slice(0, 6), "Lekkasje")}
+  </section>
+
+  <section class="page">
+    <h2>Anbefalte feltkontroller</h2>
+    <p>Feltoppgavene viser hvordan scoring og datagrunnlag oversettes til praktisk arbeid: logger, lytting, ventilkontroll, måleroppfølging eller kuminspeksjon.</p>
+    ${fieldTasksTable(data.fieldTasks)}
+    <h3>Topp anbefalte tiltak</h3>
     ${recommendationsTable(topRecommendations)}
   </section>
 
   <section class="page">
-    <h2>Lekkasjeindikasjoner</h2>
-    ${scoreTable(data.leakageScores, "Lekkasje")}
+    <h2>Private stikkledninger</h2>
+    <p>Private lekkasjesaker vises separat fordi oppfølging ofte handler om kontakt, dokumentasjon og neste steg, ikke bare teknisk lekkasjesøk.</p>
+    ${privateCasesTable(data.privateCases)}
   </section>
 
   <section class="page">
@@ -104,9 +148,11 @@ export function buildVaRiskReportHtml(data: ReportData) {
     <h2>Datakvalitet og datagap</h2>
     <p>Datakvalitet er behandlet som en del av beslutningsgrunnlaget. Manglende alder, materiale, geometri eller sensorhistorikk skal redusere tillit og kan gi egne anbefalinger om datagap.</p>
     <p>Gjennomsnittlig datakvalitet i demo-datasettet er ${data.overview.kpis.dataCompletenessScore}%.</p>
+    ${dataGapsTable(data.dataGaps)}
     <h2>Metode og scoring</h2>
-    <p>Lekkasje score vekter alder, materiale, tidligere brudd, nattforbruksavvik, trykkvariasjon og kritikalitet.</p>
+    <p>Lekkasjeprioritet vekter nattforbruksøkning, estimert vanntap, tidligere lekkasjer, ledningsalder/materiale, åpne private saker og datakvalitet.</p>
     <p>Fremmedvann score vekter regnkorrelasjon, økt pumpetid, forsinket respons, overløp og høy-nivå alarmer.</p>
+    <p>Rapporten bruker simulerte VA-data inspirert av realistiske driftssituasjoner. Kartgrunnlag og nedbør kan komme fra åpne norske datakilder.</p>
     <p>Alle score skal leses som prioriteringsstøtte, ikke som automatisk diagnose.</p>
   </section>
 
@@ -118,6 +164,54 @@ export function buildVaRiskReportHtml(data: ReportData) {
   </section>
 </body>
 </html>`;
+}
+
+function waterZonesTable(waterZones: ReportData["waterZones"]) {
+  return `<table>
+    <thead><tr><th>Sone</th><th>Nattforbruk</th><th>Baseline</th><th>Estimert vanntap</th><th>Trend 30d</th><th>Status</th><th>Datakvalitet</th></tr></thead>
+    <tbody>${waterZones
+      .map(
+        (zone) =>
+          `<tr><td>${escapeHtml(zone.name)}</td><td>${formatNumber(zone.nightFlowM3h)} m³/h</td><td>${formatNumber(zone.baselineNightFlowM3h)} m³/h</td><td>${formatNumber(zone.estimatedLossM3Day)} m³/d</td><td>${formatTrend(zone.trend30d)}</td><td><span class="status">${formatStatus(zone.status)}</span></td><td>${zone.dataQualityScore ?? "-"}%</td></tr>`
+      )
+      .join("")}</tbody>
+  </table>`;
+}
+
+function fieldTasksTable(tasks: ReportData["fieldTasks"]) {
+  return `<table>
+    <thead><tr><th>Prioritet</th><th>Område</th><th>Type</th><th>Årsak</th><th>Metode</th><th>Status</th></tr></thead>
+    <tbody>${tasks
+      .map(
+        (task) =>
+          `<tr><td>${formatStatus(task.priority)}</td><td>${escapeHtml(task.areaName)}</td><td>${formatStatus(task.type)}</td><td>${escapeHtml(task.reason)}</td><td>${formatStatus(task.suggestedMethod)}</td><td>${formatStatus(task.status)}</td></tr>`
+      )
+      .join("")}</tbody>
+  </table>`;
+}
+
+function privateCasesTable(cases: ReportData["privateCases"]) {
+  return `<table>
+    <thead><tr><th>Adresse</th><th>Sone</th><th>Estimert tap</th><th>Status</th><th>Neste oppfølging</th></tr></thead>
+    <tbody>${cases
+      .map(
+        (item) =>
+          `<tr><td>${escapeHtml(item.address)}</td><td>${escapeHtml(item.zoneName)}</td><td>${formatNumber(item.estimatedLossM3Day)} m³/d</td><td>${formatStatus(item.status)}</td><td>${item.nextFollowUp ? formatDateOnly(item.nextFollowUp) : "-"}</td></tr>`
+      )
+      .join("")}</tbody>
+  </table>`;
+}
+
+function dataGapsTable(gaps: ReportData["dataGaps"]) {
+  return `<table>
+    <thead><tr><th>Område</th><th>Funn</th><th>Anbefaling</th></tr></thead>
+    <tbody>${gaps
+      .map(
+        (gap) =>
+          `<tr><td>${escapeHtml(gap.area)}</td><td>${escapeHtml(gap.finding)}</td><td>${escapeHtml(gap.recommendation)}</td></tr>`
+      )
+      .join("")}</tbody>
+  </table>`;
 }
 
 function recommendationsTable(recommendations: ReportData["recommendations"]) {
@@ -156,10 +250,56 @@ function dataSourcesTable(sources: ReportData["dataSources"]) {
   </table>`;
 }
 
+function formatNumber(value: number) {
+  return new Intl.NumberFormat("nb-NO", { maximumFractionDigits: 1 }).format(value);
+}
+
+function formatTrend(value: number) {
+  const prefix = value > 0 ? "+" : "";
+  return `${prefix}${formatNumber(value)}%`;
+}
+
+function formatStatus(value: string) {
+  const labels: Record<string, string> = {
+    high: "Høy",
+    medium: "Medium",
+    low: "Lav",
+    normal: "Normal",
+    suspect: "Mistenkt",
+    suspected: "Mistenkt",
+    contacted: "Kontaktet",
+    repaired: "Reparert",
+    closed: "Lukket",
+    new: "Ny",
+    planned: "Planlagt",
+    in_progress: "Pågår",
+    completed: "Utført",
+    leakage_control: "Lekkasjekontroll",
+    fremmedvann_control: "Fremmedvann",
+    meter_follow_up: "Måleroppfølging",
+    valve_check: "Ventilkontroll",
+    data_quality: "Datakvalitet",
+    listening: "Lytting",
+    logger: "Logger",
+    manhole_inspection: "Kuminspeksjon",
+    cctv: "CCTV",
+    smoke_test: "Røyktest"
+  };
+
+  return labels[value] ?? value;
+}
+
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("nb-NO", {
     dateStyle: "medium",
     timeStyle: "short",
+    timeZone: "Europe/Oslo"
+  }).format(date);
+}
+
+function formatDateOnly(date: Date) {
+  return new Intl.DateTimeFormat("nb-NO", {
+    dateStyle: "medium",
     timeZone: "Europe/Oslo"
   }).format(date);
 }

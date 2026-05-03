@@ -187,7 +187,7 @@ Reference: `docs/backend-workflow-improvement-plan.md`
 - [ ] Implement `GET /api/assets/:assetType/:id`
 - [ ] Add asset profile panel for clicked map assets
 - [ ] Add recommendation event history
-- [ ] Upgrade PDF report with top risk table, methodology, data quality and field plan
+- [x] Upgrade PDF report with top risk table, methodology, data quality and field plan
 - [x] Update README to emphasize backend/API/database workflow
 - [ ] Add demo script section showing Swagger, DB, scoring service and tests
 
@@ -212,7 +212,7 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Add private cases UI
 - [x] Add field tasks UI
 - [x] Upgrade fremmedvann chart with baseline and anomaly highlight
-- [ ] Upgrade PDF with water zones, field plan and methodology
+- [x] Upgrade PDF with water zones, field plan and methodology
 
 ## Phase 14: Job-Ready Portfolio Positioning
 
