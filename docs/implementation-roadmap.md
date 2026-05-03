@@ -108,8 +108,8 @@ The demo uses real Norwegian rainfall and real public map context while keeping 
 
 Demo sentence:
 
-Demoen bruker ekte norske nedborsdata og offentlige kommunegrenser,
-kombinert med simulerte VA-driftsdata, for a vise beslutningsstotte
+Demoen bruker ekte norske nedbørsdata og offentlige kommunegrenser,
+kombinert med simulerte VA-driftsdata, for å vise beslutningsstøtte
 for lekkasjekontroll, fremmedvann og prioritering.
 
 ## Week 5: PDF And Polish
@@ -163,3 +163,23 @@ Implementation order:
 Detailed plan:
 
 - See `docs/backend-workflow-improvement-plan.md`
+
+## Two Week Product Upgrade
+
+The detailed day-by-day upgrade plan is documented in:
+
+- `docs/two-week-product-upgrade-plan.md`
+
+Main goal:
+
+Transform the app from `VA dashboard demo` into `VA Drift Insight - Vanntap & lekkasjekontroll + fremmedvann analyse`.
+
+Main implementation themes:
+
+- water zones
+- estimated water loss
+- leakage control workflow
+- private service line cases
+- field tasks
+- monthly reports
+- product navigation

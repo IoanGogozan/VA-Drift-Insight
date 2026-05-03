@@ -58,6 +58,21 @@ The data should look realistic enough to support a professional demo without usi
 3. Regn vs pumpestasjon
 4. Anbefalte tiltak
 
+## Target Product Navigation
+
+1. Oversikt
+2. Lekkasjekontroll
+3. Fremmedvann
+4. Tiltak
+5. Rapporter
+6. Datagrunnlag
+
+## Target Product Positioning
+
+VA Drift Insight - Vanntap & lekkasjekontroll + fremmedvann analyse
+
+Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, vanntap og fremmedvann i kommunal VA-drift.
+
 ## Out Of Scope For MVP
 
 - Real ML model
