@@ -14,7 +14,7 @@ The goal is not to present "AI magic". The goal is to show how existing operatio
 
 ## Application Subtitle
 
-Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, fremmedvann og driftsdata
+Et praktisk beslutningsstøtteverktøy for lekkasjekontroll, vanntap og fremmedvann i kommunal VA-drift.
 
 ## Why This Project
 
@@ -25,8 +25,12 @@ This demo shows how backend systems, maps, PostGIS, scoring and reporting can tu
 ## Main Features
 
 - VA risk overview
+- Water zones with estimated water loss
 - Leakage risk scoring
 - Fremmedvann analysis
+- Private service line case follow-up
+- Field task workflow
+- Monthly operational report summary
 - Pump station rainfall response
 - Work recommendation table
 - Data quality scoring
@@ -101,21 +105,51 @@ No real sensitive VA infrastructure data is used.
 
 ## Current Status
 
-The repository has completed Phase 7: interactive MVP screens.
+The repository has completed the main backend workflow foundation and Phase 13 product upgrade work for water loss, private service cases, field tasks and monthly reporting.
 
 Implemented so far:
 
 - Monorepo foundation
 - NestJS API with PostgreSQL/PostGIS and Prisma
 - Seeded simulated VA dataset
+- Water zones with estimated water loss and night flow trend
 - Explainable leakage and fremmedvann scoring
+- Demo dataset import and validation summary
 - Recommendations API and status workflow
-- Next.js overview, map, leakage, fremmedvann and recommendations screens
+- Private service line cases API and UI workflow
+- Field tasks API and UI workflow
+- Monthly report endpoint and UI summary
+- PDF risk report generation
+- Next.js overview, map, leakage, fremmedvann, recommendations, data foundation and report screens
 - Root `npm run dev` for local API + web startup
 
 Next planned phase:
 
-- Public data integration with MET Norway Frost API and Kartverket grensedata / Geonorge kommunegrenser
+- UI polish, screenshots and PDF report content upgrade.
+
+## Backend Workflow
+
+The demo is intentionally backend-driven. The user flow is:
+
+```text
+Import -> Validate -> Analyze -> Explain -> Recommend -> Field work -> Report
+```
+
+Important API areas:
+
+- `GET /api/overview`
+- `GET /api/map/assets`
+- `POST /api/import/demo-dataset`
+- `GET /api/import/runs`
+- `GET /api/water-zones`
+- `GET /api/leakage/zones/:id`
+- `GET /api/fremmedvann/pump-stations/:id/analysis`
+- `GET /api/private-cases`
+- `PATCH /api/private-cases/:id`
+- `GET /api/field-tasks`
+- `PATCH /api/field-tasks/:id`
+- `GET /api/reports/monthly`
+- `POST /api/reports/va-risk`
 
 ## Local Development
 
@@ -230,7 +264,7 @@ curl -X PATCH http://localhost:3001/api/recommendations/{id}/status \
   -d "{\"status\":\"planned\"}"
 ```
 
-The web application will be added in a later implementation phase.
+The web app is available at `http://localhost:3000` when `npm run dev` is running.
 
 ## MVP Priority
 

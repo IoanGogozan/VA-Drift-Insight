@@ -162,7 +162,7 @@ Acceptance criteria:
 ## Phase 11: Polish
 
 - [ ] Add screenshots
-- [ ] Improve README run instructions
+- [x] Improve README run instructions
 - [ ] Add demo script link
 - [ ] Add architecture diagram to README if useful
 - [ ] Verify Docker local startup from clean checkout
@@ -182,13 +182,13 @@ Reference: `docs/backend-workflow-improvement-plan.md`
 - [ ] Implement `GET /api/scoring/runs`
 - [ ] Persist scoring run summary and generated recommendation count
 - [ ] Add `Kjør risikoanalyse` action in UI
-- [ ] Replace generic leakage explanation with concrete calculated metrics
+- [x] Replace generic leakage explanation with concrete calculated metrics
 - [ ] Replace generic fremmedvann explanation with dry/wet weather metrics
 - [ ] Implement `GET /api/assets/:assetType/:id`
 - [ ] Add asset profile panel for clicked map assets
 - [ ] Add recommendation event history
 - [ ] Upgrade PDF report with top risk table, methodology, data quality and field plan
-- [ ] Update README to emphasize backend/API/database workflow
+- [x] Update README to emphasize backend/API/database workflow
 - [ ] Add demo script section showing Swagger, DB, scoring service and tests
 
 ## Phase 13: Vanntap And Product Navigation Upgrade
@@ -207,7 +207,7 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Add private service cases model and API
 - [x] Add field tasks model and API
 - [x] Add monthly report endpoint
-- [ ] Redesign overview KPI cards for vanntap and leakage control
+- [x] Redesign overview KPI cards for vanntap and leakage control
 - [x] Add Lekkasjekontroll table page
 - [x] Add private cases UI
 - [x] Add field tasks UI

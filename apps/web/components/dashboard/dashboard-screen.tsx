@@ -128,6 +128,10 @@ export function DashboardScreen({
 
   const estimatedWaterLoss = waterZones.reduce((sum, zone) => sum + zone.estimatedLossM3Day, 0);
   const highWaterZones = waterZones.filter((zone) => zone.status === "high").length;
+  const activePrivateCases = privateCases.filter((item) => item.status !== "closed").length;
+  const openFieldTasks = fieldTasks.filter((task) => ["new", "planned", "in_progress"].includes(task.status)).length;
+  const averageTrend30d =
+    waterZones.length > 0 ? waterZones.reduce((sum, zone) => sum + zone.trend30d, 0) / waterZones.length : 0;
 
   return (
     <main className="min-h-screen">
@@ -167,14 +171,35 @@ export function DashboardScreen({
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-4 px-6 py-6 md:grid-cols-5">
-        <KpiCard label="Estimert vanntap" value={`${estimatedWaterLoss.toFixed(1)} m³/d`} tone="high" />
-        <KpiCard label="Høyrisiko vannsoner" value={highWaterZones} tone="high" />
-        <KpiCard label={UI_TEXT.fremmedvannSuspicions} value={overview.kpis.fremmedvannSuspicions} tone="medium" />
+        <KpiCard
+          label="Estimert vanntap"
+          value={`${estimatedWaterLoss.toFixed(1)} m³/d`}
+          tone="high"
+          helper="Sum beregnet fra nattforbruk mot baseline."
+        />
+        <KpiCard
+          label="Nattforbruk trend"
+          value={`${averageTrend30d >= 0 ? "+" : ""}${averageTrend30d.toFixed(1)} %`}
+          tone={averageTrend30d >= 10 ? "high" : averageTrend30d >= 5 ? "medium" : "neutral"}
+          helper="Gjennomsnittlig 30-dagers trend for vannsoner."
+        />
+        <KpiCard
+          label="Høyrisiko vannsoner"
+          value={highWaterZones}
+          tone="high"
+          helper="Soner der nattforbruk ligger over terskel."
+        />
         <KpiCard
           label="Private lekkasjesaker"
-          value={privateCases.filter((item) => item.status !== "closed").length}
+          value={activePrivateCases}
+          helper="Åpne saker knyttet til private stikkledninger."
         />
-        <KpiCard label={UI_TEXT.recommendedFieldChecks} value={overview.kpis.recommendedFieldChecks} />
+        <KpiCard
+          label="Åpne feltoppgaver"
+          value={openFieldTasks}
+          tone={openFieldTasks > 3 ? "medium" : "neutral"}
+          helper="Planlagt eller pågående arbeid i felt."
+        />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-6">
