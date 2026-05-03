@@ -24,6 +24,7 @@ const ids = {
   incidentLeakNorth: "10000000-0000-4000-8000-000000000001",
   incidentAlarmPs03: "10000000-0000-4000-8000-000000000002",
   incidentOverflowPs03: "10000000-0000-4000-8000-000000000003",
+  incidentComplaintNorth: "10000000-0000-4000-8000-000000000004",
   recommendationLeakageNorth: "20000000-0000-4000-8000-000000000001",
   recommendationFremmedvannPs03: "20000000-0000-4000-8000-000000000002"
 };
@@ -202,6 +203,14 @@ async function main() {
         description: "Tidligere lekkasje i nærheten av gate X"
       },
       {
+        id: ids.incidentComplaintNorth,
+        incidentType: "complaint",
+        assetType: "zone",
+        assetId: ids.zoneNorth,
+        occurredAt: new Date("2026-04-02T12:10:00.000Z"),
+        description: "Kundemelding om lavt trykk og mulig lekkasje"
+      },
+      {
         id: ids.incidentAlarmPs03,
         incidentType: "high_level_alarm",
         assetType: "pump_station",
@@ -228,7 +237,7 @@ async function main() {
         scoreType: "leakage",
         score: 82,
         confidence: 76,
-        explanation: "Risikoen er høy fordi nattforbruket har økt, flere ledninger er eldre enn 45 år, og det finnes tidligere lekkasjer i nærheten."
+        explanation: "Målesone Nord har 22.8 % økning i nattforbruk sammenlignet med baseline, eldre ledninger og registrerte lekkasjehendelser."
       },
       {
         assetType: "zone",
@@ -654,6 +663,7 @@ async function setDemoGeometry() {
 
   const incidentGeometries = [
     [ids.incidentLeakNorth, '{"type":"Point","coordinates":[10.397,59.292]}'],
+    [ids.incidentComplaintNorth, '{"type":"Point","coordinates":[10.401,59.289]}'],
     [ids.incidentAlarmPs03, '{"type":"Point","coordinates":[10.425,59.258]}'],
     [ids.incidentOverflowPs03, '{"type":"Point","coordinates":[10.431,59.261]}']
   ] as const;

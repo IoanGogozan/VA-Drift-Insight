@@ -43,7 +43,7 @@ export class LeakageService {
       throw new NotFoundException("Leakage zone was not found.");
     }
 
-    const [score, recommendation, recentIncidents] = await Promise.all([
+    const [score, recommendation, recentIncidents, previousLeaks, customerComplaints] = await Promise.all([
       this.prisma.riskScore.findFirst({
         where: { assetType: "zone", assetId: id, scoreType: "leakage" },
         orderBy: { calculatedAt: "desc" }
@@ -56,18 +56,34 @@ export class LeakageService {
         where: { assetType: "zone", assetId: id },
         orderBy: { occurredAt: "desc" },
         take: 5
+      }),
+      this.prisma.incident.count({
+        where: {
+          assetType: "zone",
+          assetId: id,
+          incidentType: { in: ["leak", "pipe_break"] }
+        }
+      }),
+      this.prisma.incident.count({
+        where: {
+          assetType: "zone",
+          assetId: id,
+          incidentType: "complaint"
+        }
       })
     ]);
 
     const calculated = calculateLeakageRisk(toLeakageInput(zone));
+    const metrics = createLeakageMetrics(zone, previousLeaks, customerComplaints);
 
     return {
       zoneId: zone.id,
       name: zone.name,
       riskScore: score?.score ?? calculated.score,
       confidence: score?.confidence ?? calculated.confidence,
-      factors: calculated.factors,
-      explanation: score?.explanation ?? calculated.explanation,
+      factors: metrics,
+      scoringFactors: calculated.factors,
+      explanation: createConcreteLeakageExplanation(zone.name, metrics),
       recommendedAction:
         recommendation?.suggestedAction ??
         "Vurder målrettet lekkasjesøk og kontroll av ventiler i sonen.",
@@ -102,4 +118,61 @@ function toLeakageInput(zone: ZoneWithPipes) {
       previousBreaks: pipe.previousBreaks
     }))
   };
+}
+
+function createLeakageMetrics(zone: ZoneWithPipes, previousLeaks: number, customerComplaints: number) {
+  const nightFlowIncreasePercent = getNightFlowIncreasePercent(zone.baselineNightFlow, zone.currentNightFlow);
+  const avgPipeAge = calculateAveragePipeAge(zone.pipes);
+
+  return {
+    nightFlowIncreasePercent,
+    avgPipeAge,
+    previousLeaks,
+    pressureVariation: Math.min(25, Math.round(nightFlowIncreasePercent * 0.7)),
+    customerComplaints
+  };
+}
+
+function getNightFlowIncreasePercent(baseline: number | null, current: number | null) {
+  if (!baseline || !current || baseline <= 0) {
+    return 0;
+  }
+
+  return round(Math.max(0, ((current - baseline) / baseline) * 100), 1);
+}
+
+function calculateAveragePipeAge(pipes: Pipe[]) {
+  const currentYear = 2026;
+  const ages = pipes
+    .map((pipe) => (pipe.installedYear ? currentYear - pipe.installedYear : null))
+    .filter((age): age is number => age !== null);
+
+  if (ages.length === 0) {
+    return 0;
+  }
+
+  return Math.round(ages.reduce((sum, age) => sum + age, 0) / ages.length);
+}
+
+function createConcreteLeakageExplanation(
+  zoneName: string,
+  metrics: {
+    nightFlowIncreasePercent: number;
+    avgPipeAge: number;
+    previousLeaks: number;
+    pressureVariation: number;
+    customerComplaints: number;
+  }
+) {
+  return [
+    `${zoneName} har ${metrics.nightFlowIncreasePercent} % økning i nattforbruk siste periode sammenlignet med baseline.`,
+    `Gjennomsnittlig ledningsalder er ${metrics.avgPipeAge} år.`,
+    `Det er registrert ${metrics.previousLeaks} tidligere lekkasje-/bruddhendelser og ${metrics.customerComplaints} kundemeldinger i sonen.`,
+    "Ingen tydelig regnkorrelasjon er brukt i denne lekkasjevurderingen, derfor bør området prioriteres for målrettet lekkasjekontroll."
+  ].join(" ");
+}
+
+function round(value: number, decimals: number) {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
 }

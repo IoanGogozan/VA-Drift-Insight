@@ -80,10 +80,10 @@ function FactorBars({ factors }: { factors: Record<string, number> }) {
         <div key={key}>
           <div className="flex justify-between gap-3 text-xs text-muted">
             <span>{formatFactor(key)}</span>
-            <span>{value}</span>
+            <span>{formatFactorValue(key, value)}</span>
           </div>
           <div className="mt-1 h-2 bg-surface">
-            <div className="h-2 bg-ink" style={{ width: `${Math.min(100, Math.max(0, value))}%` }} />
+            <div className="h-2 bg-ink" style={{ width: `${getFactorWidth(key, value)}%` }} />
           </div>
         </div>
       ))}
@@ -98,8 +98,40 @@ function formatFactor(value: string) {
     historicalBreaks: "Tidligere brudd",
     nightFlowAnomaly: "Avvik i nattforbruk",
     pressureVariation: "Trykkvariasjon",
-    criticality: "Kritikalitet"
+    criticality: "Kritikalitet",
+    nightFlowIncreasePercent: "Økning i nattforbruk (%)",
+    avgPipeAge: "Gj.sn. ledningsalder",
+    previousLeaks: "Tidligere lekkasjer/brudd",
+    customerComplaints: "Kundemeldinger"
   };
 
   return labels[value] ?? value.replace(/([A-Z])/g, " $1").replace(/^./, (first) => first.toUpperCase());
+}
+
+function formatFactorValue(key: string, value: number) {
+  if (key === "nightFlowIncreasePercent") {
+    return `${value} %`;
+  }
+
+  if (key === "avgPipeAge") {
+    return `${value} år`;
+  }
+
+  if (key === "pressureVariation") {
+    return `${value} %`;
+  }
+
+  return String(value);
+}
+
+function getFactorWidth(key: string, value: number) {
+  if (key === "previousLeaks" || key === "customerComplaints") {
+    return Math.min(100, value * 25);
+  }
+
+  if (key === "pressureVariation") {
+    return Math.min(100, value * 4);
+  }
+
+  return Math.min(100, Math.max(0, value));
 }

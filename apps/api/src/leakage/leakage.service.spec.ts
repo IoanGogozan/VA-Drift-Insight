@@ -1,7 +1,7 @@
 import { LeakageService } from "./leakage.service";
 
 describe("LeakageService", () => {
-  it("returns high leakage risk details for a seeded high-risk zone", async () => {
+  it("returns concrete leakage metrics for a seeded high-risk zone", async () => {
     const zone = {
       id: "11111111-1111-4111-8111-111111111111",
       name: "Målesone Nord",
@@ -42,7 +42,10 @@ describe("LeakageService", () => {
       recommendation: {
         findFirst: jest.fn().mockResolvedValue({ suggestedAction: "Akustisk lekkasjesøk" })
       },
-      incident: { findMany: jest.fn().mockResolvedValue([]) }
+      incident: {
+        findMany: jest.fn().mockResolvedValue([]),
+        count: jest.fn().mockResolvedValueOnce(2).mockResolvedValueOnce(1)
+      }
     };
     const service = new LeakageService(prisma as never);
 
@@ -51,7 +54,13 @@ describe("LeakageService", () => {
       riskScore: 82,
       confidence: 76,
       recommendedAction: "Akustisk lekkasjesøk",
-      decisionSupportNote: "Beslutningsstøtte, ikke automatisk diagnose."
+      decisionSupportNote: "Beslutningsstøtte, ikke automatisk diagnose.",
+      factors: {
+        nightFlowIncreasePercent: 17.2,
+        avgPipeAge: 52,
+        previousLeaks: 2,
+        customerComplaints: 1
+      }
     });
   });
 });

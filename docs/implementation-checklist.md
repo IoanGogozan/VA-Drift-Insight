@@ -203,7 +203,7 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Implement `GET /api/water-zones/:id`
 - [x] Add estimated water loss calculation
 - [x] Add water zone status logic: normal, suspect, high
-- [ ] Upgrade leakage scoring output with concrete metrics
+- [x] Upgrade leakage scoring output with concrete metrics
 - [ ] Add private service cases model and API
 - [ ] Add field tasks model and API
 - [ ] Add monthly report endpoint
