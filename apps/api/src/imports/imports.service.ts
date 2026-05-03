@@ -12,6 +12,7 @@ type ValidationIssue = {
 
 type DemoAssetCounts = {
   zones: number;
+  waterZones: number;
   pipes: number;
   pumpStations: number;
   incidents: number;
@@ -83,8 +84,9 @@ export class ImportsService {
   }
 
   private async getDemoAssetCounts(): Promise<DemoAssetCounts> {
-    const [zones, pipes, pumpStations, incidents, timeSeries, weatherObservations, networkNodes] = await Promise.all([
+    const [zones, waterZones, pipes, pumpStations, incidents, timeSeries, weatherObservations, networkNodes] = await Promise.all([
       this.prisma.zone.count(),
+      this.prisma.waterZone.count(),
       this.prisma.pipe.count(),
       this.prisma.pumpStation.count(),
       this.prisma.incident.count(),
@@ -95,6 +97,7 @@ export class ImportsService {
 
     return {
       zones,
+      waterZones,
       pipes,
       pumpStations,
       incidents,
@@ -105,7 +108,15 @@ export class ImportsService {
   }
 
   private async validateDemoDataset(): Promise<ValidationIssue[]> {
-    const [pipesMissingYear, pipesMissingGeometry, pumpStationsMissingGeometry, incidentsMissingGeometry, zonesMissingQuality, timeSeriesCount] =
+    const [
+      pipesMissingYear,
+      pipesMissingGeometry,
+      pumpStationsMissingGeometry,
+      incidentsMissingGeometry,
+      zonesMissingQuality,
+      waterZonesMissingGeometry,
+      timeSeriesCount
+    ] =
       await Promise.all([
         this.prisma.pipe.findMany({
           where: { installedYear: null },
@@ -130,6 +141,11 @@ export class ImportsService {
           where: { dataQualityScore: null },
           select: { id: true, name: true }
         }),
+        this.prisma.$queryRaw<Array<{ id: string; name: string }>>`
+          SELECT id::text, name
+          FROM water_zones
+          WHERE geometry IS NULL
+        `,
         this.prisma.timeSeries.count()
       ]);
 
@@ -182,6 +198,16 @@ export class ImportsService {
         field: "data_quality_score",
         severity: "warning",
         message: `Sone ${zone.name} mangler datakvalitetsscore.`
+      });
+    }
+
+    for (const waterZone of waterZonesMissingGeometry) {
+      issues.push({
+        entityType: "water_zone",
+        entityId: waterZone.id,
+        field: "geometry",
+        severity: "warning",
+        message: `Vannsone ${waterZone.name} mangler geometri.`
       });
     }
 

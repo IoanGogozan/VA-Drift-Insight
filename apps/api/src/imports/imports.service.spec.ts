@@ -7,6 +7,9 @@ describe("ImportsService", () => {
         count: jest.fn().mockResolvedValue(2),
         findMany: jest.fn().mockResolvedValue([])
       },
+      waterZone: {
+        count: jest.fn().mockResolvedValue(2)
+      },
       pipe: {
         count: jest.fn().mockResolvedValue(3),
         findMany: jest.fn().mockResolvedValue([{ id: "pipe-1", pipeCode: "P-1" }])
@@ -18,6 +21,7 @@ describe("ImportsService", () => {
       $queryRaw: jest
         .fn()
         .mockResolvedValueOnce([{ count: BigInt(4) }])
+        .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([]),
@@ -39,7 +43,7 @@ describe("ImportsService", () => {
         data: expect.objectContaining({
           importType: "demo_dataset",
           status: "completed_with_warnings",
-          totalRows: 16,
+          totalRows: 18,
           rejectedRows: 0,
           warningCount: 2
         })

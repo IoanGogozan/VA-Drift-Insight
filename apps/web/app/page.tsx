@@ -9,18 +9,30 @@ import {
   getPumpStationAnalysis,
   getPumpStations,
   getRainfall,
-  getRecommendations
+  getRecommendations,
+  getWaterZones
 } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [overview, mapAssets, mapContext, rainfall, leakageZones, pumpStations, recommendations, importRuns] = await Promise.all([
+  const [
+    overview,
+    mapAssets,
+    mapContext,
+    rainfall,
+    leakageZones,
+    waterZones,
+    pumpStations,
+    recommendations,
+    importRuns
+  ] = await Promise.all([
     getOverview(),
     getMapAssets(),
     getMapContext(),
     getRainfall(),
     getLeakageZones(),
+    getWaterZones(),
     getPumpStations(),
     getRecommendations(),
     getImportRuns()
@@ -37,6 +49,7 @@ export default async function HomePage() {
       mapContext={mapContext}
       rainfall={rainfall}
       leakageZones={leakageZones}
+      waterZones={waterZones}
       pumpStations={pumpStations}
       recommendations={recommendations}
       importRuns={importRuns}

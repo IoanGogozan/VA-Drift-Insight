@@ -6,6 +6,9 @@ const ids = {
   zoneNorth: "11111111-1111-4111-8111-111111111111",
   zoneSentrum: "22222222-2222-4222-8222-222222222222",
   zoneSouth: "33333333-3333-4333-8333-333333333333",
+  waterZoneNorth: "31111111-1111-4111-8111-111111111111",
+  waterZoneSentrum: "32222222-2222-4222-8222-222222222222",
+  waterZoneSouth: "33333333-0000-4333-8333-333333333333",
   catchmentA: "44444444-4444-4444-8444-444444444444",
   catchmentB: "55555555-5555-4555-8555-555555555555",
   catchmentC: "66666666-6666-4666-8666-666666666666",
@@ -40,6 +43,7 @@ async function main() {
     prisma.timeSeries.deleteMany(),
     prisma.pumpStation.deleteMany(),
     prisma.pipe.deleteMany(),
+    prisma.waterZone.deleteMany(),
     prisma.zone.deleteMany()
   ]);
 
@@ -51,7 +55,7 @@ async function main() {
         zoneType: "water_meter_zone",
         population: 4200,
         baselineNightFlow: 18,
-        currentNightFlow: 21.1,
+        currentNightFlow: 22.1,
         dataQualityScore: 72
       },
       {
@@ -98,6 +102,41 @@ async function main() {
 
   await prisma.pipe.createMany({
     data: createPipeSeedData()
+  });
+
+  await prisma.waterZone.createMany({
+    data: [
+      createWaterZoneSeedData({
+        id: ids.waterZoneNorth,
+        zoneId: ids.zoneNorth,
+        name: "Målesone Nord",
+        totalConsumptionM3Day: 1840,
+        nightFlowM3h: 22.1,
+        baselineNightFlowM3h: 18,
+        trend7d: 6.4,
+        trend30d: 22.8
+      }),
+      createWaterZoneSeedData({
+        id: ids.waterZoneSentrum,
+        zoneId: ids.zoneSentrum,
+        name: "Målesone Sentrum",
+        totalConsumptionM3Day: 2620,
+        nightFlowM3h: 25.4,
+        baselineNightFlowM3h: 24,
+        trend7d: 1.8,
+        trend30d: 5.8
+      }),
+      createWaterZoneSeedData({
+        id: ids.waterZoneSouth,
+        zoneId: ids.zoneSouth,
+        name: "Målesone Sør",
+        totalConsumptionM3Day: 980,
+        nightFlowM3h: 11.4,
+        baselineNightFlowM3h: 11,
+        trend7d: -0.6,
+        trend30d: 3.6
+      })
+    ]
   });
 
   await seedNetworkNodes();
@@ -308,6 +347,27 @@ function createFallbackWeatherObservations() {
     temperatureC: Number((7.5 + index * 0.25).toFixed(1)),
     qualityCode: "0"
   }));
+}
+
+function createWaterZoneSeedData(input: {
+  id: string;
+  zoneId: string;
+  name: string;
+  totalConsumptionM3Day: number;
+  nightFlowM3h: number;
+  baselineNightFlowM3h: number;
+  trend7d: number;
+  trend30d: number;
+}) {
+  const flowDelta = Math.max(0, input.nightFlowM3h - input.baselineNightFlowM3h);
+  const nightFlowDeltaPercent =
+    input.baselineNightFlowM3h > 0 ? (flowDelta / input.baselineNightFlowM3h) * 100 : 0;
+
+  return {
+    ...input,
+    estimatedLossM3Day: Number((flowDelta * 24).toFixed(1)),
+    status: nightFlowDeltaPercent > 20 ? ("high" as const) : nightFlowDeltaPercent >= 10 ? ("suspect" as const) : ("normal" as const)
+  };
 }
 
 function createPipeSeedData() {
@@ -531,6 +591,21 @@ async function setDemoGeometry() {
       geometry,
       id
     );
+  }
+
+  const waterZoneGeometryByZoneId = [
+    ids.zoneNorth,
+    ids.zoneSentrum,
+    ids.zoneSouth
+  ] as const;
+
+  for (const zoneId of waterZoneGeometryByZoneId) {
+    await prisma.$executeRaw`
+      UPDATE water_zones wz
+      SET geometry = z.geometry
+      FROM zones z
+      WHERE wz.zone_id = z.id AND z.id = ${zoneId}::uuid
+    `;
   }
 
   const fixedPipeGeometries = [

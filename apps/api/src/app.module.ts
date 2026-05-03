@@ -13,6 +13,7 @@ import { RecommendationsModule } from "./recommendations/recommendations.module"
 import { ReportsModule } from "./reports/reports.module";
 import { VersionModule } from "./version/version.module";
 import { WeatherModule } from "./weather/weather.module";
+import { WaterZonesModule } from "./water-zones/water-zones.module";
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { WeatherModule } from "./weather/weather.module";
     RecommendationsModule,
     MunicipalityModule,
     WeatherModule,
+    WaterZonesModule,
     ReportsModule
   ]
 })

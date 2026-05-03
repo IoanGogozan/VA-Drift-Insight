@@ -195,20 +195,20 @@ Reference: `docs/backend-workflow-improvement-plan.md`
 
 Reference: `docs/two-week-product-upgrade-plan.md`
 
-- [ ] Add top-level navigation: Oversikt, Lekkasjekontroll, Fremmedvann, Tiltak, Rapporter, Datagrunnlag
-- [ ] Add first-page intro copy for VA Drift Insight
-- [ ] Add `water_zones` database model and migration
-- [ ] Seed water zones with total consumption, night flow, baseline and trends
-- [ ] Implement `GET /api/water-zones`
-- [ ] Implement `GET /api/water-zones/:id`
-- [ ] Add estimated water loss calculation
-- [ ] Add water zone status logic: normal, suspect, high
+- [x] Add top-level navigation: Oversikt, Lekkasjekontroll, Fremmedvann, Tiltak, Rapporter, Datagrunnlag
+- [x] Add first-page intro copy for VA Drift Insight
+- [x] Add `water_zones` database model and migration
+- [x] Seed water zones with total consumption, night flow, baseline and trends
+- [x] Implement `GET /api/water-zones`
+- [x] Implement `GET /api/water-zones/:id`
+- [x] Add estimated water loss calculation
+- [x] Add water zone status logic: normal, suspect, high
 - [ ] Upgrade leakage scoring output with concrete metrics
 - [ ] Add private service cases model and API
 - [ ] Add field tasks model and API
 - [ ] Add monthly report endpoint
 - [ ] Redesign overview KPI cards for vanntap and leakage control
-- [ ] Add Lekkasjekontroll table page
+- [x] Add Lekkasjekontroll table page
 - [ ] Add private cases UI
 - [ ] Add field tasks UI
 - [ ] Upgrade fremmedvann chart with baseline and anomaly highlight

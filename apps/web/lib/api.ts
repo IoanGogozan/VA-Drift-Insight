@@ -56,6 +56,23 @@ export type ImportRunSummary = {
   validationErrors: ImportValidationError[];
 };
 
+export type WaterZoneSummary = {
+  id: string;
+  zoneId: string | null;
+  name: string;
+  totalConsumptionM3Day: number;
+  nightFlowM3h: number;
+  baselineNightFlowM3h: number;
+  estimatedLossM3Day: number;
+  nightFlowDeltaPercent: number;
+  trend7d: number;
+  trend30d: number;
+  status: "normal" | "suspect" | "high";
+  statusLabel: string;
+  pipeCount: number;
+  dataQualityScore: number | null;
+};
+
 export type MapAssetFeature = {
   type: "Feature";
   id: string;
@@ -190,6 +207,10 @@ export async function getRainfall(): Promise<RainfallResponse> {
 
 export async function getLeakageZones(): Promise<LeakageZoneSummary[]> {
   return getJson<LeakageZoneSummary[]>("/api/leakage/zones");
+}
+
+export async function getWaterZones(): Promise<WaterZoneSummary[]> {
+  return getJson<WaterZoneSummary[]>("/api/water-zones");
 }
 
 export async function getLeakageZoneAnalysis(zoneId: string): Promise<LeakageZoneAnalysis> {

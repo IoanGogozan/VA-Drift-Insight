@@ -12,7 +12,8 @@ import type {
   PumpStationAnalysis,
   PumpStationSummary,
   RainfallResponse,
-  RecommendationSummary
+  RecommendationSummary,
+  WaterZoneSummary
 } from "@/lib/api";
 import { fetchLeakageZoneAnalysis, fetchPumpStationAnalysis } from "@/lib/client-api";
 import { UI_TEXT } from "@/lib/ui-text";
@@ -24,6 +25,7 @@ import { DataSourcesCard } from "../overview/data-sources-card";
 import { KpiCard } from "../overview/kpi-card";
 import { RecommendationsTable } from "../recommendations/recommendations-table";
 import { ReportButton } from "../reports/report-button";
+import { WaterZonesTable } from "../water-zones/water-zones-table";
 
 type DashboardScreenProps = {
   overview: OverviewResponse;
@@ -31,6 +33,7 @@ type DashboardScreenProps = {
   mapContext: MapContextResponse;
   rainfall: RainfallResponse;
   leakageZones: LeakageZoneSummary[];
+  waterZones: WaterZoneSummary[];
   pumpStations: PumpStationSummary[];
   recommendations: RecommendationSummary[];
   importRuns: ImportRunSummary[];
@@ -44,6 +47,7 @@ export function DashboardScreen({
   mapContext,
   rainfall,
   leakageZones,
+  waterZones,
   pumpStations,
   recommendations,
   importRuns,
@@ -110,6 +114,9 @@ export function DashboardScreen({
     }
   }
 
+  const estimatedWaterLoss = waterZones.reduce((sum, zone) => sum + zone.estimatedLossM3Day, 0);
+  const highWaterZones = waterZones.filter((zone) => zone.status === "high").length;
+
   return (
     <main className="min-h-screen">
       <section className="border-b border-slate-200 bg-white">
@@ -121,14 +128,42 @@ export function DashboardScreen({
           </div>
           <ReportButton />
         </div>
+        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-6 pb-4 text-sm">
+          {["Oversikt", "Lekkasjekontroll", "Fremmedvann", "Tiltak", "Rapporter", "Datagrunnlag"].map((item) => (
+            <a
+              key={item}
+              href={`#${getNavTarget(item)}`}
+              className="border border-slate-200 px-3 py-2 text-muted hover:border-slate-400 hover:text-ink"
+            >
+              {item}
+            </a>
+          ))}
+        </nav>
+      </section>
+
+      <section id="oversikt" className="mx-auto max-w-7xl px-6 pt-6">
+        <article className="border border-slate-200 bg-white p-6">
+          <h2 className="text-xl font-semibold text-ink">Velkommen til VA Drift Insight</h2>
+          <p className="mt-3 max-w-4xl text-sm leading-6 text-muted">
+            Dette er en demoapplikasjon som viser hvordan kommunale VA-data kan brukes til praktisk beslutningsstøtte
+            for lekkasjekontroll, vanntap og fremmedvann. Målet er ikke å erstatte eksisterende
+            driftskontrollsystemer, men å vise hvordan data fra ledningsnett, målesoner, pumpestasjoner og nedbør kan
+            kombineres for å gi bedre grunnlag for prioritering i felt.
+          </p>
+          <p className="mt-3 text-sm font-medium text-ink">Beslutningsstøtte, ikke automatisk diagnose.</p>
+        </article>
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-4 px-6 py-6 md:grid-cols-5">
-        <KpiCard label={UI_TEXT.highRiskLeakageZones} value={overview.kpis.highRiskLeakageZones} tone="high" />
+        <KpiCard label="Estimert vanntap" value={`${estimatedWaterLoss.toFixed(1)} m³/d`} tone="high" />
+        <KpiCard label="Høyrisiko vannsoner" value={highWaterZones} tone="high" />
         <KpiCard label={UI_TEXT.fremmedvannSuspicions} value={overview.kpis.fremmedvannSuspicions} tone="medium" />
-        <KpiCard label={UI_TEXT.activeAnomalies} value={overview.kpis.activeAnomalies} />
+        <KpiCard label="Private lekkasjesaker" value={0} />
         <KpiCard label={UI_TEXT.recommendedFieldChecks} value={overview.kpis.recommendedFieldChecks} />
-        <KpiCard label={UI_TEXT.dataQuality} value={`${overview.kpis.dataCompletenessScore}%`} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-6">
+        <WaterZonesTable waterZones={waterZones} />
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">
@@ -151,11 +186,11 @@ export function DashboardScreen({
         />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-6">
+      <section id="datagrunnlag" className="mx-auto max-w-7xl px-6 pb-6">
         <DataImportPanel initialImportRuns={importRuns} />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-6">
+      <section id="fremmedvann" className="mx-auto max-w-7xl px-6 pb-6">
         <PumpStationChart
           pumpStations={pumpStations}
           rainfall={rainfall}
@@ -174,9 +209,28 @@ export function DashboardScreen({
         <DataSourcesCard />
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-8">
+      <section id="tiltak" className="mx-auto max-w-7xl px-6 pb-8">
         <RecommendationsTable initialRecommendations={recommendations} />
+      </section>
+
+      <section id="rapporter" className="mx-auto max-w-7xl px-6 pb-8">
+        <div className="border border-slate-200 bg-white p-5 text-sm text-muted">
+          Bruk rapportknappen øverst for å generere VA-risikorapport fra gjeldende demo-datasett.
+        </div>
       </section>
     </main>
   );
+}
+
+function getNavTarget(item: string) {
+  const targets: Record<string, string> = {
+    Oversikt: "oversikt",
+    Lekkasjekontroll: "lekkasjekontroll",
+    Fremmedvann: "fremmedvann",
+    Tiltak: "tiltak",
+    Rapporter: "rapporter",
+    Datagrunnlag: "datagrunnlag"
+  };
+
+  return targets[item] ?? "oversikt";
 }
