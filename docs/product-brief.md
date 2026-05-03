@@ -55,7 +55,7 @@ Fjordvik kommune
 
 The data should look realistic enough to support a professional demo without using real customer, municipality or SCADA data.
 
-## MVP Screens
+## Application Screens
 
 1. Oversikt
 2. Vannsoner og vanntap
@@ -83,7 +83,7 @@ VA Drift Insight - vanntap, lekkasjekontroll og datadrevet feltoppfølging
 
 Et porteføljeprosjekt som viser hvordan praktisk VVS-/VA-erfaring kan kombineres med backend, databaser, kart og rapportering.
 
-## Out Of Scope For MVP
+## Out Of Scope
 
 - Real ML model
 - Real SCADA integration

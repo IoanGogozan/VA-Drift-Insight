@@ -33,14 +33,12 @@ va-drift-insight/
     api/
       src/
       prisma/
-      Dockerfile
       package.json
 
     web/
       app/
       components/
       lib/
-      public/
       package.json
 
   packages/
@@ -50,18 +48,12 @@ va-drift-insight/
         scoring/
         constants/
 
-  data/
-    seed/
-      pipes.geojson
-      zones.geojson
-      pump_stations.geojson
-      time_series.csv
-      incidents.csv
-
   docs/
     architecture.md
+    api-design.md
     domain-model.md
     scoring-methodology.md
+    engineering-guidelines.md
     demo-script-no.md
 
   docker-compose.yml
@@ -78,19 +70,16 @@ va-drift-insight/
 - Zod for import validation and DTO validation where useful
 - Puppeteer for PDF generation
 - OpenAPI/Swagger from NestJS
-- BullMQ and Redis only if async imports or scoring jobs become necessary
 
-## Backend Module Plan
+## Backend Modules
 
 ```text
 src/
   app.module.ts
 
   common/
-    filters/
-    interceptors/
     dto/
-    utils/
+    guards/
 
   database/
     prisma.service.ts
@@ -99,28 +88,29 @@ src/
     assets.controller.ts
     assets.service.ts
 
-  zones/
-    zones.controller.ts
-    zones.service.ts
+  water-zones/
+    water-zones.controller.ts
+    water-zones.service.ts
 
-  pump-stations/
-    pump-stations.controller.ts
-    pump-stations.service.ts
+  leakage/
+    leakage.controller.ts
+    leakage.service.ts
 
-  time-series/
-    time-series.controller.ts
-    time-series.service.ts
+  fremmedvann/
+    fremmedvann.controller.ts
+    fremmedvann.service.ts
 
-  incidents/
-    incidents.controller.ts
-    incidents.service.ts
+  imports/
+    imports.controller.ts
+    imports.service.ts
 
-  scoring/
-    scoring.controller.ts
-    scoring.service.ts
-    leakage-risk.service.ts
-    fremmedvann-risk.service.ts
-    data-quality.service.ts
+  private-cases/
+    private-cases.controller.ts
+    private-cases.service.ts
+
+  field-tasks/
+    field-tasks.controller.ts
+    field-tasks.service.ts
 
   recommendations/
     recommendations.controller.ts
@@ -131,22 +121,10 @@ src/
     reports.service.ts
     pdf.service.ts
 
-  imports/
-    imports.controller.ts
-    imports.service.ts
-
   external-data/
     met/
       frost-client.ts
       frost.service.ts
-
-    kartverket/
-      kartverket-client.ts
-      municipality-boundary.service.ts
-
-    ssb/
-      ssb-client.ts
-      ssb.service.ts
 
   weather/
     weather.controller.ts
@@ -159,14 +137,14 @@ src/
 
 ## External Data Strategy
 
-The MVP should combine real public Norwegian data with simulated VA operational data.
+The demo combines real public Norwegian data with simulated VA operational data.
 
-MVP public sources:
+Public sources:
 
 - MET Norway Frost API for historical precipitation
 - Kartverket grensedata / Geonorge kommunegrenser for map context and municipality boundaries
 
-Phase 2 source:
+Optional future source:
 
 - SSB / KOSTRA for municipality water and wastewater context
 
@@ -222,12 +200,6 @@ volumes:
 ```
 
 ## Deployment
-
-Recommended sequence:
-
-1. Complete local Docker demo
-2. Record a short video demo or add screenshots
-3. Deploy only if time allows
 
 Possible cloud deployment:
 

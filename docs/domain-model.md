@@ -1,31 +1,47 @@
 # Domain Model
 
-## Main Tables
+The database model is designed around VA operational decision support:
+
+```text
+Assets -> Measurements -> Scores -> Recommendations -> Field follow-up -> Report
+```
+
+## Core Asset Tables
 
 ### zones
 
 Represents water meter zones and wastewater catchments.
 
-Fields:
+Important fields:
 
-- `id`
-- `name`
-- `zone_type`: `water_meter_zone | wastewater_catchment`
+- `zone_type`
 - `population`
 - `baseline_night_flow`
 - `current_night_flow`
 - `data_quality_score`
 - `geometry`
-- `created_at`
-- `updated_at`
+
+### water_zones
+
+Represents leakage-control zones with water loss metrics.
+
+Important fields:
+
+- `total_consumption_m3_day`
+- `night_flow_m3h`
+- `baseline_night_flow_m3h`
+- `estimated_loss_m3_day`
+- `trend_7d`
+- `trend_30d`
+- `status`: `normal | suspect | high`
+- `geometry`
 
 ### pipes
 
 Represents water, wastewater and stormwater pipe segments.
 
-Fields:
+Important fields:
 
-- `id`
 - `pipe_code`
 - `zone_id`
 - `material`
@@ -35,34 +51,41 @@ Fields:
 - `criticality`
 - `previous_breaks`
 - `geometry`
-- `created_at`
-- `updated_at`
 
 ### pump_stations
 
 Represents wastewater pump stations.
 
-Fields:
+Important fields:
 
-- `id`
 - `station_code`
-- `name`
 - `catchment_id`
 - `capacity_m3h`
 - `alarm_count`
 - `overflow_events`
 - `geometry`
-- `created_at`
-- `updated_at`
+
+### network_nodes
+
+Represents map objects such as valves, manholes, meters and sensors.
+
+Important fields:
+
+- `node_code`
+- `node_type`
+- `pipe_type`
+- `status`
+- `geometry`
+
+## Operational Data
 
 ### time_series
 
 Represents operational measurements and rainfall.
 
-Fields:
+Important fields:
 
-- `id`
-- `asset_type`: `zone | pipe | pump_station`
+- `asset_type`
 - `asset_id`
 - `timestamp`
 - `flow_m3h`
@@ -70,56 +93,101 @@ Fields:
 - `level_m`
 - `pump_runtime_minutes`
 - `rainfall_mm`
-- `created_at`
 
 ### incidents
 
 Represents operational events, alarms and field observations.
 
-Fields:
+Incident types:
 
-- `id`
-- `incident_type`: `leak | pipe_break | high_level_alarm | overflow | complaint | pump_failure | suspected_fremmedvann`
-- `asset_type`
-- `asset_id`
-- `occurred_at`
-- `description`
-- `resolved_at`
-- `geometry`
-- `created_at`
+- `leak`
+- `pipe_break`
+- `high_level_alarm`
+- `overflow`
+- `complaint`
+- `pump_failure`
+- `suspected_fremmedvann`
+
+## Analysis And Workflow
 
 ### risk_scores
 
 Stores calculated scores and explanations.
 
-Fields:
+Score types:
 
-- `id`
-- `asset_type`
-- `asset_id`
-- `score_type`: `leakage | fremmedvann | data_quality | sanering`
-- `score`
-- `confidence`
-- `explanation`
-- `calculated_at`
+- `leakage`
+- `fremmedvann`
+- `data_quality`
+- `sanering`
 
 ### recommendations
 
 Stores recommended operational actions.
 
-Fields:
+Important fields:
 
-- `id`
 - `type`: `leakage | fremmedvann | sanering | data_gap`
 - `priority`: `high | medium | low`
-- `asset_type`
-- `asset_id`
 - `area_name`
 - `reason`
 - `suggested_action`
-- `status`: `new | planned | in_progress | completed | dismissed`
-- `created_at`
-- `updated_at`
+- `status`
+
+### field_tasks
+
+Stores practical field work derived from analysis.
+
+Task types:
+
+- `leakage_control`
+- `fremmedvann_control`
+- `meter_follow_up`
+- `valve_check`
+- `data_quality`
+
+Methods:
+
+- `listening`
+- `logger`
+- `valve_check`
+- `meter_follow_up`
+- `manhole_inspection`
+- `cctv`
+- `smoke_test`
+
+### private_service_cases
+
+Stores follow-up of suspected private service line leaks.
+
+Statuses:
+
+- `suspected`
+- `contacted`
+- `repaired`
+- `closed`
+
+## Public Data And Import Tracking
+
+### municipalities
+
+Stores municipality metadata and boundary geometry.
+
+### weather_observations
+
+Stores weather observations from public sources or fallback seed data.
+
+### external_data_sources
+
+Documents public data sources used in the demo.
+
+### import_runs
+
+Stores import and validation summaries.
+
+### import_validation_errors
+
+Stores validation findings from imports.
 
 ## Norwegian UI Labels
 
@@ -133,10 +201,10 @@ Incident labels:
 - `pump_failure`: Pumpefeil
 - `suspected_fremmedvann`: Mistanke om fremmedvann
 
-Recommendation status labels:
+Status labels:
 
 - `new`: Ny
 - `planned`: Planlagt
 - `in_progress`: Pågår
-- `completed`: Fullført
+- `completed`: Utført
 - `dismissed`: Avvist

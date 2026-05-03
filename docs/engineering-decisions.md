@@ -8,7 +8,7 @@ Status: Accepted
 
 Decision:
 
-Use transparent scoring formulas instead of ML for the MVP.
+Use transparent scoring formulas instead of ML for this demo.
 
 Reason:
 
@@ -92,7 +92,7 @@ Use `next@16.3.0-canary.8` for the frontend foundation until the stable Next rel
 
 Reason:
 
-The latest stable Next version available during Phase 6 pulled `postcss@8.4.31` internally, which npm audit reports as vulnerable. The canary version resolves the audit finding and passes typecheck/build for this demo.
+The selected Next.js canary version resolves a dependency audit issue found in the stable release available during development and passes typecheck/build for this demo.
 
 Implication:
 
@@ -104,7 +104,7 @@ Status: Accepted
 
 Decision:
 
-Use MET Norway Frost API and Kartverket grensedata / Geonorge kommunegrenser in the MVP. Keep SSB/KOSTRA as a Phase 2 contextual integration. Continue simulating VA operational data.
+Use MET Norway Frost API and Kartverket grensedata / Geonorge kommunegrenser for public context. Keep SSB/KOSTRA as an optional contextual integration. Continue simulating VA operational data.
 
 Reason:
 

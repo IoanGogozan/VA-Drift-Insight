@@ -549,7 +549,7 @@ Suggested branches:
 - `develop`
 - `feature/leakage-scoring`
 - `feature/fremmedvann-analysis`
-- `feature/pdf-report`
+- `feature/reporting`
 - `fix/import-validation`
 
 Use clear commit messages:
@@ -567,7 +567,7 @@ Avoid:
 - `changes`
 - `final version`
 
-After each completed implementation phase:
+After each completed feature:
 
 - Run relevant tests.
 - Run typecheck and build.

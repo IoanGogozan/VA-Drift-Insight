@@ -4,13 +4,13 @@ A practical demo application for Norwegian water and wastewater operations.
 
 The app combines GIS, time-series data, incidents and explainable scoring methods to support leakage control, fremmedvann analysis and maintenance prioritization.
 
-The updated MVP direction is to combine open Norwegian public data sources with simulated VA operational data.
+The demo combines open Norwegian public data sources with simulated VA operational data.
 
 ## Demo Message
 
 Jeg kan koble praktisk VA-/VVS-forståelse med moderne backend, data, kart og rapportering.
 
-The goal is not to present "AI magic". The goal is to show how existing operational data can become practical decision support for municipalities, intermunicipal companies and consultants.
+The goal is not black-box automation. The goal is to show how existing operational data can become practical decision support for municipalities, intermunicipal companies and consultants.
 
 ## Application Subtitle
 
@@ -70,12 +70,12 @@ Demoen bruker simulerte VA-data. Målet er beslutningsstøtte, ikke automatisk d
 
 This demo combines public Norwegian data with simulated VA operational data.
 
-Public data planned for MVP:
+Public data used or prepared for the demo:
 
 - MET Norway Frost API: historical precipitation
 - Kartverket grensedata / Geonorge kommunegrenser: municipality boundary and map context
 
-Phase 2 optional data:
+Optional future context data:
 
 - SSB/KOSTRA through SSB PxWebApi: municipality water and wastewater context
 
@@ -115,7 +115,6 @@ No real sensitive VA infrastructure data is used.
 ## Documentation
 
 - [Product brief](docs/product-brief.md)
-- [Implementation roadmap](docs/implementation-roadmap.md)
 - [Architecture](docs/architecture.md)
 - [Domain model](docs/domain-model.md)
 - [API design](docs/api-design.md)
@@ -123,19 +122,12 @@ No real sensitive VA infrastructure data is used.
 - [Engineering guidelines](docs/engineering-guidelines.md)
 - [Engineering decisions](docs/engineering-decisions.md)
 - [External data sources](docs/external-data-sources.md)
-- [Security checklist](docs/security-checklist.md)
-- [Seed data plan](docs/seed-data.md)
-- [UI screens](docs/ui-screens.md)
-- [PDF report specification](docs/pdf-report.md)
-- [Implementation checklist](docs/implementation-checklist.md)
 - [Demo script in Norwegian](docs/demo-script-no.md)
 - [Portfolio screenshots plan](docs/portfolio-screenshots.md)
 
-## Current Status
+## Implemented Scope
 
-The repository has completed the main backend workflow foundation and Phase 13 product upgrade work for water loss, private service cases, field tasks and monthly reporting.
-
-Implemented so far:
+The repository implements a backend-driven VA decision-support workflow:
 
 - Monorepo foundation
 - NestJS API with PostgreSQL/PostGIS and Prisma
@@ -150,10 +142,6 @@ Implemented so far:
 - PDF risk report generation
 - Next.js overview, map, leakage, fremmedvann, recommendations, data foundation and report screens
 - Root `npm run dev` for local API + web startup
-
-Next planned phase:
-
-- UI polish, screenshots and PDF report content upgrade.
 
 ## Backend Workflow
 
@@ -294,20 +282,9 @@ curl -X PATCH http://localhost:3001/api/recommendations/{id}/status \
 
 The web app is available at `http://localhost:3000` when `npm run dev` is running.
 
-## MVP Priority
+## Scope Boundaries
 
-Build the application in this order:
-
-1. Map and overview KPIs
-2. Explainable leakage risk scoring
-3. Fremmedvann analysis chart
-4. Recommendations workflow
-5. PDF report
-6. Data quality details
-7. CSV import
-8. Optional cloud deployment
-
-Auth, multi-tenancy, Kubernetes, complex user management and real SCADA integrations are outside the MVP.
+Auth, multi-tenancy, Kubernetes, complex user management, billing and real SCADA integrations are outside this portfolio demo.
 
 ## Portfolio Positioning
 

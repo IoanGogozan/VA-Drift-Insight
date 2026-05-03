@@ -13,12 +13,12 @@ Real Norwegian rainfall data
 
 ## Final Decision
 
-Integrate in the MVP:
+Use in the main demo:
 
 1. MET Norway Frost API
 2. Kartverket grensedata / Geonorge kommunegrenser
 
-Add in Phase 2, only after the MVP works:
+Optional future context source:
 
 3. SSB / KOSTRA
 
@@ -166,14 +166,14 @@ apps/api/src/external-data/kartverket/
   municipality-boundary.service.ts
 ```
 
-Simpler MVP option:
+Simpler local option:
 
 ```text
 data/public-geodata/
   municipality-boundary.geojson
 ```
 
-The simple MVP can import a prepared GeoJSON file into PostGIS instead of calling a live API during local startup.
+The local demo can import a prepared GeoJSON file into PostGIS instead of calling a live API during startup.
 
 Database table:
 
@@ -223,7 +223,7 @@ Selve VA-nettet er simulert, fordi reelle ledningsdata og pumpestasjonsdata
 ofte er sensitive og ikke egner seg for en offentlig demo.
 ```
 
-## Phase 2 Source: SSB / KOSTRA
+## Optional Source: SSB / KOSTRA
 
 Purpose:
 
