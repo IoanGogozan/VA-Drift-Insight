@@ -54,7 +54,9 @@ va-drift-insight/
     domain-model.md
     scoring-methodology.md
     engineering-guidelines.md
-    demo-script-no.md
+    engineering-decisions.md
+    external-data-sources.md
+    product-brief.md
 
   docker-compose.yml
   README.md

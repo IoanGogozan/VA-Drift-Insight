@@ -110,7 +110,7 @@ No real sensitive VA infrastructure data is used.
 - Application UI: Norwegian
 - Code, comments and commit messages: English
 - Technical documentation: English
-- Demo script and interview pitch: Norwegian
+- Public repository documentation: English
 
 ## Documentation
 
@@ -122,8 +122,6 @@ No real sensitive VA infrastructure data is used.
 - [Engineering guidelines](docs/engineering-guidelines.md)
 - [Engineering decisions](docs/engineering-decisions.md)
 - [External data sources](docs/external-data-sources.md)
-- [Demo script in Norwegian](docs/demo-script-no.md)
-- [Portfolio screenshots plan](docs/portfolio-screenshots.md)
 
 ## Implemented Scope
 

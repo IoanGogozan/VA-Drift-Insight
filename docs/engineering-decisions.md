@@ -40,7 +40,7 @@ Status: Accepted
 
 Decision:
 
-Use English for code, comments and commits. Use Norwegian for visible UI text and demo script.
+Use English for code, comments, commits and public repository documentation. Use Norwegian for visible application text.
 
 Reason:
 
