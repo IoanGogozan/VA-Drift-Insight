@@ -13,6 +13,7 @@ type ValidationIssue = {
 type DemoAssetCounts = {
   zones: number;
   waterZones: number;
+  privateCases: number;
   pipes: number;
   pumpStations: number;
   incidents: number;
@@ -84,9 +85,20 @@ export class ImportsService {
   }
 
   private async getDemoAssetCounts(): Promise<DemoAssetCounts> {
-    const [zones, waterZones, pipes, pumpStations, incidents, timeSeries, weatherObservations, networkNodes] = await Promise.all([
+    const [
+      zones,
+      waterZones,
+      privateCases,
+      pipes,
+      pumpStations,
+      incidents,
+      timeSeries,
+      weatherObservations,
+      networkNodes
+    ] = await Promise.all([
       this.prisma.zone.count(),
       this.prisma.waterZone.count(),
+      this.prisma.privateServiceCase.count(),
       this.prisma.pipe.count(),
       this.prisma.pumpStation.count(),
       this.prisma.incident.count(),
@@ -98,6 +110,7 @@ export class ImportsService {
     return {
       zones,
       waterZones,
+      privateCases,
       pipes,
       pumpStations,
       incidents,

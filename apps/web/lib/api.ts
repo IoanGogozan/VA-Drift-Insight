@@ -30,6 +30,8 @@ export type RecommendationSummary = {
 export type RecommendationType = "leakage" | "fremmedvann" | "sanering" | "data_gap";
 export type RecommendationStatus = "new" | "planned" | "in_progress" | "completed" | "dismissed";
 
+export type PrivateServiceCaseStatus = "suspected" | "contacted" | "repaired" | "closed";
+
 export type ImportValidationError = {
   id: string;
   importRunId: string;
@@ -71,6 +73,20 @@ export type WaterZoneSummary = {
   statusLabel: string;
   pipeCount: number;
   dataQualityScore: number | null;
+};
+
+export type PrivateServiceCaseSummary = {
+  id: string;
+  address: string;
+  zoneId: string;
+  zoneName: string;
+  status: PrivateServiceCaseStatus;
+  statusLabel: string;
+  estimatedLossM3Day: number;
+  lastFollowUp: string | null;
+  nextFollowUp: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type MapAssetFeature = {
@@ -228,6 +244,10 @@ export async function getPumpStationAnalysis(pumpStationId: string): Promise<Pum
 
 export async function getRecommendations(): Promise<RecommendationSummary[]> {
   return getJson<RecommendationSummary[]>("/api/recommendations");
+}
+
+export async function getPrivateCases(): Promise<PrivateServiceCaseSummary[]> {
+  return getJson<PrivateServiceCaseSummary[]>("/api/private-cases");
 }
 
 export async function getImportRuns(): Promise<ImportRunSummary[]> {

@@ -9,6 +9,9 @@ const ids = {
   waterZoneNorth: "31111111-1111-4111-8111-111111111111",
   waterZoneSentrum: "32222222-2222-4222-8222-222222222222",
   waterZoneSouth: "33333333-0000-4333-8333-333333333333",
+  privateCaseNorth1: "40000000-0000-4000-8000-000000000001",
+  privateCaseNorth2: "40000000-0000-4000-8000-000000000002",
+  privateCaseSentrum1: "40000000-0000-4000-8000-000000000003",
   catchmentA: "44444444-4444-4444-8444-444444444444",
   catchmentB: "55555555-5555-4555-8555-555555555555",
   catchmentC: "66666666-6666-4666-8666-666666666666",
@@ -42,6 +45,7 @@ async function main() {
     prisma.riskScore.deleteMany(),
     prisma.incident.deleteMany(),
     prisma.timeSeries.deleteMany(),
+    prisma.privateServiceCase.deleteMany(),
     prisma.pumpStation.deleteMany(),
     prisma.pipe.deleteMany(),
     prisma.waterZone.deleteMany(),
@@ -137,6 +141,38 @@ async function main() {
         trend7d: -0.6,
         trend30d: 3.6
       })
+    ]
+  });
+
+  await prisma.privateServiceCase.createMany({
+    data: [
+      {
+        id: ids.privateCaseNorth1,
+        address: "Kjelleveien 18",
+        zoneId: ids.zoneNorth,
+        status: "suspected",
+        estimatedLossM3Day: 18.5,
+        lastFollowUp: new Date("2026-04-24T09:00:00.000Z"),
+        nextFollowUp: new Date("2026-05-06T09:00:00.000Z")
+      },
+      {
+        id: ids.privateCaseNorth2,
+        address: "Slottsfjellgata 7",
+        zoneId: ids.zoneNorth,
+        status: "contacted",
+        estimatedLossM3Day: 9.2,
+        lastFollowUp: new Date("2026-04-29T13:30:00.000Z"),
+        nextFollowUp: new Date("2026-05-08T10:00:00.000Z")
+      },
+      {
+        id: ids.privateCaseSentrum1,
+        address: "Storgaten 42",
+        zoneId: ids.zoneSentrum,
+        status: "repaired",
+        estimatedLossM3Day: 6.4,
+        lastFollowUp: new Date("2026-04-18T08:15:00.000Z"),
+        nextFollowUp: null
+      }
     ]
   });
 

@@ -1,6 +1,8 @@
 import type {
   ImportRunSummary,
   LeakageZoneAnalysis,
+  PrivateServiceCaseStatus,
+  PrivateServiceCaseSummary,
   PumpStationAnalysis,
   RecommendationStatus,
   RecommendationSummary
@@ -35,6 +37,26 @@ export async function updateRecommendationStatus(
   }
 
   return response.json() as Promise<RecommendationSummary>;
+}
+
+export async function updatePrivateCaseStatus(
+  privateCaseId: string,
+  status: PrivateServiceCaseStatus
+): Promise<PrivateServiceCaseSummary> {
+  const response = await fetch(`${API_URL}/api/private-cases/${privateCaseId}`, {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+      "x-demo-api-key": DEMO_API_KEY
+    },
+    body: JSON.stringify({ status })
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunne ikke oppdatere privat lekkasjesak.");
+  }
+
+  return response.json() as Promise<PrivateServiceCaseSummary>;
 }
 
 export async function generateVaRiskReport(): Promise<{

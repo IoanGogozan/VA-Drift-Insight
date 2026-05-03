@@ -6,6 +6,7 @@ import {
   getMapAssets,
   getMapContext,
   getOverview,
+  getPrivateCases,
   getPumpStationAnalysis,
   getPumpStations,
   getRainfall,
@@ -23,6 +24,7 @@ export default async function HomePage() {
     rainfall,
     leakageZones,
     waterZones,
+    privateCases,
     pumpStations,
     recommendations,
     importRuns
@@ -33,6 +35,7 @@ export default async function HomePage() {
     getRainfall(),
     getLeakageZones(),
     getWaterZones(),
+    getPrivateCases(),
     getPumpStations(),
     getRecommendations(),
     getImportRuns()
@@ -50,6 +53,7 @@ export default async function HomePage() {
       rainfall={rainfall}
       leakageZones={leakageZones}
       waterZones={waterZones}
+      privateCases={privateCases}
       pumpStations={pumpStations}
       recommendations={recommendations}
       importRuns={importRuns}

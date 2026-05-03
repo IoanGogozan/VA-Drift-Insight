@@ -9,6 +9,7 @@ import type {
   MapAssetsResponse,
   MapContextResponse,
   OverviewResponse,
+  PrivateServiceCaseSummary,
   PumpStationAnalysis,
   PumpStationSummary,
   RainfallResponse,
@@ -23,6 +24,7 @@ import { LeakageDetailsPanel } from "../leakage/leakage-details-panel";
 import { RiskMap } from "../map/risk-map";
 import { DataSourcesCard } from "../overview/data-sources-card";
 import { KpiCard } from "../overview/kpi-card";
+import { PrivateCasesTable } from "../private-cases/private-cases-table";
 import { RecommendationsTable } from "../recommendations/recommendations-table";
 import { ReportButton } from "../reports/report-button";
 import { WaterZonesTable } from "../water-zones/water-zones-table";
@@ -34,6 +36,7 @@ type DashboardScreenProps = {
   rainfall: RainfallResponse;
   leakageZones: LeakageZoneSummary[];
   waterZones: WaterZoneSummary[];
+  privateCases: PrivateServiceCaseSummary[];
   pumpStations: PumpStationSummary[];
   recommendations: RecommendationSummary[];
   importRuns: ImportRunSummary[];
@@ -48,6 +51,7 @@ export function DashboardScreen({
   rainfall,
   leakageZones,
   waterZones,
+  privateCases,
   pumpStations,
   recommendations,
   importRuns,
@@ -158,12 +162,19 @@ export function DashboardScreen({
         <KpiCard label="Estimert vanntap" value={`${estimatedWaterLoss.toFixed(1)} m³/d`} tone="high" />
         <KpiCard label="Høyrisiko vannsoner" value={highWaterZones} tone="high" />
         <KpiCard label={UI_TEXT.fremmedvannSuspicions} value={overview.kpis.fremmedvannSuspicions} tone="medium" />
-        <KpiCard label="Private lekkasjesaker" value={0} />
+        <KpiCard
+          label="Private lekkasjesaker"
+          value={privateCases.filter((item) => item.status !== "closed").length}
+        />
         <KpiCard label={UI_TEXT.recommendedFieldChecks} value={overview.kpis.recommendedFieldChecks} />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-6">
         <WaterZonesTable waterZones={waterZones} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-6">
+        <PrivateCasesTable initialPrivateCases={privateCases} />
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">

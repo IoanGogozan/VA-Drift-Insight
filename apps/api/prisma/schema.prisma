@@ -68,6 +68,13 @@ enum WaterZoneStatus {
   high
 }
 
+enum PrivateServiceCaseStatus {
+  suspected
+  contacted
+  repaired
+  closed
+}
+
 model Zone {
   id                 String   @id @default(uuid()) @db.Uuid
   name               String
@@ -83,8 +90,27 @@ model Zone {
   pipes        Pipe[]
   pumpStations PumpStation[] @relation("CatchmentPumpStations")
   waterZone    WaterZone?
+  privateServiceCases PrivateServiceCase[]
 
   @@map("zones")
+}
+
+model PrivateServiceCase {
+  id                 String                   @id @default(uuid()) @db.Uuid
+  address            String
+  zoneId             String                   @map("zone_id") @db.Uuid
+  status             PrivateServiceCaseStatus @default(suspected)
+  estimatedLossM3Day Float                    @map("estimated_loss_m3_day")
+  lastFollowUp       DateTime?                @map("last_follow_up")
+  nextFollowUp       DateTime?                @map("next_follow_up")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+
+  zone Zone @relation(fields: [zoneId], references: [id])
+
+  @@index([zoneId])
+  @@index([status])
+  @@map("private_service_cases")
 }
 
 model WaterZone {
