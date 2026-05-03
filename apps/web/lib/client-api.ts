@@ -1,4 +1,10 @@
-import type { LeakageZoneAnalysis, PumpStationAnalysis, RecommendationStatus, RecommendationSummary } from "./api";
+import type {
+  ImportRunSummary,
+  LeakageZoneAnalysis,
+  PumpStationAnalysis,
+  RecommendationStatus,
+  RecommendationSummary
+} from "./api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 const DEMO_API_KEY = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "local-demo-key";
@@ -54,6 +60,21 @@ export async function generateVaRiskReport(): Promise<{
     downloadUrl: string;
     generatedAt: string;
   }>;
+}
+
+export async function runDemoDatasetImport(): Promise<ImportRunSummary> {
+  const response = await fetch(`${API_URL}/api/import/demo-dataset`, {
+    method: "POST",
+    headers: {
+      "x-demo-api-key": DEMO_API_KEY
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunne ikke kjøre dataimport.");
+  }
+
+  return response.json() as Promise<ImportRunSummary>;
 }
 
 async function getJson<T>(path: string): Promise<T> {

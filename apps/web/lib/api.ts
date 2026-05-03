@@ -30,6 +30,32 @@ export type RecommendationSummary = {
 export type RecommendationType = "leakage" | "fremmedvann" | "sanering" | "data_gap";
 export type RecommendationStatus = "new" | "planned" | "in_progress" | "completed" | "dismissed";
 
+export type ImportValidationError = {
+  id: string;
+  importRunId: string;
+  entityType: string;
+  entityId: string | null;
+  field: string;
+  severity: "warning" | "error";
+  message: string;
+  createdAt: string;
+};
+
+export type ImportRunSummary = {
+  id: string;
+  importType: string;
+  status: string;
+  totalRows: number;
+  acceptedRows: number;
+  rejectedRows: number;
+  warningCount: number;
+  durationMs: number;
+  summary: Record<string, number>;
+  createdAt: string;
+  completedAt: string | null;
+  validationErrors: ImportValidationError[];
+};
+
 export type MapAssetFeature = {
   type: "Feature";
   id: string;
@@ -180,6 +206,10 @@ export async function getPumpStationAnalysis(pumpStationId: string): Promise<Pum
 
 export async function getRecommendations(): Promise<RecommendationSummary[]> {
   return getJson<RecommendationSummary[]>("/api/recommendations");
+}
+
+export async function getImportRuns(): Promise<ImportRunSummary[]> {
+  return getJson<ImportRunSummary[]>("/api/import/runs");
 }
 
 async function getJson<T>(path: string): Promise<T> {

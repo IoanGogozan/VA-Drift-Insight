@@ -236,3 +236,39 @@ model ExternalDataSource {
 
   @@map("external_data_sources")
 }
+
+model ImportRun {
+  id            String   @id @default(uuid()) @db.Uuid
+  importType    String   @map("import_type")
+  status        String
+  totalRows     Int      @default(0) @map("total_rows")
+  acceptedRows  Int      @default(0) @map("accepted_rows")
+  rejectedRows  Int      @default(0) @map("rejected_rows")
+  warningCount  Int      @default(0) @map("warning_count")
+  durationMs    Int      @default(0) @map("duration_ms")
+  summary       Json     @default("{}")
+  createdAt     DateTime @default(now()) @map("created_at")
+  completedAt   DateTime? @map("completed_at")
+
+  validationErrors ImportValidationError[]
+
+  @@index([createdAt])
+  @@index([status])
+  @@map("import_runs")
+}
+
+model ImportValidationError {
+  id          String   @id @default(uuid()) @db.Uuid
+  importRunId String   @map("import_run_id") @db.Uuid
+  entityType  String   @map("entity_type")
+  entityId    String?  @map("entity_id")
+  field       String
+  severity    String
+  message     String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  importRun ImportRun @relation(fields: [importRunId], references: [id], onDelete: Cascade)
+
+  @@index([importRunId])
+  @@map("import_validation_errors")
+}

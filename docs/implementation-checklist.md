@@ -172,11 +172,11 @@ Acceptance criteria:
 
 Reference: `docs/backend-workflow-improvement-plan.md`
 
-- [ ] Add `import_runs` and `import_validation_errors` database models
-- [ ] Implement `POST /api/import/demo-dataset`
-- [ ] Implement `GET /api/import/runs`
-- [ ] Show import summary and validation errors in UI
-- [ ] Add validation tests for imported demo data
+- [x] Add `import_runs` and `import_validation_errors` database models
+- [x] Implement `POST /api/import/demo-dataset`
+- [x] Implement `GET /api/import/runs`
+- [x] Show import summary and validation errors in UI
+- [x] Add validation tests for imported demo data
 - [ ] Add `scoring_runs` database model
 - [ ] Implement `POST /api/scoring/run`
 - [ ] Implement `GET /api/scoring/runs`

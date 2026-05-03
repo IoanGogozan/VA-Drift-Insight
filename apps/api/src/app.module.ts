@@ -5,6 +5,7 @@ import { AssetsModule } from "./assets/assets.module";
 import { DatabaseModule } from "./database/database.module";
 import { FremmedvannModule } from "./fremmedvann/fremmedvann.module";
 import { HealthModule } from "./health/health.module";
+import { ImportsModule } from "./imports/imports.module";
 import { LeakageModule } from "./leakage/leakage.module";
 import { OverviewModule } from "./overview/overview.module";
 import { MunicipalityModule } from "./municipality/municipality.module";
@@ -31,6 +32,7 @@ import { WeatherModule } from "./weather/weather.module";
     AssetsModule,
     LeakageModule,
     FremmedvannModule,
+    ImportsModule,
     RecommendationsModule,
     MunicipalityModule,
     WeatherModule,

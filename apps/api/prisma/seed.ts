@@ -29,6 +29,8 @@ async function main() {
   await prisma.$executeRaw`DELETE FROM network_nodes`;
 
   await prisma.$transaction([
+    prisma.importValidationError.deleteMany(),
+    prisma.importRun.deleteMany(),
     prisma.externalDataSource.deleteMany(),
     prisma.weatherObservation.deleteMany(),
     prisma.municipality.deleteMany(),

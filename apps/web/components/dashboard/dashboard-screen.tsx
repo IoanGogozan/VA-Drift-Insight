@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type {
   LeakageZoneAnalysis,
   LeakageZoneSummary,
+  ImportRunSummary,
   MapAssetFeature,
   MapAssetsResponse,
   MapContextResponse,
@@ -16,6 +17,7 @@ import type {
 import { fetchLeakageZoneAnalysis, fetchPumpStationAnalysis } from "@/lib/client-api";
 import { UI_TEXT } from "@/lib/ui-text";
 import { PumpStationChart } from "../fremmedvann/pump-station-chart";
+import { DataImportPanel } from "../imports/data-import-panel";
 import { LeakageDetailsPanel } from "../leakage/leakage-details-panel";
 import { RiskMap } from "../map/risk-map";
 import { DataSourcesCard } from "../overview/data-sources-card";
@@ -31,6 +33,7 @@ type DashboardScreenProps = {
   leakageZones: LeakageZoneSummary[];
   pumpStations: PumpStationSummary[];
   recommendations: RecommendationSummary[];
+  importRuns: ImportRunSummary[];
   initialLeakageAnalysis: LeakageZoneAnalysis | null;
   initialPumpStationAnalysis: PumpStationAnalysis | null;
 };
@@ -43,6 +46,7 @@ export function DashboardScreen({
   leakageZones,
   pumpStations,
   recommendations,
+  importRuns,
   initialLeakageAnalysis,
   initialPumpStationAnalysis
 }: DashboardScreenProps) {
@@ -145,6 +149,10 @@ export function DashboardScreen({
             setSelectedZoneId(zoneId);
           }}
         />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-6">
+        <DataImportPanel initialImportRuns={importRuns} />
       </section>
 
       <section className="mx-auto max-w-7xl px-6 pb-6">
