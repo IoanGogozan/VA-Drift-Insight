@@ -142,3 +142,24 @@ The project has a GitHub repo, local demo, optional live demo or video, PDF samp
 9. SSB/KOSTRA municipality profile
 10. Cloud deployment
 11. Auth
+
+## Next Focus: Backend Workflow Depth
+
+The next version should not add many unrelated screens. It should make the existing demo deeper and more backend-driven.
+
+Target flow:
+
+Import -> Validate -> Analyze -> Explain -> Recommend -> Report
+
+Implementation order:
+
+1. Add demo dataset import with validation summary.
+2. Add persisted scoring runs.
+3. Improve scoring explanations with concrete metrics.
+4. Add asset detail endpoint and asset profile panel.
+5. Add recommendation lifecycle events.
+6. Upgrade PDF report content.
+
+Detailed plan:
+
+- See `docs/backend-workflow-improvement-plan.md`

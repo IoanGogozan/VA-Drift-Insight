@@ -168,6 +168,29 @@ Acceptance criteria:
 - [ ] Verify Docker local startup from clean checkout
 - [ ] Record optional demo video
 
+## Phase 12: Backend Workflow Depth
+
+Reference: `docs/backend-workflow-improvement-plan.md`
+
+- [ ] Add `import_runs` and `import_validation_errors` database models
+- [ ] Implement `POST /api/import/demo-dataset`
+- [ ] Implement `GET /api/import/runs`
+- [ ] Show import summary and validation errors in UI
+- [ ] Add validation tests for imported demo data
+- [ ] Add `scoring_runs` database model
+- [ ] Implement `POST /api/scoring/run`
+- [ ] Implement `GET /api/scoring/runs`
+- [ ] Persist scoring run summary and generated recommendation count
+- [ ] Add `Kjør risikoanalyse` action in UI
+- [ ] Replace generic leakage explanation with concrete calculated metrics
+- [ ] Replace generic fremmedvann explanation with dry/wet weather metrics
+- [ ] Implement `GET /api/assets/:assetType/:id`
+- [ ] Add asset profile panel for clicked map assets
+- [ ] Add recommendation event history
+- [ ] Upgrade PDF report with top risk table, methodology, data quality and field plan
+- [ ] Update README to emphasize backend/API/database workflow
+- [ ] Add demo script section showing Swagger, DB, scoring service and tests
+
 ## Definition Of Done For MVP
 
 - App runs locally with Docker Compose
