@@ -108,6 +108,22 @@ export type FieldTaskSummary = {
   updatedAt: string;
 };
 
+export type MonthlyReportSummary = {
+  period: {
+    year: number;
+    month: number;
+    label: string;
+  };
+  leaksFound: number;
+  estimatedSavedM3: number;
+  municipal: number;
+  private: number;
+  openCases: number;
+  completedFieldTasks: number;
+  estimatedOpenLossM3Day: number;
+  recommendedZones: string[];
+};
+
 export type MapAssetFeature = {
   type: "Feature";
   id: string;
@@ -271,6 +287,10 @@ export async function getPrivateCases(): Promise<PrivateServiceCaseSummary[]> {
 
 export async function getFieldTasks(): Promise<FieldTaskSummary[]> {
   return getJson<FieldTaskSummary[]>("/api/field-tasks");
+}
+
+export async function getMonthlyReport(): Promise<MonthlyReportSummary> {
+  return getJson<MonthlyReportSummary>("/api/reports/monthly");
 }
 
 export async function getImportRuns(): Promise<ImportRunSummary[]> {

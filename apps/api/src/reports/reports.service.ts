@@ -49,6 +49,61 @@ export class ReportsService {
     return { fileName, filePath };
   }
 
+  async getMonthlyReport() {
+    const [
+      leaksFound,
+      repairedPrivateCases,
+      openPrivateCases,
+      openFieldTasks,
+      completedFieldTasks,
+      highWaterZones,
+      highPriorityTasks
+    ] = await Promise.all([
+      this.prisma.incident.count({
+        where: { incidentType: { in: ["leak", "pipe_break"] } }
+      }),
+      this.prisma.privateServiceCase.findMany({
+        where: { status: { in: ["repaired", "closed"] } },
+        select: { estimatedLossM3Day: true }
+      }),
+      this.prisma.privateServiceCase.count({
+        where: { status: { in: ["suspected", "contacted"] } }
+      }),
+      this.prisma.fieldTask.count({
+        where: { status: { in: ["new", "planned", "in_progress"] } }
+      }),
+      this.prisma.fieldTask.count({
+        where: { status: "completed" }
+      }),
+      this.prisma.waterZone.findMany({
+        where: { status: "high" },
+        select: { name: true, estimatedLossM3Day: true }
+      }),
+      this.prisma.fieldTask.findMany({
+        where: { priority: "high", status: { in: ["new", "planned", "in_progress"] } },
+        include: { zone: { select: { name: true } } }
+      })
+    ]);
+
+    const privateSavedM3PerDay = repairedPrivateCases.reduce((sum, item) => sum + item.estimatedLossM3Day, 0);
+    const estimatedSavedM3 = Math.round(privateSavedM3PerDay * 30);
+    const recommendedZones = Array.from(
+      new Set([...highWaterZones.map((zone) => zone.name), ...highPriorityTasks.map((task) => task.zone.name)])
+    );
+
+    return {
+      period: getCurrentMonthPeriod(),
+      leaksFound,
+      estimatedSavedM3,
+      municipal: Math.max(0, leaksFound - repairedPrivateCases.length),
+      private: repairedPrivateCases.length,
+      openCases: openPrivateCases + openFieldTasks,
+      completedFieldTasks,
+      estimatedOpenLossM3Day: round(highWaterZones.reduce((sum, zone) => sum + zone.estimatedLossM3Day, 0), 1),
+      recommendedZones
+    };
+  }
+
   private async buildReportHtml() {
     const [recommendations, leakageScores, fremmedvannScores, zones, dataSources] = await Promise.all([
       this.prisma.recommendation.findMany({
@@ -113,4 +168,22 @@ export class ReportsService {
       }))
     });
   }
+}
+
+function getCurrentMonthPeriod() {
+  const now = new Date();
+
+  return {
+    year: now.getFullYear(),
+    month: now.getMonth() + 1,
+    label: new Intl.DateTimeFormat("nb-NO", {
+      month: "long",
+      year: "numeric"
+    }).format(now)
+  };
+}
+
+function round(value: number, decimals: number) {
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
 }

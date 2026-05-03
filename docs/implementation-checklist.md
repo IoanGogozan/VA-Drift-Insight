@@ -206,7 +206,7 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Upgrade leakage scoring output with concrete metrics
 - [x] Add private service cases model and API
 - [x] Add field tasks model and API
-- [ ] Add monthly report endpoint
+- [x] Add monthly report endpoint
 - [ ] Redesign overview KPI cards for vanntap and leakage control
 - [x] Add Lekkasjekontroll table page
 - [x] Add private cases UI

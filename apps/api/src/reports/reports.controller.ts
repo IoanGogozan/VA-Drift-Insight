@@ -7,6 +7,11 @@ import { ReportsService } from "./reports.service";
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
+  @Get("monthly")
+  getMonthlyReport() {
+    return this.reportsService.getMonthlyReport();
+  }
+
   @Post("va-risk")
   @UseGuards(DemoWriteGuard)
   generateVaRiskReport() {

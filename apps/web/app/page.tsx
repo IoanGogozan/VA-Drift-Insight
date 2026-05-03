@@ -6,6 +6,7 @@ import {
   getImportRuns,
   getMapAssets,
   getMapContext,
+  getMonthlyReport,
   getOverview,
   getPrivateCases,
   getPumpStationAnalysis,
@@ -29,7 +30,8 @@ export default async function HomePage() {
     fieldTasks,
     pumpStations,
     recommendations,
-    importRuns
+    importRuns,
+    monthlyReport
   ] = await Promise.all([
     getOverview(),
     getMapAssets(),
@@ -41,7 +43,8 @@ export default async function HomePage() {
     getFieldTasks(),
     getPumpStations(),
     getRecommendations(),
-    getImportRuns()
+    getImportRuns(),
+    getMonthlyReport()
   ]);
   const [initialLeakageAnalysis, initialPumpStationAnalysis] = await Promise.all([
     leakageZones[0] ? getLeakageZoneAnalysis(leakageZones[0].zoneId) : Promise.resolve(null),
@@ -61,6 +64,7 @@ export default async function HomePage() {
       pumpStations={pumpStations}
       recommendations={recommendations}
       importRuns={importRuns}
+      monthlyReport={monthlyReport}
       initialLeakageAnalysis={initialLeakageAnalysis}
       initialPumpStationAnalysis={initialPumpStationAnalysis}
     />

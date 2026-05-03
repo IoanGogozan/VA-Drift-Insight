@@ -9,6 +9,7 @@ import type {
   MapAssetFeature,
   MapAssetsResponse,
   MapContextResponse,
+  MonthlyReportSummary,
   OverviewResponse,
   PrivateServiceCaseSummary,
   PumpStationAnalysis,
@@ -28,6 +29,7 @@ import { DataSourcesCard } from "../overview/data-sources-card";
 import { KpiCard } from "../overview/kpi-card";
 import { PrivateCasesTable } from "../private-cases/private-cases-table";
 import { RecommendationsTable } from "../recommendations/recommendations-table";
+import { MonthlyReportCard } from "../reports/monthly-report-card";
 import { ReportButton } from "../reports/report-button";
 import { WaterZonesTable } from "../water-zones/water-zones-table";
 
@@ -43,6 +45,7 @@ type DashboardScreenProps = {
   pumpStations: PumpStationSummary[];
   recommendations: RecommendationSummary[];
   importRuns: ImportRunSummary[];
+  monthlyReport: MonthlyReportSummary;
   initialLeakageAnalysis: LeakageZoneAnalysis | null;
   initialPumpStationAnalysis: PumpStationAnalysis | null;
 };
@@ -59,6 +62,7 @@ export function DashboardScreen({
   pumpStations,
   recommendations,
   importRuns,
+  monthlyReport,
   initialLeakageAnalysis,
   initialPumpStationAnalysis
 }: DashboardScreenProps) {
@@ -233,9 +237,7 @@ export function DashboardScreen({
       </section>
 
       <section id="rapporter" className="mx-auto max-w-7xl px-6 pb-8">
-        <div className="border border-slate-200 bg-white p-5 text-sm text-muted">
-          Bruk rapportknappen øverst for å generere VA-risikorapport fra gjeldende demo-datasett.
-        </div>
+        <MonthlyReportCard report={monthlyReport} />
       </section>
     </main>
   );
