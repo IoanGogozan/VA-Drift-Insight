@@ -13,6 +13,9 @@ describe("ImportsService", () => {
       privateServiceCase: {
         count: jest.fn().mockResolvedValue(3)
       },
+      fieldTask: {
+        count: jest.fn().mockResolvedValue(4)
+      },
       pipe: {
         count: jest.fn().mockResolvedValue(3),
         findMany: jest.fn().mockResolvedValue([{ id: "pipe-1", pipeCode: "P-1" }])
@@ -46,7 +49,7 @@ describe("ImportsService", () => {
         data: expect.objectContaining({
           importType: "demo_dataset",
           status: "completed_with_warnings",
-          totalRows: 21,
+          totalRows: 25,
           rejectedRows: 0,
           warningCount: 2
         })

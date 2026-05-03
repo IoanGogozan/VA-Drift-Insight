@@ -12,6 +12,10 @@ const ids = {
   privateCaseNorth1: "40000000-0000-4000-8000-000000000001",
   privateCaseNorth2: "40000000-0000-4000-8000-000000000002",
   privateCaseSentrum1: "40000000-0000-4000-8000-000000000003",
+  fieldTaskLeakageNorth: "50000000-0000-4000-8000-000000000001",
+  fieldTaskValveNorth: "50000000-0000-4000-8000-000000000002",
+  fieldTaskMeterSentrum: "50000000-0000-4000-8000-000000000003",
+  fieldTaskFremmedvannA: "50000000-0000-4000-8000-000000000004",
   catchmentA: "44444444-4444-4444-8444-444444444444",
   catchmentB: "55555555-5555-4555-8555-555555555555",
   catchmentC: "66666666-6666-4666-8666-666666666666",
@@ -45,6 +49,7 @@ async function main() {
     prisma.riskScore.deleteMany(),
     prisma.incident.deleteMany(),
     prisma.timeSeries.deleteMany(),
+    prisma.fieldTask.deleteMany(),
     prisma.privateServiceCase.deleteMany(),
     prisma.pumpStation.deleteMany(),
     prisma.pipe.deleteMany(),
@@ -172,6 +177,51 @@ async function main() {
         estimatedLossM3Day: 6.4,
         lastFollowUp: new Date("2026-04-18T08:15:00.000Z"),
         nextFollowUp: null
+      }
+    ]
+  });
+
+  await prisma.fieldTask.createMany({
+    data: [
+      {
+        id: ids.fieldTaskLeakageNorth,
+        type: "leakage_control",
+        zoneId: ids.zoneNorth,
+        priority: "high",
+        reason: "22.8 % økning i nattforbruk og tidligere lekkasjehendelse",
+        suggestedMethod: "listening",
+        status: "new",
+        lastChecked: null
+      },
+      {
+        id: ids.fieldTaskValveNorth,
+        type: "valve_check",
+        zoneId: ids.zoneNorth,
+        priority: "medium",
+        reason: "Trykkvariasjon og behov for avgrensing av målesone",
+        suggestedMethod: "valve_check",
+        status: "planned",
+        lastChecked: new Date("2026-04-24T11:00:00.000Z")
+      },
+      {
+        id: ids.fieldTaskMeterSentrum,
+        type: "meter_follow_up",
+        zoneId: ids.zoneSentrum,
+        priority: "medium",
+        reason: "Målerdata bør kontrolleres før ny baseline settes",
+        suggestedMethod: "meter_follow_up",
+        status: "new",
+        lastChecked: null
+      },
+      {
+        id: ids.fieldTaskFremmedvannA,
+        type: "fremmedvann_control",
+        zoneId: ids.catchmentB,
+        priority: "high",
+        reason: "PS-03 viser tydelig regnrespons og høy-nivå alarmer",
+        suggestedMethod: "cctv",
+        status: "planned",
+        lastChecked: new Date("2026-04-20T07:30:00.000Z")
       }
     ]
   });

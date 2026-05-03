@@ -205,12 +205,12 @@ Reference: `docs/two-week-product-upgrade-plan.md`
 - [x] Add water zone status logic: normal, suspect, high
 - [x] Upgrade leakage scoring output with concrete metrics
 - [x] Add private service cases model and API
-- [ ] Add field tasks model and API
+- [x] Add field tasks model and API
 - [ ] Add monthly report endpoint
 - [ ] Redesign overview KPI cards for vanntap and leakage control
 - [x] Add Lekkasjekontroll table page
 - [x] Add private cases UI
-- [ ] Add field tasks UI
+- [x] Add field tasks UI
 - [ ] Upgrade fremmedvann chart with baseline and anomaly highlight
 - [ ] Upgrade PDF with water zones, field plan and methodology
 

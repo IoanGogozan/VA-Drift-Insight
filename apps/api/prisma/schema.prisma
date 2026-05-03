@@ -75,6 +75,32 @@ enum PrivateServiceCaseStatus {
   closed
 }
 
+enum FieldTaskType {
+  leakage_control
+  fremmedvann_control
+  meter_follow_up
+  valve_check
+  data_quality
+}
+
+enum FieldTaskStatus {
+  new
+  planned
+  in_progress
+  completed
+  cancelled
+}
+
+enum FieldTaskMethod {
+  listening
+  logger
+  valve_check
+  meter_follow_up
+  manhole_inspection
+  cctv
+  smoke_test
+}
+
 model Zone {
   id                 String   @id @default(uuid()) @db.Uuid
   name               String
@@ -91,8 +117,28 @@ model Zone {
   pumpStations PumpStation[] @relation("CatchmentPumpStations")
   waterZone    WaterZone?
   privateServiceCases PrivateServiceCase[]
+  fieldTasks FieldTask[]
 
   @@map("zones")
+}
+
+model FieldTask {
+  id              String                 @id @default(uuid()) @db.Uuid
+  type            FieldTaskType
+  zoneId          String                 @map("zone_id") @db.Uuid
+  priority        RecommendationPriority
+  reason          String
+  suggestedMethod FieldTaskMethod        @map("suggested_method")
+  status          FieldTaskStatus        @default(new)
+  lastChecked     DateTime?              @map("last_checked")
+  createdAt       DateTime               @default(now()) @map("created_at")
+  updatedAt       DateTime               @updatedAt @map("updated_at")
+
+  zone Zone @relation(fields: [zoneId], references: [id])
+
+  @@index([zoneId])
+  @@index([priority, status])
+  @@map("field_tasks")
 }
 
 model PrivateServiceCase {

@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { AssetsModule } from "./assets/assets.module";
 import { DatabaseModule } from "./database/database.module";
+import { FieldTasksModule } from "./field-tasks/field-tasks.module";
 import { FremmedvannModule } from "./fremmedvann/fremmedvann.module";
 import { HealthModule } from "./health/health.module";
 import { ImportsModule } from "./imports/imports.module";
@@ -32,6 +33,7 @@ import { WaterZonesModule } from "./water-zones/water-zones.module";
     VersionModule,
     OverviewModule,
     AssetsModule,
+    FieldTasksModule,
     LeakageModule,
     FremmedvannModule,
     ImportsModule,

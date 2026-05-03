@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type {
+  FieldTaskSummary,
   LeakageZoneAnalysis,
   LeakageZoneSummary,
   ImportRunSummary,
@@ -18,6 +19,7 @@ import type {
 } from "@/lib/api";
 import { fetchLeakageZoneAnalysis, fetchPumpStationAnalysis } from "@/lib/client-api";
 import { UI_TEXT } from "@/lib/ui-text";
+import { FieldTasksTable } from "../field-tasks/field-tasks-table";
 import { PumpStationChart } from "../fremmedvann/pump-station-chart";
 import { DataImportPanel } from "../imports/data-import-panel";
 import { LeakageDetailsPanel } from "../leakage/leakage-details-panel";
@@ -37,6 +39,7 @@ type DashboardScreenProps = {
   leakageZones: LeakageZoneSummary[];
   waterZones: WaterZoneSummary[];
   privateCases: PrivateServiceCaseSummary[];
+  fieldTasks: FieldTaskSummary[];
   pumpStations: PumpStationSummary[];
   recommendations: RecommendationSummary[];
   importRuns: ImportRunSummary[];
@@ -52,6 +55,7 @@ export function DashboardScreen({
   leakageZones,
   waterZones,
   privateCases,
+  fieldTasks,
   pumpStations,
   recommendations,
   importRuns,
@@ -175,6 +179,10 @@ export function DashboardScreen({
 
       <section className="mx-auto max-w-7xl px-6 pb-6">
         <PrivateCasesTable initialPrivateCases={privateCases} />
+      </section>
+
+      <section className="mx-auto max-w-7xl px-6 pb-6">
+        <FieldTasksTable initialFieldTasks={fieldTasks} />
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-6 lg:grid-cols-[minmax(0,1fr)_390px]">

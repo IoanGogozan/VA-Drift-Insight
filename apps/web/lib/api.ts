@@ -31,6 +31,7 @@ export type RecommendationType = "leakage" | "fremmedvann" | "sanering" | "data_
 export type RecommendationStatus = "new" | "planned" | "in_progress" | "completed" | "dismissed";
 
 export type PrivateServiceCaseStatus = "suspected" | "contacted" | "repaired" | "closed";
+export type FieldTaskStatus = "new" | "planned" | "in_progress" | "completed" | "cancelled";
 
 export type ImportValidationError = {
   id: string;
@@ -85,6 +86,24 @@ export type PrivateServiceCaseSummary = {
   estimatedLossM3Day: number;
   lastFollowUp: string | null;
   nextFollowUp: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FieldTaskSummary = {
+  id: string;
+  type: string;
+  typeLabel: string;
+  zoneId: string;
+  areaName: string;
+  priority: "high" | "medium" | "low";
+  priorityLabel: string;
+  reason: string;
+  suggestedMethod: string;
+  suggestedMethodLabel: string;
+  status: FieldTaskStatus;
+  statusLabel: string;
+  lastChecked: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -248,6 +267,10 @@ export async function getRecommendations(): Promise<RecommendationSummary[]> {
 
 export async function getPrivateCases(): Promise<PrivateServiceCaseSummary[]> {
   return getJson<PrivateServiceCaseSummary[]>("/api/private-cases");
+}
+
+export async function getFieldTasks(): Promise<FieldTaskSummary[]> {
+  return getJson<FieldTaskSummary[]>("/api/field-tasks");
 }
 
 export async function getImportRuns(): Promise<ImportRunSummary[]> {

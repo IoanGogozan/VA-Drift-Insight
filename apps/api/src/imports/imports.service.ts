@@ -14,6 +14,7 @@ type DemoAssetCounts = {
   zones: number;
   waterZones: number;
   privateCases: number;
+  fieldTasks: number;
   pipes: number;
   pumpStations: number;
   incidents: number;
@@ -89,6 +90,7 @@ export class ImportsService {
       zones,
       waterZones,
       privateCases,
+      fieldTasks,
       pipes,
       pumpStations,
       incidents,
@@ -99,6 +101,7 @@ export class ImportsService {
       this.prisma.zone.count(),
       this.prisma.waterZone.count(),
       this.prisma.privateServiceCase.count(),
+      this.prisma.fieldTask.count(),
       this.prisma.pipe.count(),
       this.prisma.pumpStation.count(),
       this.prisma.incident.count(),
@@ -111,6 +114,7 @@ export class ImportsService {
       zones,
       waterZones,
       privateCases,
+      fieldTasks,
       pipes,
       pumpStations,
       incidents,

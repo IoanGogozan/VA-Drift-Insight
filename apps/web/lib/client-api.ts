@@ -1,4 +1,6 @@
 import type {
+  FieldTaskStatus,
+  FieldTaskSummary,
   ImportRunSummary,
   LeakageZoneAnalysis,
   PrivateServiceCaseStatus,
@@ -57,6 +59,23 @@ export async function updatePrivateCaseStatus(
   }
 
   return response.json() as Promise<PrivateServiceCaseSummary>;
+}
+
+export async function updateFieldTaskStatus(fieldTaskId: string, status: FieldTaskStatus): Promise<FieldTaskSummary> {
+  const response = await fetch(`${API_URL}/api/field-tasks/${fieldTaskId}`, {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+      "x-demo-api-key": DEMO_API_KEY
+    },
+    body: JSON.stringify({ status })
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunne ikke oppdatere feltoppgave.");
+  }
+
+  return response.json() as Promise<FieldTaskSummary>;
 }
 
 export async function generateVaRiskReport(): Promise<{

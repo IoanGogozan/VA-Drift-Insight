@@ -1,5 +1,6 @@
 import { DashboardScreen } from "@/components/dashboard/dashboard-screen";
 import {
+  getFieldTasks,
   getLeakageZoneAnalysis,
   getLeakageZones,
   getImportRuns,
@@ -25,6 +26,7 @@ export default async function HomePage() {
     leakageZones,
     waterZones,
     privateCases,
+    fieldTasks,
     pumpStations,
     recommendations,
     importRuns
@@ -36,6 +38,7 @@ export default async function HomePage() {
     getLeakageZones(),
     getWaterZones(),
     getPrivateCases(),
+    getFieldTasks(),
     getPumpStations(),
     getRecommendations(),
     getImportRuns()
@@ -54,6 +57,7 @@ export default async function HomePage() {
       leakageZones={leakageZones}
       waterZones={waterZones}
       privateCases={privateCases}
+      fieldTasks={fieldTasks}
       pumpStations={pumpStations}
       recommendations={recommendations}
       importRuns={importRuns}
