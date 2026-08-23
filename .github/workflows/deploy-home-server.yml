@@ -1,0 +1,135 @@
+name: Deploy Home Server Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_simulated_data_only:
+        description: "Confirm that the deployment contains simulated/demo-safe VA data only."
+        required: true
+        type: boolean
+      deploy_note:
+        description: "Optional deployment note."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-va-drift-insight-home-server
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    name: Deployment gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require main branch
+        run: test "$GITHUB_REF" = "refs/heads/main"
+
+      - name: Require simulated-data confirmation
+        if: ${{ inputs.confirm_simulated_data_only != true }}
+        run: |
+          echo "Simulated/demo-safe data confirmation is required."
+          exit 1
+
+  validate:
+    name: Validate release
+    needs: gate
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy approved commit
+    needs: validate
+    runs-on: [self-hosted, home-server, va-drift-insight]
+    environment: home-demo
+    env:
+      PROJECT_DIR: /srv/projects/va-drift-insight
+      COMPOSE_FILE: infra/docker/docker-compose.home-server.yml
+      APP_DOMAIN: va.norvix.no
+    steps:
+      - name: Checkout trusted main revision
+        uses: actions/checkout@v4
+
+      - name: Verify server prerequisites
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          command -v rsync >/dev/null
+          docker compose version >/dev/null
+          docker network inspect proxy >/dev/null
+          test -f "$PROJECT_DIR/.env"
+          test -d /srv/proxy/sites
+
+      - name: Sync application files
+        run: |
+          set -euo pipefail
+          mkdir -p "$PROJECT_DIR"
+          rsync -az --delete \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.env' \
+            --exclude 'node_modules/' \
+            --exclude '.next/' \
+            "$GITHUB_WORKSPACE/" "$PROJECT_DIR/"
+
+      - name: Validate and deploy application
+        working-directory: /srv/projects/va-drift-insight
+        run: |
+          set -euo pipefail
+          export GIT_SHA="$GITHUB_SHA"
+          docker compose --env-file .env -f "$COMPOSE_FILE" config --quiet
+          docker compose --env-file .env -f "$COMPOSE_FILE" up -d --build --remove-orphans
+          docker compose --env-file .env -f "$COMPOSE_FILE" ps
+
+          web_container="$(docker compose --env-file .env -f "$COMPOSE_FILE" ps -q web)"
+          api_container="$(docker compose --env-file .env -f "$COMPOSE_FILE" ps -q api)"
+          test -n "$web_container"
+          test -n "$api_container"
+
+          for attempt in $(seq 1 36); do
+            web_status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$web_container" 2>/dev/null || true)"
+            api_status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$api_container" 2>/dev/null || true)"
+            if [ "$web_status" = "healthy" ] && [ "$api_status" = "healthy" ]; then
+              break
+            fi
+            test "$attempt" -lt 36 || {
+              docker compose --env-file .env -f "$COMPOSE_FILE" logs --tail=200
+              exit 1
+            }
+            sleep 5
+          done
+
+      - name: Install and validate Caddy route
+        run: |
+          set -euo pipefail
+          docker compose -f /srv/proxy/compose.yml exec -T caddy mkdir -p /data/logs
+          install -m 0644 \
+            "$PROJECT_DIR/infra/caddy/va.norvix.no.caddy" \
+            /srv/proxy/sites/va.norvix.no.caddy
+          docker compose -f /srv/proxy/compose.yml exec -T caddy \
+            caddy validate --config /etc/caddy/Caddyfile
+          docker compose -f /srv/proxy/compose.yml exec -T caddy \
+            caddy reload --config /etc/caddy/Caddyfile
+
+      - name: Run post-deploy smoke tests
+        working-directory: /srv/projects/va-drift-insight
+        env:
+          RESOLVE_IP: 127.0.0.1
+        run: |
+          set -euo pipefail
+          demo_api_key="$(sed -n 's/^DEMO_API_KEY=//p' .env | tail -n 1)"
+          test -n "$demo_api_key"
+          for attempt in $(seq 1 12); do
+            if DEMO_API_KEY="$demo_api_key" \
+              bash infra/scripts/smoke-home-server.sh "https://$APP_DOMAIN"; then
+              exit 0
+            fi
+            test "$attempt" -lt 12 || exit 1
+            sleep 5
+          done
+
+      - name: Deployment summary
+        run: |
+          echo "Deployed $GITHUB_SHA to https://$APP_DOMAIN"
+          echo "Note: ${{ inputs.deploy_note }}"

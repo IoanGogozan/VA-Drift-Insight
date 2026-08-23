@@ -1,0 +1,48 @@
+FROM node:24-bookworm-slim AS build
+
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+WORKDIR /workspace
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY packages/shared/package.json packages/shared/package.json
+RUN npm ci
+
+COPY apps/api apps/api
+COPY packages/shared packages/shared
+RUN npm run prisma:generate --workspace @va-drift-insight/api
+RUN npm run build --workspace @va-drift-insight/api
+
+FROM build AS migrate
+CMD ["sh", "-c", "npm exec --workspace @va-drift-insight/api -- prisma migrate deploy && if [ \"${RESET_DEMO_DATA_ON_DEPLOY:-true}\" = \"true\" ]; then npm run prisma:seed --workspace @va-drift-insight/api; fi"]
+
+FROM build AS runtime-dependencies
+RUN npm prune --omit=dev \
+  && rm -rf node_modules/prisma node_modules/@prisma/config node_modules/deepmerge-ts
+
+FROM node:24-bookworm-slim AS runtime
+
+ENV NODE_ENV=production
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+WORKDIR /workspace
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends chromium ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && mkdir -p /data/reports \
+  && chown -R node:node /data /workspace
+
+COPY --from=runtime-dependencies --chown=node:node /workspace/node_modules ./node_modules
+COPY --from=build --chown=node:node /workspace/apps/api/package.json ./apps/api/package.json
+COPY --from=build --chown=node:node /workspace/apps/api/dist ./apps/api/dist
+COPY --from=build --chown=node:node /workspace/packages/shared/package.json ./packages/shared/package.json
+COPY --from=build --chown=node:node /workspace/packages/shared/dist ./packages/shared/dist
+
+USER node
+EXPOSE 3001
+CMD ["node", "apps/api/dist/main.js"]

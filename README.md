@@ -123,6 +123,8 @@ No real sensitive VA infrastructure data is used.
 - [Engineering guidelines](docs/engineering-guidelines.md)
 - [Engineering decisions](docs/engineering-decisions.md)
 - [External data sources](docs/external-data-sources.md)
+- [Home server deployment](docs/deployment-home-server.md)
+- [Deployment quickstart](docs/deployment-quickstart.md)
 
 ## Implemented Scope
 
@@ -280,6 +282,21 @@ curl -X PATCH http://localhost:3001/api/recommendations/{id}/status \
 ```
 
 The web app is available at `http://localhost:3000` when `npm run dev` is running.
+
+## Portfolio Deployment
+
+The public portfolio target is:
+
+```text
+https://va.norvix.no
+```
+
+The home-server deployment uses the existing shared Caddy proxy, Docker
+Compose, PostGIS, and a dedicated self-hosted GitHub Actions runner. Only Caddy
+publishes ports 80/443; application and database ports remain private Docker
+services. See the [home-server deployment runbook](docs/deployment-home-server.md)
+for first-time server setup, DNS, runner labels, environment variables, release
+gates, smoke tests, operations, and rollback.
 
 ## Scope Boundaries
 

@@ -5,7 +5,8 @@ import { FileText } from "lucide-react";
 import { generateVaRiskReport } from "@/lib/client-api";
 import { Button } from "../ui/button";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "production" ? "" : "http://localhost:3001");
 
 export function ReportButton() {
   const [error, setError] = useState<string | null>(null);

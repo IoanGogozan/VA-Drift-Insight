@@ -10,7 +10,8 @@ import type {
   RecommendationSummary
 } from "./api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === "production" ? "" : "http://localhost:3001");
 const DEMO_API_KEY = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "local-demo-key";
 
 export async function fetchLeakageZoneAnalysis(zoneId: string): Promise<LeakageZoneAnalysis> {

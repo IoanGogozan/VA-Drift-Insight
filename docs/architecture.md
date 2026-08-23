@@ -193,8 +193,22 @@ volumes:
 
 ## Deployment
 
-Possible cloud deployment:
+The selected portfolio deployment is `https://va.norvix.no` on the existing
+Norvix home server.
 
-- Supabase Postgres for database
-- Render, Fly.io or Railway for API
-- Vercel for frontend
+```text
+Shared Caddy edge
+   +--> /api/* -> NestJS API
+   +--> /*     -> Next.js standalone server
+
+Internal Docker network
+   +--> NestJS API
+   +--> PostgreSQL/PostGIS
+   +--> one-shot Prisma migration and demo seed job
+```
+
+Web and API share one public browser origin. Server-side Next.js calls use the
+private Docker API address, while browser calls use relative `/api` URLs.
+PostgreSQL and application ports are not published on the host.
+
+See [Home server deployment](deployment-home-server.md).

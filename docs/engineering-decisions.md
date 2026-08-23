@@ -82,21 +82,25 @@ Implication:
 
 Even when seed data uses fixed IDs for readability, generated records should use UUID defaults.
 
-## ADR 006: Use Next Canary Temporarily For Security Audit Cleanliness
+## ADR 006: Return To Stable Next.js Before Deployment
 
-Status: Accepted
+Status: Accepted (supersedes the temporary canary decision)
 
 Decision:
 
-Use `next@16.3.0-canary.8` for the frontend foundation until the stable Next release includes a non-vulnerable internal PostCSS version.
+Use the pinned stable Next.js release for CI and deployment. The temporary
+`next@16.3.0-canary.8` dependency was replaced by stable `next@16.3.2` when the
+patched stable release became available.
 
 Reason:
 
-The selected Next.js canary version resolves a dependency audit issue found in the stable release available during development and passes typecheck/build for this demo.
+Portfolio deployment should not depend on a canary runtime when a patched
+stable release is available.
 
 Implication:
 
-Revisit this dependency before deployment and return to stable Next as soon as the stable release line has the patched dependency.
+Next.js, React, and React DOM are pinned to reviewed stable versions and updated
+through an explicit dependency change with CI validation.
 
 ## ADR 007: Use Public Norwegian Data, Simulate Sensitive VA Operations
 
@@ -113,3 +117,28 @@ Real rainfall and official municipality boundaries make the demo credible, while
 Implication:
 
 The UI, README and PDF reports must clearly label which data is public/open and which data is simulated. The app must keep working with fallback seed data when external APIs or credentials are unavailable.
+
+## ADR 008: Deploy The Portfolio Demo On The Norvix Home Server
+
+Status: Accepted
+
+Decision:
+
+Deploy the public demo at `https://va.norvix.no` through the existing shared
+Caddy edge. Run web, API, migrations, and PostGIS with Docker Compose. Use a
+repository-specific self-hosted GitHub Actions runner for manual, main-only
+deployments.
+
+Reason:
+
+This reuses the established Norvix server topology, keeps SSH private to the
+home LAN, avoids exposing application and database ports, and makes the
+portfolio release process reproducible.
+
+Implication:
+
+The repository owns Dockerfiles, the home-server Compose file, Caddy site
+fragment, CI, deploy workflow, smoke test, and operational runbook. Server
+secrets remain only in `/srv/projects/va-drift-insight/.env`. The deployment
+accepts simulated data only and must not be presented as a production VA
+operations system.

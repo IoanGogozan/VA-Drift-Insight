@@ -1,0 +1,134 @@
+name: va-drift-insight
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.web
+      args:
+        NEXT_PUBLIC_API_URL: ""
+        NEXT_PUBLIC_DEMO_API_KEY: ${DEMO_API_KEY:?DEMO_API_KEY is required}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    environment:
+      INTERNAL_API_URL: http://api:3001
+    depends_on:
+      api:
+        condition: service_healthy
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      proxy:
+        aliases:
+          - va-drift-web
+      data:
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+      target: runtime
+    restart: unless-stopped
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+      API_VERSION: ${GIT_SHA:-0.1.0}
+      API_CORS_ORIGINS: https://${APP_DOMAIN:-va.norvix.no}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-va_drift}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-va_drift_insight}
+      DEMO_API_KEY: ${DEMO_API_KEY:?DEMO_API_KEY is required}
+      FROST_CLIENT_ID: ${FROST_CLIENT_ID:-}
+      DEFAULT_MUNICIPALITY_CODE: ${DEFAULT_MUNICIPALITY_CODE:-3905}
+      DEFAULT_MUNICIPALITY_NAME: ${DEFAULT_MUNICIPALITY_NAME:-Tonsberg}
+      PDF_STORAGE_PATH: /data/reports
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
+      HOME: /tmp
+      XDG_CACHE_HOME: /tmp/.cache
+      XDG_CONFIG_HOME: /tmp/.config
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    expose:
+      - "3001"
+    volumes:
+      - reports_data:/data/reports
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/api/health/db').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      proxy:
+        aliases:
+          - va-drift-api
+      data:
+
+  migrate:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+      target: migrate
+    restart: "no"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-va_drift}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:-va_drift_insight}
+      RESET_DEMO_DATA_ON_DEPLOY: ${RESET_DEMO_DATA_ON_DEPLOY:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - data
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-va_drift_insight}
+      POSTGRES_USER: ${POSTGRES_USER:-va_drift}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-va_drift} -d ${POSTGRES_DB:-va_drift_insight}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - data
+
+networks:
+  proxy:
+    external: true
+  data:
+    internal: true
+
+volumes:
+  postgres_data:
+  reports_data:

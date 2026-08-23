@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  workflow_call:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, Test, Build
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://va_ci:va_ci_password@localhost:5432/va_drift_insight_ci
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_DEMO_API_KEY: ci-demo-key
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: va_drift_insight_ci
+          POSTGRES_USER: va_ci
+          POSTGRES_PASSWORD: va_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U va_ci -d va_drift_insight_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate --workspace @va-drift-insight/api
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Apply database migrations
+        run: npm exec --workspace @va-drift-insight/api -- prisma migrate deploy
+
+      - name: Seed simulated demo data
+        run: npm run prisma:seed --workspace @va-drift-insight/api
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  compose:
+    name: Validate Home-server Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Compose configuration
+        env:
+          POSTGRES_PASSWORD: ci-compose-postgres-password
+          DEMO_API_KEY: ci-compose-demo-key
+        run: docker compose -f infra/docker/docker-compose.home-server.yml config --quiet

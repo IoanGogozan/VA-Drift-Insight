@@ -1,0 +1,6 @@
+self-hosted-runner:
+  labels:
+    - home-server
+    - va-drift-insight
+
+config-variables: null

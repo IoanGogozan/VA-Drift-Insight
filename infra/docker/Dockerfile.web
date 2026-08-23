@@ -1,0 +1,36 @@
+FROM node:24-bookworm-slim AS build
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ARG NEXT_PUBLIC_API_URL=
+ARG NEXT_PUBLIC_DEMO_API_KEY
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_DEMO_API_KEY=$NEXT_PUBLIC_DEMO_API_KEY
+WORKDIR /workspace
+
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY packages/shared/package.json packages/shared/package.json
+RUN npm ci
+
+COPY apps/web apps/web
+COPY packages/shared packages/shared
+RUN npm run build --workspace @va-drift-insight/shared
+RUN npm run build --workspace @va-drift-insight/web
+
+FROM node:24-bookworm-slim AS runtime
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+WORKDIR /app
+
+COPY --from=build --chown=node:node /workspace/apps/web/.next/standalone ./
+COPY --from=build --chown=node:node /workspace/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build --chown=node:node /workspace/apps/web/app/icon.svg ./apps/web/app/icon.svg
+
+USER node
+EXPOSE 3000
+CMD ["node", "apps/web/server.js"]
