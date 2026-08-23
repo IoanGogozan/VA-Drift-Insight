@@ -78,7 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           export GIT_SHA="$GITHUB_SHA"
-          docker compose --env-file .env -f "$COMPOSE_FILE" config --quiet
+          docker compose --env-file .env -f "$COMPOSE_FILE" config >/dev/null
           docker compose --env-file .env -f "$COMPOSE_FILE" up -d --build --remove-orphans
           docker compose --env-file .env -f "$COMPOSE_FILE" ps
 

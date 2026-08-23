@@ -321,7 +321,7 @@ cd /srv/projects/va-drift-insight
 docker compose \
   --env-file .env \
   -f infra/docker/docker-compose.home-server.yml \
-  config --quiet
+  config >/dev/null
 
 docker compose \
   --env-file .env \
