@@ -49,7 +49,7 @@ jobs:
       APP_DOMAIN: va.norvix.no
     steps:
       - name: Checkout trusted main revision
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Verify server prerequisites
         run: |
