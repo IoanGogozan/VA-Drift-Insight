@@ -114,7 +114,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-va_drift}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-va_drift} -d ${POSTGRES_DB:-va_drift_insight}"]
+      # During first initialization, the PostGIS image briefly starts a
+      # Unix-socket-only bootstrap server. Requiring TCP prevents the migrate
+      # job from starting before the final database listener is available.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${POSTGRES_USER:-va_drift} -d ${POSTGRES_DB:-va_drift_insight}"]
       interval: 10s
       timeout: 5s
       retries: 10
