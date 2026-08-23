@@ -57,7 +57,10 @@ jobs:
         run: npm run prisma:generate --workspace @va-drift-insight/api
 
       - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+        # Prisma CLI is an optional peer used only by the isolated migration
+        # image. The public API runtime explicitly removes it and other build
+        # tooling, so this gate audits the dependencies shipped to that runtime.
+        run: npm audit --omit=dev --omit=optional --audit-level=high
 
       - name: Apply database migrations
         run: npm exec --workspace @va-drift-insight/api -- prisma migrate deploy

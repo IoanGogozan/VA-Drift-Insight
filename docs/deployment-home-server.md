@@ -265,11 +265,13 @@ also be called by the deployment workflow. It:
 1. starts disposable PostGIS;
 2. installs the locked npm dependency graph;
 3. generates Prisma Client;
-4. applies all committed migrations;
-5. seeds simulated data;
-6. runs type checks and tests;
-7. builds API, shared package, and frontend;
-8. validates the home-server Compose configuration.
+4. audits the non-development, non-optional dependency set shipped by the
+   public API runtime;
+5. applies all committed migrations;
+6. seeds simulated data;
+7. runs type checks and tests;
+8. builds API, shared package, and frontend;
+9. validates the home-server Compose configuration.
 
 ## Deployment workflow
 
